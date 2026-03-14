@@ -1,0 +1,298 @@
+import { inferFalMediaType, resolveFalModelOrFallback } from './falai-client.ts';
+
+const DEFAULT_COSTS: Record<string, number> = {
+  text: 1,
+  image: 5,
+  video: 20,
+  audio: 8,
+  generation: 5,
+};
+
+const MODEL_COST_OVERRIDES: Record<string, number> = {
+  'fal-ai/nano-banana-2': 4,
+  'fal-ai/nano-banana-pro': 7,
+  'fal-ai/qwen-image-2/text-to-image': 5,
+  'fal-ai/qwen-image-2/pro/text-to-image': 7,
+  'fal-ai/kling-video/o3/standard/text-to-video': 22,
+  'fal-ai/kling-video/o3/standard/image-to-video': 24,
+  'fal-ai/kling-video/o3/pro/text-to-video': 32,
+  'fal-ai/kling-video/o3/pro/image-to-video': 30,
+  'fal-ai/sora-2/text-to-video': 35,
+  'fal-ai/sora-2/text-to-video/pro': 50,
+  'fal-ai/ltx-2-19b/text-to-video': 18,
+  'fal-ai/bytedance/seedance/v1/lite/text-to-video': 20,
+  'fal-ai/bytedance/seedance/v1/pro/text-to-video': 30,
+};
+
+const WORKFLOW_COSTS: Record<string, number> = {
+  'generate-storylines': 3,
+  'gen-shots': 1,
+};
+
+const TOP_UP_URL = '/settings/billing';
+
+function asNumber(value: unknown, fallback = 0): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function safeJson(value: unknown): Record<string, unknown> {
+  if (!value) return {};
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return {};
+}
+
+export class InsufficientCreditsError extends Error {
+  readonly code = 'insufficient_credits';
+  readonly required: number;
+  readonly available: number;
+  readonly topUpUrl: string;
+
+  constructor(required: number, available: number, topUpUrl = TOP_UP_URL) {
+    super('Insufficient credits');
+    this.required = required;
+    this.available = available;
+    this.topUpUrl = topUpUrl;
+  }
+}
+
+export function shouldSkipCreditBilling(headers: Headers): boolean {
+  return (headers.get('x-credit-billing') || '').toLowerCase() === 'upstream';
+}
+
+export function buildCreditIdempotencyKey(...parts: Array<string | number | null | undefined>): string {
+  return parts
+    .map((part) => String(part ?? ''))
+    .filter((part) => part.length > 0)
+    .join(':');
+}
+
+export function getCreditCostForModel(modelId: string | null | undefined, resourceType: string): number {
+  const normalizedResource = resourceType.toLowerCase();
+  const requestedModel = typeof modelId === 'string' ? modelId.trim() : '';
+  if (!requestedModel) {
+    return Math.max(1, Math.ceil(DEFAULT_COSTS[normalizedResource] ?? DEFAULT_COSTS.generation));
+  }
+
+  const resolved = resolveFalModelOrFallback(requestedModel, {
+    mediaTypeHint: inferFalMediaType(requestedModel),
+    uiGroup: 'generation',
+  });
+
+  const byModel = MODEL_COST_OVERRIDES[resolved.model.id] ?? MODEL_COST_OVERRIDES[requestedModel];
+  if (typeof byModel === 'number') {
+    return Math.max(1, Math.ceil(byModel));
+  }
+
+  const inferredMedia = resolved.model.media_type;
+  return Math.max(
+    1,
+    Math.ceil(DEFAULT_COSTS[inferredMedia] ?? DEFAULT_COSTS[normalizedResource] ?? DEFAULT_COSTS.generation),
+  );
+}
+
+export function getWorkflowCreditCost(workflow: 'generate-storylines' | 'gen-shots', units = 1): number {
+  const base = WORKFLOW_COSTS[workflow] ?? 1;
+  const multiplier = Math.max(1, Math.ceil(units));
+  return Math.max(1, Math.ceil(base * multiplier));
+}
+
+interface ReserveCreditsInput {
+  supabase: any;
+  userId: string;
+  resourceType: string;
+  requestedAmount: number;
+  referenceType: string;
+  referenceId: string;
+  idempotencyKey: string;
+  metadata?: Record<string, unknown>;
+  skipBilling?: boolean;
+}
+
+interface CreditReserveResult {
+  holdId: string | null;
+  requestedAmount: number;
+  availableAfter: number;
+  skipped: boolean;
+}
+
+function parseRpcPayload(data: unknown): Record<string, unknown> {
+  if (typeof data === 'string') {
+    try {
+      const parsed = JSON.parse(data);
+      return safeJson(parsed);
+    } catch {
+      return {};
+    }
+  }
+  return safeJson(data);
+}
+
+export async function reserveCredits(input: ReserveCreditsInput): Promise<CreditReserveResult> {
+  const requestedAmount = Math.max(1, Math.ceil(input.requestedAmount));
+
+  if (input.skipBilling) {
+    return {
+      holdId: null,
+      requestedAmount,
+      availableAfter: 0,
+      skipped: true,
+    };
+  }
+
+  const MAX_RETRIES = 6;
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const { data: creditRow, error: fetchError } = await input.supabase
+      .from('user_credits')
+      .select('total_credits, used_credits')
+      .eq('user_id', input.userId)
+      .single();
+
+    if (fetchError || !creditRow) {
+      throw new InsufficientCreditsError(requestedAmount, 0);
+    }
+
+    const available = (creditRow.total_credits ?? 0) - (creditRow.used_credits ?? 0);
+    if (available < requestedAmount) {
+      throw new InsufficientCreditsError(requestedAmount, available);
+    }
+
+    const expectedUsedCredits = creditRow.used_credits ?? 0;
+    const newUsedCredits = expectedUsedCredits + requestedAmount;
+
+    const { data: atomicResult, error: atomicError } = await input.supabase
+      .from('user_credits')
+      .update({ used_credits: newUsedCredits, updated_at: new Date().toISOString() })
+      .eq('user_id', input.userId)
+      .eq('used_credits', expectedUsedCredits)
+      .select('used_credits');
+
+    if (atomicError) {
+      throw new Error(`Credit deduction failed: ${atomicError.message}`);
+    }
+
+    // CAS failed — another request modified credits concurrently, retry
+    if (!atomicResult || atomicResult.length === 0) {
+      if (attempt < MAX_RETRIES - 1) {
+        // Small backoff before retry
+        await new Promise((r) => setTimeout(r, 50 * (attempt + 1) + Math.floor(Math.random() * 100)));
+        continue;
+      }
+      throw new Error('Credit deduction failed after retries: concurrent modification detected. Please retry.');
+    }
+
+    // Success — record transaction
+    await input.supabase.from('credit_transactions').insert({
+      user_id: input.userId,
+      amount: -requestedAmount,
+      transaction_type: 'usage',
+      resource_type: input.resourceType,
+      metadata: {
+        ...(input.metadata || {}),
+        reference_type: input.referenceType,
+        reference_id: input.referenceId,
+        idempotency_key: input.idempotencyKey,
+      },
+    });
+
+    return {
+      holdId: input.referenceId,
+      requestedAmount,
+      availableAfter: available - requestedAmount,
+      skipped: false,
+    };
+  }
+
+  // Should not reach here, but TypeScript needs a return
+  throw new Error('Credit deduction failed: unexpected retry exhaustion.');
+}
+
+interface CreditSettleInput {
+  supabase: any;
+  holdId: string | null;
+  amount?: number;
+  metadata?: Record<string, unknown>;
+  reason?: string;
+  skipped?: boolean;
+  userId?: string;
+}
+
+export async function commitCredits(input: CreditSettleInput): Promise<void> {
+  // Credits already deducted upfront via use_credits — nothing to do
+  return;
+}
+
+export async function releaseCredits(input: CreditSettleInput): Promise<void> {
+  if (input.skipped || !input.holdId) return;
+
+  const refundAmount = input.amount ?? 0;
+  if (refundAmount <= 0) return;
+
+  const userId =
+    input.userId ||
+    ((input.metadata as Record<string, unknown> | undefined)?.user_id as string | undefined);
+
+  if (!userId) {
+    console.error('releaseCredits: missing user_id in metadata, cannot refund');
+    return;
+  }
+
+  // Single atomic update: decrement used_credits by refundAmount, floor at 0
+  const { data: currentRow, error: fetchError } = await input.supabase
+    .from('user_credits')
+    .select('used_credits')
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !currentRow) {
+    console.error('releaseCredits: user_credits row not found for', userId);
+    return;
+  }
+
+  const newUsedCredits = Math.max(0, (currentRow.used_credits ?? 0) - refundAmount);
+  
+  const { error: updateError } = await input.supabase
+    .from('user_credits')
+    .update({ used_credits: newUsedCredits, updated_at: new Date().toISOString() })
+    .eq('user_id', userId);
+
+  if (updateError) {
+    console.error('releaseCredits: update failed', updateError.message);
+  }
+
+  // Record refund transaction
+  await input.supabase.from('credit_transactions').insert({
+    user_id: userId,
+    amount: refundAmount,
+    transaction_type: 'refund',
+    resource_type: 'credit',
+    metadata: {
+      reason: input.reason || 'operation_failed',
+      reference_id: input.holdId,
+      ...(input.metadata || {}),
+    },
+  });
+}
+
+export function insufficientCreditsResponse(error: InsufficientCreditsError, extraHeaders: Record<string, string> = {}): Response {
+  return new Response(
+    JSON.stringify({
+      error: 'Insufficient credits',
+      code: error.code,
+      required: error.required,
+      available: error.available,
+      top_up_url: error.topUpUrl,
+    }),
+    {
+      status: 402,
+      headers: { ...extraHeaders, 'Content-Type': 'application/json' },
+    },
+  );
+}

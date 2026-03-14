@@ -1,0 +1,377 @@
+import type { Database, Json } from "@/integrations/supabase/types";
+import type {
+  KanvasCinemaRequest,
+  KanvasCinemaSettings,
+  KanvasGenerationRequest,
+  KanvasImageToImageRequest,
+  KanvasImageToVideoRequest,
+  KanvasJob,
+  KanvasLipSyncRequest,
+  KanvasMediaType,
+  KanvasMode,
+  KanvasResultPayload,
+  KanvasStudio,
+  KanvasTalkingHeadRequest,
+  KanvasTextToImageRequest,
+  KanvasTextToVideoRequest,
+} from "@/features/kanvas/types";
+
+type GenerationJobRow = any;
+
+export const KANVAS_STUDIO_ORDER: KanvasStudio[] = ["image", "video", "lipsync", "cinema", "worldview"];
+
+export const KANVAS_STUDIO_META: Record<
+  KanvasStudio,
+  { label: string; headline: string; description: string }
+> = {
+  image: {
+    label: "Image",
+    headline: "Image Studio",
+    description: "Transform prompts and references into styled stills.",
+  },
+  video: {
+    label: "Video",
+    headline: "Video Studio",
+    description: "Turn prompts and frames into motion-first clips.",
+  },
+  cinema: {
+    label: "Cinema Studio",
+    headline: "Cinema Studio 2.0",
+    description: "Compose a cinematic still with camera and lens language.",
+  },
+  lipsync: {
+    label: "Lip Sync",
+    headline: "Lip Sync",
+    description: "Animate portraits or existing footage with synced speech.",
+  },
+  worldview: {
+    label: "Worldview",
+    headline: "Worldview Studio",
+    description: "Generate 3D worlds, capture takes, and compose AI shots.",
+  },
+};
+
+export const KANVAS_CAMERAS: Record<string, string> = {
+  "Modular 8K Digital": "modular 8K digital cinema camera",
+  "Full-Frame Cine Digital": "full-frame digital cinema camera",
+  "Grand Format 70mm Film": "grand format 70mm film camera",
+  "Studio Digital S35": "Super 35 studio digital camera",
+  "Classic 16mm Film": "classic 16mm film camera",
+  "Premium Large Format Digital": "premium large-format digital cinema camera",
+};
+
+export const KANVAS_LENSES: Record<string, string> = {
+  "Creative Tilt Lens": "creative tilt lens effect",
+  "Compact Anamorphic": "compact anamorphic lens",
+  "Extreme Macro": "extreme macro lens",
+  "70s Cinema Prime": "1970s cinema prime lens",
+  "Classic Anamorphic": "classic anamorphic lens",
+  "Premium Modern Prime": "premium modern prime lens",
+  "Warm Cinema Prime": "warm-toned cinema prime lens",
+  "Swirl Bokeh Portrait": "swirl bokeh portrait lens",
+  "Vintage Prime": "vintage prime lens",
+  "Halation Diffusion": "halation diffusion filter",
+  "Clinical Sharp Prime": "ultra-sharp clinical prime lens",
+};
+
+const FOCAL_PERSPECTIVES: Record<number, string> = {
+  8: "ultra-wide perspective",
+  14: "wide-angle perspective",
+  24: "wide-angle dynamic perspective",
+  35: "natural cinematic perspective",
+  50: "standard portrait perspective",
+  85: "classic portrait perspective",
+};
+
+const APERTURE_EFFECTS: Record<string, string> = {
+  "f/1.4": "shallow depth of field, creamy bokeh",
+  "f/4": "balanced depth of field",
+  "f/11": "deep focus clarity, sharp foreground to background",
+};
+
+export const KANVAS_FOCAL_LENGTHS = [8, 14, 24, 35, 50, 85] as const;
+export const KANVAS_APERTURES = ["f/1.4", "f/4", "f/11"] as const;
+
+function asRecord(value: Json | null): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function asStringArray(value: Json): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function asOutputArray(value: unknown): KanvasResultPayload["outputs"] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+      const entry = item as Record<string, unknown>;
+      if (typeof entry.url !== "string") {
+        return null;
+      }
+      return {
+        url: entry.url,
+        contentType: typeof entry.contentType === "string" ? entry.contentType : undefined,
+        fileName: typeof entry.fileName === "string" ? entry.fileName : undefined,
+        width: typeof entry.width === "number" ? entry.width : undefined,
+        height: typeof entry.height === "number" ? entry.height : undefined,
+        duration: typeof entry.duration === "number" ? entry.duration : undefined,
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null);
+}
+
+export function createDefaultCinemaSettings(): KanvasCinemaSettings {
+  return {
+    camera: Object.keys(KANVAS_CAMERAS)[0],
+    lens: Object.keys(KANVAS_LENSES)[0],
+    focalLength: 35,
+    aperture: "f/1.4",
+  };
+}
+
+export function normalizeStudioParam(value: string | null | undefined): KanvasStudio {
+  if (value === "image" || value === "video" || value === "cinema" || value === "lipsync" || value === "worldview") {
+    return value;
+  }
+  return "image";
+}
+
+export function buildCinemaPrompt(prompt: string, cinema: KanvasCinemaSettings): string {
+  const camera = KANVAS_CAMERAS[cinema.camera] ?? cinema.camera;
+  const lens = KANVAS_LENSES[cinema.lens] ?? cinema.lens;
+  const perspective = FOCAL_PERSPECTIVES[cinema.focalLength] ?? "";
+  const aperture = APERTURE_EFFECTS[cinema.aperture] ?? "";
+
+  return [
+    prompt,
+    `shot on a ${camera}`,
+    `using a ${lens} at ${cinema.focalLength}mm${perspective ? ` (${perspective})` : ""}`,
+    `aperture ${cinema.aperture}`,
+    aperture,
+    "cinematic lighting",
+    "natural color science",
+    "high dynamic range",
+    "professional photography, ultra-detailed, 8K resolution",
+  ]
+    .filter((part) => part.trim().length > 0)
+    .join(", ");
+}
+
+export function buildImageRequest(input: {
+  projectId?: string | null;
+  modelId: string;
+  prompt: string;
+  settings?: Record<string, unknown>;
+  imageIds: string[];
+}): KanvasTextToImageRequest | KanvasImageToImageRequest {
+  if (input.imageIds.length > 0) {
+    return {
+      studio: "image",
+      mode: "image-to-image",
+      projectId: input.projectId,
+      modelId: input.modelId,
+      prompt: input.prompt.trim() || undefined,
+      settings: input.settings,
+      assetSelections: {
+        imageIds: input.imageIds,
+      },
+    };
+  }
+
+  return {
+    studio: "image",
+    mode: "text-to-image",
+    projectId: input.projectId,
+    modelId: input.modelId,
+    prompt: input.prompt,
+    settings: input.settings,
+  };
+}
+
+export function buildVideoRequest(input: {
+  projectId?: string | null;
+  modelId: string;
+  prompt: string;
+  settings?: Record<string, unknown>;
+  imageId?: string | null;
+}): KanvasTextToVideoRequest | KanvasImageToVideoRequest {
+  if (input.imageId) {
+    return {
+      studio: "video",
+      mode: "image-to-video",
+      projectId: input.projectId,
+      modelId: input.modelId,
+      prompt: input.prompt.trim() || undefined,
+      settings: input.settings,
+      assetSelections: {
+        imageId: input.imageId,
+      },
+    };
+  }
+
+  return {
+    studio: "video",
+    mode: "text-to-video",
+    projectId: input.projectId,
+    modelId: input.modelId,
+    prompt: input.prompt,
+    settings: input.settings,
+  };
+}
+
+export function buildCinemaRequest(input: {
+  projectId?: string | null;
+  modelId: string;
+  prompt: string;
+  settings?: Record<string, unknown>;
+  cinema: KanvasCinemaSettings;
+}): KanvasCinemaRequest {
+  return {
+    studio: "cinema",
+    mode: "cinematic-image",
+    projectId: input.projectId,
+    modelId: input.modelId,
+    prompt: input.prompt,
+    settings: input.settings,
+    cinema: input.cinema,
+  };
+}
+
+export function buildLipSyncRequest(input: {
+  projectId?: string | null;
+  mode: Extract<KanvasMode, "talking-head" | "lip-sync">;
+  modelId: string;
+  prompt: string;
+  settings?: Record<string, unknown>;
+  imageId?: string | null;
+  videoId?: string | null;
+  audioId: string;
+}): KanvasTalkingHeadRequest | KanvasLipSyncRequest {
+  if (input.mode === "lip-sync") {
+    if (!input.videoId) {
+      throw new Error("Lip-sync mode requires a source video.");
+    }
+    return {
+      studio: "lipsync",
+      mode: "lip-sync",
+      projectId: input.projectId,
+      modelId: input.modelId,
+      prompt: input.prompt.trim() || undefined,
+      settings: input.settings,
+      assetSelections: {
+        videoId: input.videoId,
+        audioId: input.audioId,
+      },
+    };
+  }
+
+  return {
+    studio: "lipsync",
+    mode: "talking-head",
+    projectId: input.projectId,
+    modelId: input.modelId,
+    prompt: input.prompt.trim() || undefined,
+    settings: input.settings,
+    assetSelections: {
+      imageId: input.imageId ?? undefined,
+      audioId: input.audioId,
+    },
+  };
+}
+
+export function normalizeKanvasJobRow(row: GenerationJobRow): KanvasJob {
+  const resultPayloadRecord = asRecord(row.result_payload);
+  const mediaType =
+    resultPayloadRecord.mediaType === "video" ? "video" : (row.job_type as KanvasMediaType);
+  const outputs = asOutputArray(resultPayloadRecord.outputs);
+  const primaryUrl =
+    typeof resultPayloadRecord.primaryUrl === "string"
+      ? resultPayloadRecord.primaryUrl
+      : row.result_url;
+  const previewUrl =
+    typeof resultPayloadRecord.previewUrl === "string"
+      ? resultPayloadRecord.previewUrl
+      : primaryUrl;
+
+  const resultPayload: KanvasResultPayload | null =
+    primaryUrl && previewUrl
+      ? {
+          mediaType,
+          primaryUrl,
+          previewUrl,
+          outputs,
+          raw: "raw" in resultPayloadRecord ? resultPayloadRecord.raw : row.result_payload,
+        }
+      : null;
+
+  return {
+    id: row.id,
+    userId: row.user_id,
+    projectId: row.project_id,
+    studio: (row.studio ?? "image") as KanvasStudio,
+    modelId: row.model_id,
+    externalRequestId: row.external_request_id,
+    jobType: row.job_type as KanvasMediaType,
+    status: row.status as KanvasJob["status"],
+    progress: row.progress,
+    resultUrl: row.result_url,
+    errorMessage: row.error_message,
+    config: asRecord(row.config),
+    inputAssets: asStringArray(row.input_assets),
+    resultPayload,
+    createdAt: row.created_at,
+    startedAt: row.started_at,
+    completedAt: row.completed_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function getJobPrimaryUrl(job: KanvasJob | null): string | null {
+  return job?.resultPayload?.primaryUrl ?? job?.resultUrl ?? null;
+}
+
+export function isJobActive(job: KanvasJob): boolean {
+  return job.status === "queued" || job.status === "processing";
+}
+
+export function matchModelForMode<T extends { mode: KanvasMode }>(
+  models: T[],
+  mode: KanvasMode
+): T[] {
+  return models.filter((model) => model.mode === mode);
+}
+
+export function pickLatestStudioJob(jobs: KanvasJob[], studio: KanvasStudio): KanvasJob | null {
+  return jobs.find((job) => job.studio === studio) ?? null;
+}
+
+export function buildRequestForStudio(
+  studio: KanvasStudio,
+  input:
+    | Parameters<typeof buildImageRequest>[0]
+    | Parameters<typeof buildVideoRequest>[0]
+    | Parameters<typeof buildCinemaRequest>[0]
+    | Parameters<typeof buildLipSyncRequest>[0]
+): KanvasGenerationRequest | undefined {
+  switch (studio) {
+    case "image":
+      return buildImageRequest(input as Parameters<typeof buildImageRequest>[0]);
+    case "video":
+      return buildVideoRequest(input as Parameters<typeof buildVideoRequest>[0]);
+    case "cinema":
+      return buildCinemaRequest(input as Parameters<typeof buildCinemaRequest>[0]);
+    case "lipsync":
+      return buildLipSyncRequest(input as Parameters<typeof buildLipSyncRequest>[0]);
+    case "worldview":
+      // Worldview uses its own service layer, not the kanvas generation pipeline
+      return undefined;
+  }
+}
