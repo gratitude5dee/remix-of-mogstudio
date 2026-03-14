@@ -88,7 +88,7 @@ export const ProjectAssetsTab: React.FC<ProjectAssetsTabProps> = ({ projectId })
               border: `1px solid ${editorTheme.border.subtle}`,
               color: editorTheme.text.primary,
               fontSize: typography.fontSize.sm,
-              focusRingColor: editorTheme.border.focus,
+              
             }}
             onFocus={(e) => {
               e.currentTarget.style.borderColor = editorTheme.border.focus;
