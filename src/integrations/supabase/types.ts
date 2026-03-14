@@ -6109,6 +6109,7 @@ export type Database = {
           music_video_data: Json | null
           product_name: string | null
           selected_storyline_id: string | null
+          short_film_data: Json | null
           special_requests: string | null
           status: string | null
           style_reference_asset_id: string | null
@@ -6143,6 +6144,7 @@ export type Database = {
           music_video_data?: Json | null
           product_name?: string | null
           selected_storyline_id?: string | null
+          short_film_data?: Json | null
           special_requests?: string | null
           status?: string | null
           style_reference_asset_id?: string | null
@@ -6177,6 +6179,7 @@ export type Database = {
           music_video_data?: Json | null
           product_name?: string | null
           selected_storyline_id?: string | null
+          short_film_data?: Json | null
           special_requests?: string | null
           status?: string | null
           style_reference_asset_id?: string | null
