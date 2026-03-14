@@ -157,7 +157,8 @@ function LogoPlane({ phase }: LogoPlaneProps) {
 
   // Compute plane size to fit nicely in viewport
   const planeSize = useMemo(() => {
-    const aspect = texture.image ? texture.image.width / texture.image.height : 2;
+    const img = texture.image as { width: number; height: number } | undefined;
+    const aspect = img ? img.width / img.height : 2;
     const maxW = viewport.width * 0.45;
     const maxH = viewport.height * 0.35;
     let w = maxW;

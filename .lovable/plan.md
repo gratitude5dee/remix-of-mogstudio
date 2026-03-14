@@ -1,22 +1,18 @@
 
 
-# Fix: 4 Build Errors
+# Fix: Restore missing `.env` file (again)
 
-## Changes
+## Root Cause
+The `.env` file has been deleted (again). The Supabase client requires `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to initialize. Without them, the app crashes on boot with a blank screen.
 
-### 1. `src/components/editor/EditorCanvas.tsx` (line 163)
-Cast `EditorComposition` through `unknown` first to satisfy TypeScript:
-```typescript
-component={EditorComposition as unknown as React.ComponentType<Record<string, unknown>>}
+## Fix
+Recreate `.env` with the known project credentials:
+
+```
+VITE_SUPABASE_PROJECT_ID="<your-supabase-project-id>"
+VITE_SUPABASE_PUBLISHABLE_KEY="<your-supabase-anon-key>"
+VITE_SUPABASE_URL="https://<your-project-id>.supabase.co"
 ```
 
-### 2. `src/components/editor/tabs/ProjectAssetsTab.tsx` (line 91)
-Remove the invalid `focusRingColor` CSS property — it's not a valid `style` property. The focus ring is already handled by the `onFocus` handler below it.
-
-### 3. `src/components/landing/CinematicIntro.tsx` (line 160)
-Type-assert `texture.image` to access `.width` and `.height`:
-```typescript
-const img = texture.image as { width: number; height: number } | undefined;
-const aspect = img ? img.width / img.height : 2;
-```
+Single file restore — immediate fix.
 

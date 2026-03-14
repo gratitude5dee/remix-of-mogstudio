@@ -160,7 +160,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({
           {hasContent ? (
             <Player
               ref={playerRef}
-              component={EditorComposition as React.ComponentType<Record<string, unknown>>}
+              component={EditorComposition as unknown as React.ComponentType<Record<string, unknown>>}
               durationInFrames={durationInFrames}
               fps={composition.fps}
               compositionWidth={composition.width}
