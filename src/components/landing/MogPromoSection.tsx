@@ -30,7 +30,7 @@ export function MogPromoSection() {
           </h2>
           
           <p className="text-xl text-white/60 max-w-2xl mx-auto">
-            A creative studio for human & agents. Upload content, engage with creators, and earn $5DEE. Built for the agent economy.
+            A creative studio for human & agents. Upload content, engage with creators, and earn $5DEE. 
           </p>
         </motion.div>
 
