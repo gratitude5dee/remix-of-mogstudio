@@ -1,26 +1,19 @@
 
 
-# Fix: Commit `.env` to GitHub
+# Fix: Restore missing `.env` file with Supabase environment variables
 
 ## Problem
-The `.env` file is listed in `.gitignore` (line 14: `.env`), so every time the project syncs from GitHub the file is missing, causing the `supabaseUrl is required` crash.
+The `.env` file was deleted (likely during a GitHub rebuild), so the app can't connect to Supabase — all API calls and auth will fail.
 
 ## Fix
-Remove `.env` from `.gitignore` so it gets committed to the repo and persists across GitHub syncs.
+Recreate `.env` with the three required Supabase variables plus `VITE_SUPABASE_ANON_KEY` (used directly by several components for API authorization headers):
 
-**File: `.gitignore`** — remove lines 14-15 (`.env` and `.env.*`):
-
-```text
-# Before (lines 13-15):
-*.local
-.env
-.env.*
-
-# After (lines 13):
-*.local
+```
+VITE_SUPABASE_PROJECT_ID="ixkkrousepsiorwlaycp"
+VITE_SUPABASE_URL="https://ixkkrousepsiorwlaycp.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4a2tyb3VzZXBzaW9yd2xheWNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzMzI1MjcsImV4cCI6MjA1NTkwODUyN30.eX_P7bJam2IZ20GEghfjfr-pNwMynsdVb3Rrfipgls4"
+VITE_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4a2tyb3VzZXBzaW9yd2xheWNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzMzI1MjcsImV4cCI6MjA1NTkwODUyN30.eX_P7bJam2IZ20GEghfjfr-pNwMynsdVb3Rrfipgls4"
 ```
 
-Since this `.env` only contains the public Supabase URL and anon key (which are already visible in the client bundle), there is no security risk in committing it.
-
-No other changes needed — the `.env` file already exists with the correct values.
+Single file change, no code modifications needed.
 
