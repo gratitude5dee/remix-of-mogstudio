@@ -574,7 +574,7 @@ export function useStudioNodeGeneration(projectId?: string) {
 
           const token = await getAuthToken();
           const response = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-text-generation`,
+            `${SUPABASE_URL}/functions/v1/gemini-text-generation`,
             {
               method: 'POST',
               headers: {
