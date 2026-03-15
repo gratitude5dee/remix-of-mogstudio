@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Settings, Save, FileText, Scissors, Copy, Undo, Redo, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 import { supabaseService } from '@/services/supabaseService';
 import {
   Dialog,

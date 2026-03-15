@@ -14,6 +14,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 import {
   getModelById,
   type StudioModel,

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 import { toast } from 'sonner';
 import { buildCanonicalFalInputs, normalizeFalModelId } from '@/lib/falModelNormalization';
 
