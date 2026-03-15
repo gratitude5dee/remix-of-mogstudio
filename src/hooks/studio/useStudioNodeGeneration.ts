@@ -979,7 +979,7 @@ export function useStudioNodeGeneration(projectId?: string) {
         }
 
         const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`,
+          `${SUPABASE_URL}/functions/v1/${functionName}`,
           {
             method: 'POST',
             headers: {
