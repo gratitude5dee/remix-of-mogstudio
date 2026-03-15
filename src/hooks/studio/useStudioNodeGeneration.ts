@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 import { buildCanonicalFalInputs } from '@/lib/falModelNormalization';
 import { getNodeImagePreviewUrl } from '@/lib/imageEdit';
 import { getModelById, type StudioModel } from '@/lib/studio-model-constants';
