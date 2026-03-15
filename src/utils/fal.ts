@@ -1,6 +1,7 @@
 
 import * as fal from '@fal-ai/serverless-client';
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 
 export interface ApiInfo {
   id: string;
