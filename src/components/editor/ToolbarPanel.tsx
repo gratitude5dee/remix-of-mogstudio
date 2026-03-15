@@ -60,7 +60,7 @@ const ToolbarPanel = () => {
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-project`, {
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/create-project`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

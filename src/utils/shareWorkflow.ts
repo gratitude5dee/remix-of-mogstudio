@@ -17,7 +17,7 @@ export async function shareWorkflow({ workflowId, title, description }: ShareWor
     }
 
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/share`,
+      `${SUPABASE_URL}/functions/v1/share`,
       {
         method: 'POST',
         headers: {

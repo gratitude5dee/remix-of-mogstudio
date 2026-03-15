@@ -54,7 +54,7 @@ export async function falRequest({ modelId, input }: FalRequestOptions) {
 
     // Proxy the request through Supabase Edge Function
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fal`,
+      `${SUPABASE_URL}/functions/v1/fal`,
       {
         method: 'POST',
         headers: {

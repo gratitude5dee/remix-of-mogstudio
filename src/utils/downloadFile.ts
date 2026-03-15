@@ -7,7 +7,7 @@ export async function downloadFile(url: string) {
     const { data: { session } } = await supabase.auth.getSession();
     
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/download?url=${encodeURIComponent(url)}`,
+      `${SUPABASE_URL}/functions/v1/download?url=${encodeURIComponent(url)}`,
       {
         headers: {
           Authorization: `Bearer ${session?.access_token}`,
