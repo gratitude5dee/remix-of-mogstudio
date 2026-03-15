@@ -1,6 +1,7 @@
 
 import * as fal from '@fal-ai/serverless-client';
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 
 export interface ApiInfo {
   id: string;
@@ -53,7 +54,7 @@ export async function falRequest({ modelId, input }: FalRequestOptions) {
 
     // Proxy the request through Supabase Edge Function
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fal`,
+      `${SUPABASE_URL}/functions/v1/fal`,
       {
         method: 'POST',
         headers: {

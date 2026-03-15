@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 import { buildCanonicalFalInputs } from '@/lib/falModelNormalization';
 import { getNodeImagePreviewUrl } from '@/lib/imageEdit';
 import { getModelById, type StudioModel } from '@/lib/studio-model-constants';
@@ -405,7 +406,7 @@ export function useStudioNodeGeneration(projectId?: string) {
       const token = await getAuthToken();
       const canonical = buildCanonicalFalInputs(modelId, inputs);
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fal-stream`,
+        `${SUPABASE_URL}/functions/v1/fal-stream`,
         {
           method: 'POST',
           headers: {
@@ -573,7 +574,7 @@ export function useStudioNodeGeneration(projectId?: string) {
 
           const token = await getAuthToken();
           const response = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gemini-text-generation`,
+            `${SUPABASE_URL}/functions/v1/gemini-text-generation`,
             {
               method: 'POST',
               headers: {
@@ -978,7 +979,7 @@ export function useStudioNodeGeneration(projectId?: string) {
         }
 
         const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`,
+          `${SUPABASE_URL}/functions/v1/${functionName}`,
           {
             method: 'POST',
             headers: {

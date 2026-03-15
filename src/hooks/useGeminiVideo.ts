@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 import { toast } from 'sonner';
 import { buildCanonicalFalInputs, normalizeFalModelId } from '@/lib/falModelNormalization';
 
@@ -89,7 +90,7 @@ export const useGeminiVideo = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fal-stream`,
+        `${SUPABASE_URL}/functions/v1/fal-stream`,
         {
           method: 'POST',
           headers: {

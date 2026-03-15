@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 import { useToast } from '@/hooks/use-toast';
 
 interface ShareWorkflowParams {
@@ -16,7 +17,7 @@ export async function shareWorkflow({ workflowId, title, description }: ShareWor
     }
 
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/share`,
+      `${SUPABASE_URL}/functions/v1/share`,
       {
         method: 'POST',
         headers: {

@@ -1,12 +1,13 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 
 export async function downloadFile(url: string) {
   try {
     const { data: { session } } = await supabase.auth.getSession();
     
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/download?url=${encodeURIComponent(url)}`,
+      `${SUPABASE_URL}/functions/v1/download?url=${encodeURIComponent(url)}`,
       {
         headers: {
           Authorization: `Bearer ${session?.access_token}`,

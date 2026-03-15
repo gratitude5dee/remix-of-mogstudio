@@ -14,6 +14,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 import {
   getModelById,
   type StudioModel,
@@ -174,7 +175,7 @@ async function getAuthToken(): Promise<string | null> {
 }
 
 function getSupabaseUrl(): string {
-  return import.meta.env.VITE_SUPABASE_URL as string;
+  return SUPABASE_URL;
 }
 
 function determineMediaType(model: StudioModel | undefined, modelId: string): StudioModelMediaType | 'unknown' {

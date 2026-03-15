@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 
 export async function uploadFile(file: File) {
   try {
@@ -12,7 +13,7 @@ export async function uploadFile(file: File) {
     formData.append('file', file);
 
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upload`,
+      `${SUPABASE_URL}/functions/v1/upload`,
       {
         method: 'POST',
         headers: {
