@@ -406,7 +406,7 @@ export function useStudioNodeGeneration(projectId?: string) {
       const token = await getAuthToken();
       const canonical = buildCanonicalFalInputs(modelId, inputs);
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fal-stream`,
+        `${SUPABASE_URL}/functions/v1/fal-stream`,
         {
           method: 'POST',
           headers: {
