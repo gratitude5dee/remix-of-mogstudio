@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_URL } from '@/integrations/supabase/config';
 
 export async function uploadFile(file: File) {
   try {
