@@ -718,6 +718,7 @@ function GSplatViewer({
   } = useWorldviewStore();
 
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const sparkRef = useRef<SparkSplatViewerHandle>(null);
   const [lensOpen, setLensOpen] = useState(false);
 
   const activeLens = LENS_OPTIONS.find((l) => l.value === camera.lens);
