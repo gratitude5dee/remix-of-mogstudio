@@ -384,14 +384,14 @@ const StoryboardPage = () => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            onClick={isProjectAutoGenerating ? cancelProjectAutoGenerate : startProjectAutoGenerate}
+                            onClick={isProjectAutoGenerating ? cancelProjectAutoGenerate : () => setShowProjectConfirmGenerate(true)}
                             className={cn(
                               'relative overflow-hidden backdrop-blur-sm px-6 py-2',
                               projectNextPhase === 'images'
-                                ? 'bg-[#1a1510] border border-[#f97316]/25 text-[#FDE8D0]'
-                                : 'bg-[#181615] border border-[#d4a574]/20 text-[#E6E0C8]',
+                                ? 'bg-[#1a1015] border border-purple-500/25 text-purple-100'
+                                : 'bg-[#181516] border border-purple-400/20 text-purple-50',
                               'shadow-[0_12px_28px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)]',
-                              'hover:border-white/15 hover:bg-[#1b1b1b]',
+                              'hover:border-purple-500/30 hover:bg-[#1b1b1b]',
                               'transition-all duration-300'
                             )}
                           >
