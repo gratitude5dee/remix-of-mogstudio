@@ -9,10 +9,49 @@ const CLIENT_PARSEABLE_EXTENSIONS = new Set(['txt', 'md', 'text', 'markdown']);
 /** All accepted document extensions */
 export const ACCEPTED_DOCUMENT_EXTENSIONS = '.pdf,.docx,.md,.txt,.text';
 
+export interface Chapter {
+  number: number;
+  title: string;
+  content: string;
+}
+
 export interface DocumentParseResult {
   text: string;
   pageCount?: number;
   format: string;
+  chapters?: Chapter[];
+  isBook?: boolean;
+  title?: string;
+}
+
+function detectChapters(text: string): Chapter[] {
+  const chapterPattern = /^(chapter|part|section|episode|act)\s+(\d+|[ivxlcdm]+|one|two|three|four|five|six|seven|eight|nine|ten)[:\s\-—]*(.*)/gim;
+  const chapters: Chapter[] = [];
+  const matches: { index: number; number: number; title: string }[] = [];
+
+  let match: RegExpExecArray | null;
+  let chapterNum = 1;
+  while ((match = chapterPattern.exec(text)) !== null) {
+    const rawNum = match[2];
+    const parsed = parseInt(rawNum, 10);
+    const num = isNaN(parsed) ? chapterNum : parsed;
+    matches.push({ index: match.index, number: num, title: match[0].trim() });
+    chapterNum = num + 1;
+  }
+
+  if (matches.length === 0) return [];
+
+  for (let i = 0; i < matches.length; i++) {
+    const start = matches[i].index;
+    const end = i < matches.length - 1 ? matches[i + 1].index : text.length;
+    chapters.push({
+      number: matches[i].number,
+      title: matches[i].title,
+      content: text.slice(start, end).trim(),
+    });
+  }
+
+  return chapters;
 }
 
 /**
