@@ -856,6 +856,22 @@ const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected =
         </div>
         <ScrollBar orientation="horizontal" className="h-2" />
       </ScrollArea>
+
+      <ConfirmGenerateDialog
+        open={showConfirmGenerate}
+        onOpenChange={setShowConfirmGenerate}
+        onConfirm={() => {
+          setShowConfirmGenerate(false);
+          startAutoGenerate();
+        }}
+        title="Confirm Auto-Generate"
+        description="Are you sure you wish to proceed with auto generate?"
+        estimatedCredits={
+          nextPhase === 'images'
+            ? getShotImageCredits(selectedImageModel) * shots.length
+            : getShotVideoCredits(selectedVideoModel) * shots.length
+        }
+      />
     </motion.div>
   );
 };
