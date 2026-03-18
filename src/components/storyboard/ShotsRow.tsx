@@ -19,6 +19,7 @@ import { useAutoGenerate } from '@/hooks/useAutoGenerate';
 import { supabase } from '@/integrations/supabase/client';
 import { getShotImageCredits, getShotVideoCredits } from '@/lib/constants/credits';
 import { useProjectSettingsStore } from '@/store/projectSettingsStore';
+import { ConfirmGenerateDialog } from '@/components/ui/ConfirmGenerateDialog';
 
 interface ShotConnection {
   id: string;
@@ -78,6 +79,7 @@ const placeholderCopy: Record<ShotStreamStatus, string> = {
 const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected = false }: ShotsRowProps) => {
   const { settings: projectSettings } = useProjectSettingsStore();
   const selectedImageModel = projectSettings?.baseImageModel;
+  const [showConfirmGenerate, setShowConfirmGenerate] = useState(false);
   const selectedVideoModel = projectSettings?.baseVideoModel;
   const [shots, setShots] = useState<ShotDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -242,14 +244,25 @@ const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected =
 
         setShots(reorderedItems);
 
-        await Promise.all(
-          reorderedItems.map((shot) =>
-            supabaseService.shots.update(shot.id, { shot_number: shot.shot_number })
-          )
+        // Batch reorder: first set all to negative values to avoid unique constraint
+        const negativeUpdates = reorderedItems.map((shot, idx) =>
+          supabaseService.shots.update(shot.id, { shot_number: -(idx + 1) })
         );
+        await Promise.all(negativeUpdates);
+
+        // Then set final values
+        const finalUpdates = reorderedItems.map((shot) =>
+          supabaseService.shots.update(shot.id, { shot_number: shot.shot_number })
+        );
+        await Promise.all(finalUpdates);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error';
         toast.error(`Failed to save shot order: ${message}`);
+        // Refresh shots on error to get correct state
+        try {
+          const fetched = await supabaseService.shots.listByScene(sceneId);
+          setShots(fetched as ShotDetails[]);
+        } catch {}
       } finally {
         setIsSavingOrder(false);
       }
@@ -480,12 +493,13 @@ const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected =
       className={cn(
         'relative group mb-8 p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300',
         'bg-[rgba(17,17,17,0.88)]',
-        'border border-white/[0.06] hover:border-white/[0.12]',
+        'border border-purple-500/[0.08] hover:border-purple-500/[0.18]',
         'shadow-[0_8px_40px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)]',
         isSelected && [
-          'border-[#f97316]/40',
-          'shadow-[0_0_0_4px_rgba(249,115,22,0.08),0_12px_48px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.05)]',
-          'bg-[rgba(18,24,20,0.92)]'
+          'border-purple-500/40',
+          'shadow-[0_0_0_4px_rgba(139,92,246,0.08),0_12px_48px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.05)]',
+          'ring-2 ring-purple-500/30',
+          'bg-[rgba(18,14,24,0.92)]'
         ]
       )}
     >
@@ -601,7 +615,7 @@ const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected =
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      onClick={isAutoGenerating ? cancelAutoGenerate : startAutoGenerate}
+                      onClick={isAutoGenerating ? cancelAutoGenerate : () => setShowConfirmGenerate(true)}
                       size="sm"
                       className={cn(
                         'relative overflow-hidden backdrop-blur-sm',
@@ -842,6 +856,22 @@ const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected =
         </div>
         <ScrollBar orientation="horizontal" className="h-2" />
       </ScrollArea>
+
+      <ConfirmGenerateDialog
+        open={showConfirmGenerate}
+        onOpenChange={setShowConfirmGenerate}
+        onConfirm={() => {
+          setShowConfirmGenerate(false);
+          startAutoGenerate();
+        }}
+        title="Confirm Auto-Generate"
+        description="Are you sure you wish to proceed with auto generate?"
+        estimatedCredits={
+          nextPhase === 'images'
+            ? getShotImageCredits(selectedImageModel) * shots.length
+            : getShotVideoCredits(selectedVideoModel) * shots.length
+        }
+      />
     </motion.div>
   );
 };

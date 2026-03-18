@@ -13,76 +13,103 @@ interface StreamingTextAnimateProps {
 /**
  * A progressive typewriter / blur-in component for streamed text.
  *
- * Unlike TextAnimate which re-renders all segments whenever children change,
- * this component tracks which words have already been revealed and only
- * animates newly-arrived words.  Previously revealed words are rendered
- * instantly (no re-animation flicker).
+ * Animates newly-arrived words in batches of 3-5 for a natural typing feel.
+ * Previously revealed words are rendered instantly (no re-animation flicker).
+ * Paragraph-aware: adds a brief pause at paragraph breaks.
  */
 function StreamingTextAnimateBase({
   text,
   isStreaming = false,
   className,
 }: StreamingTextAnimateProps) {
-  // Split by whitespace while preserving the whitespace tokens
-  const words = text.split(/(\s+)/);
+  // Split into paragraphs first, then words within each paragraph
+  const paragraphs = text.split(/\n\n+/);
+  
+  // Flatten to word tokens while tracking paragraph boundaries
+  const tokens: Array<{ word: string; isParagraphBreak: boolean }> = [];
+  paragraphs.forEach((para, pIdx) => {
+    if (pIdx > 0) {
+      tokens.push({ word: '\n\n', isParagraphBreak: true });
+    }
+    const words = para.split(/(\s+)/);
+    words.forEach(word => {
+      tokens.push({ word, isParagraphBreak: false });
+    });
+  });
 
-  // Track how many words have already been revealed so they don't re-animate
+  // Track how many tokens have already been revealed so they don't re-animate
   const revealedCountRef = useRef(0);
   const [revealedCount, setRevealedCount] = useState(0);
 
   useEffect(() => {
-    // When text grows, mark new words for animation
-    if (words.length > revealedCountRef.current) {
-      // Schedule the reveal update so the current render sees the old count
+    if (tokens.length > revealedCountRef.current) {
       const timer = requestAnimationFrame(() => {
-        revealedCountRef.current = words.length;
-        setRevealedCount(words.length);
+        revealedCountRef.current = tokens.length;
+        setRevealedCount(tokens.length);
       });
       return () => cancelAnimationFrame(timer);
     }
-  }, [words.length]);
+  }, [tokens.length]);
+
+  // Group new words into batches of 3 for smoother animation
+  const newStartIdx = revealedCount;
+  const batchSize = 3;
 
   return (
-    <p className={cn('whitespace-pre-wrap leading-relaxed', className)}>
-      {words.map((word, i) => {
+    <div className={cn('leading-relaxed', className)}>
+      {tokens.map((token, i) => {
+        if (token.isParagraphBreak) {
+          return <div key={`pb-${i}`} className="h-4" />;
+        }
+
         const alreadyRevealed = i < revealedCount;
 
         if (alreadyRevealed) {
-          // Already visible — render instantly, no animation
           return (
             <span key={`w-${i}`} className="inline whitespace-pre-wrap">
-              {word}
+              {token.word}
             </span>
           );
         }
 
-        // New word — animate in with blur + fade
+        // New word — animate in batches with subtle blur
+        const batchIndex = Math.floor((i - newStartIdx) / batchSize);
         return (
           <motion.span
             key={`w-${i}`}
             className="inline whitespace-pre-wrap"
-            initial={{ opacity: 0, filter: 'blur(8px)' }}
+            initial={{ opacity: 0, filter: 'blur(2px)' }}
             animate={{ opacity: 1, filter: 'blur(0px)' }}
             transition={{
-              duration: 0.35,
-              delay: (i - revealedCount) * 0.04, // stagger new words
+              duration: 0.2,
+              delay: batchIndex * 0.06,
               ease: 'easeOut',
             }}
           >
-            {word}
+            {token.word}
           </motion.span>
         );
       })}
 
-      {/* Blinking cursor while streaming */}
+      {/* Thin vertical cursor while streaming */}
       {isStreaming && (
         <motion.span
-          className="inline-block w-0.5 h-5 bg-primary ml-1 align-middle"
-          animate={{ opacity: [1, 0, 1] }}
-          transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
+          className="inline-block w-[2px] h-5 bg-primary ml-0.5 align-middle rounded-full"
+          animate={{ opacity: [1, 0.2, 1] }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
         />
       )}
-    </p>
+
+      {/* Completion glow on last sentence when streaming finishes */}
+      {!isStreaming && tokens.length > 0 && revealedCount === tokens.length && (
+        <motion.span
+          className="inline"
+          initial={{ textShadow: '0 0 8px rgba(139, 92, 246, 0.4)' }}
+          animate={{ textShadow: '0 0 0px transparent' }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        />
+      )}
+    </div>
   );
 }
 

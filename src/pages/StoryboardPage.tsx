@@ -20,6 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { appRoutes } from '@/lib/routes';
 import { getShotImageCredits, getShotVideoCredits, DIRECTORS_CUT_CREDITS } from '@/lib/constants/credits';
 import { useProjectSettingsStore } from '@/store/projectSettingsStore';
+import { ConfirmGenerateDialog } from '@/components/ui/ConfirmGenerateDialog';
 
 const StoryboardPage = () => {
   const { projectId } = useParams<{ projectId?: string }>();
@@ -33,7 +34,8 @@ const StoryboardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarData, setSidebarData] = useState<SidebarData | null>(null);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
-
+  const [showProjectConfirmGenerate, setShowProjectConfirmGenerate] = useState(false);
+  const [showDirectorsCutConfirm, setShowDirectorsCutConfirm] = useState(false);
   // Get user-selected models from project settings store
   const { settings: projectSettings, fetchSettings: fetchProjectSettings } = useProjectSettingsStore();
   const selectedImageModel = projectSettings?.baseImageModel;
@@ -360,12 +362,12 @@ const StoryboardPage = () => {
                   {projectId && (
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Button
-                        onClick={() => navigate(appRoutes.projects.directorsCut(projectId))}
+                        onClick={() => setShowDirectorsCutConfirm(true)}
                         className={cn(
                           'relative overflow-hidden backdrop-blur-sm px-5 py-2',
-                          'bg-[#151515] border border-white/10 text-zinc-100',
+                          'bg-[#151515] border border-purple-500/15 text-zinc-100',
                           'shadow-[0_12px_28px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.06)]',
-                          'hover:border-white/15 hover:bg-[#1a1a1a]',
+                          'hover:border-purple-500/25 hover:bg-[#1a1a1a]',
                           'transition-all duration-300'
                         )}
                       >
@@ -382,14 +384,14 @@ const StoryboardPage = () => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            onClick={isProjectAutoGenerating ? cancelProjectAutoGenerate : startProjectAutoGenerate}
+                            onClick={isProjectAutoGenerating ? cancelProjectAutoGenerate : () => setShowProjectConfirmGenerate(true)}
                             className={cn(
                               'relative overflow-hidden backdrop-blur-sm px-6 py-2',
                               projectNextPhase === 'images'
-                                ? 'bg-[#1a1510] border border-[#f97316]/25 text-[#FDE8D0]'
-                                : 'bg-[#181615] border border-[#d4a574]/20 text-[#E6E0C8]',
+                                ? 'bg-[#1a1015] border border-purple-500/25 text-purple-100'
+                                : 'bg-[#181516] border border-purple-400/20 text-purple-50',
                               'shadow-[0_12px_28px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)]',
-                              'hover:border-white/15 hover:bg-[#1b1b1b]',
+                              'hover:border-purple-500/30 hover:bg-[#1b1b1b]',
                               'transition-all duration-300'
                             )}
                           >
@@ -584,6 +586,34 @@ const StoryboardPage = () => {
           <SettingsPanel projectId={projectId} onClose={() => setIsSettingsPanelOpen(false)} />
         </div>
       )}
+
+      <ConfirmGenerateDialog
+        open={showProjectConfirmGenerate}
+        onOpenChange={setShowProjectConfirmGenerate}
+        onConfirm={() => {
+          setShowProjectConfirmGenerate(false);
+          startProjectAutoGenerate();
+        }}
+        title="Confirm Auto-Generate All"
+        description="Are you sure you wish to auto-generate across all scenes?"
+        estimatedCredits={
+          projectNextPhase === 'images'
+            ? getShotImageCredits(selectedImageModel) * (projectAutoGenState.progress.total || scenes.length * 3)
+            : getShotVideoCredits(selectedVideoModel) * (projectAutoGenState.progress.total || scenes.length * 3)
+        }
+      />
+
+      <ConfirmGenerateDialog
+        open={showDirectorsCutConfirm}
+        onOpenChange={setShowDirectorsCutConfirm}
+        onConfirm={() => {
+          setShowDirectorsCutConfirm(false);
+          if (projectId) navigate(appRoutes.projects.directorsCut(projectId));
+        }}
+        title="Confirm Director's Cut"
+        description="Are you sure you wish to proceed with Director's Cut?"
+        estimatedCredits={DIRECTORS_CUT_CREDITS}
+      />
     </div>
   );
 };

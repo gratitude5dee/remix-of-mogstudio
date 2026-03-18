@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Plus, ChevronRight, Loader2 } from 'lucide-react';
+import { Plus, ChevronRight, Loader2, X } from 'lucide-react';
 import { useProjectContext } from './ProjectContext';
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseService } from '@/services/supabaseService';
@@ -14,6 +14,12 @@ import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { StyleReferenceUploader } from './StyleReferenceUploader';
 import { VoiceOverSelector } from './VoiceOverSelector';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface SettingsTabProps {
   projectData: ProjectData;
@@ -21,7 +27,22 @@ interface SettingsTabProps {
 }
 
 type AspectRatioOption = '16:9' | '1:1' | '9:16';
-type VideoStyleOption = 'none' | 'cinematic' | 'scribble' | 'film-noir';
+type VideoStyleOption = 'none' | 'cinematic' | 'scribble' | 'film-noir' | 'anime' | 'watercolor' | 'pixel-art' | 'cyberpunk' | 'fantasy' | 'documentary' | 'horror' | 'vintage';
+
+const ALL_VIDEO_STYLES: { value: VideoStyleOption; label: string; description: string }[] = [
+  { value: 'none', label: 'None', description: 'No style applied' },
+  { value: 'cinematic', label: 'Cinematic', description: 'Film-like color grading, lens flares, shallow depth of field' },
+  { value: 'scribble', label: 'Scribble', description: 'Hand-drawn / sketch aesthetic' },
+  { value: 'film-noir', label: 'Film Noir', description: 'High contrast black & white with dramatic lighting' },
+  { value: 'anime', label: 'Anime', description: 'Japanese animation style' },
+  { value: 'watercolor', label: 'Watercolor', description: 'Soft, painterly watercolor look' },
+  { value: 'pixel-art', label: 'Pixel Art', description: 'Retro pixel-style rendering' },
+  { value: 'cyberpunk', label: 'Cyberpunk', description: 'Neon-lit, futuristic dystopia' },
+  { value: 'fantasy', label: 'Fantasy', description: 'Ethereal, magical atmosphere' },
+  { value: 'documentary', label: 'Documentary', description: 'Realistic, natural lighting' },
+  { value: 'horror', label: 'Horror', description: 'Dark, desaturated, unsettling mood' },
+  { value: 'vintage', label: 'Vintage', description: 'Aged film grain, warm tones, vignette' },
+];
 
 const SettingsTab = ({ projectData, updateProjectData }: SettingsTabProps) => {
   const { projectId, generationCompletedSignal } = useProjectContext();
@@ -34,6 +55,7 @@ const SettingsTab = ({ projectData, updateProjectData }: SettingsTabProps) => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoadingCharacters, setIsLoadingCharacters] = useState(true);
   const [isAddingCharacter, setIsAddingCharacter] = useState(false);
+  const [showAllStyles, setShowAllStyles] = useState(false);
 
   // Fetch characters when projectId changes or after generation completes
   useEffect(() => {
@@ -241,7 +263,10 @@ const SettingsTab = ({ projectData, updateProjectData }: SettingsTabProps) => {
               <Label className="block text-sm font-medium text-gray-400 uppercase">
                 VIDEO STYLE
               </Label>
-              <button className="text-xs text-blue-400 flex items-center">
+              <button 
+                onClick={() => setShowAllStyles(true)}
+                className="text-xs text-blue-400 flex items-center hover:text-blue-300 transition-colors"
+              >
                 View All <ChevronRight className="h-3 w-3 ml-1" />
               </button>
             </div>
@@ -260,7 +285,7 @@ const SettingsTab = ({ projectData, updateProjectData }: SettingsTabProps) => {
                     onClick={() => handleVideoStyleChange(style)}
                     className={`relative p-1 pb-6 aspect-square rounded border ${
                       selectedVideoStyle === style 
-                        ? 'border-blue-500' 
+                        ? 'border-purple-500 ring-1 ring-purple-500/30' 
                         : 'border-zinc-700'
                     }`}
                   >
@@ -283,6 +308,53 @@ const SettingsTab = ({ projectData, updateProjectData }: SettingsTabProps) => {
               })}
             </div>
           </div>
+
+          {/* Video Styles Popup */}
+          <Dialog open={showAllStyles} onOpenChange={setShowAllStyles}>
+            <DialogContent className="border-zinc-800 bg-zinc-950 text-zinc-100 sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>All Video Styles</DialogTitle>
+              </DialogHeader>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                {ALL_VIDEO_STYLES.map(style => (
+                  <button
+                    key={style.value}
+                    onClick={() => {
+                      handleVideoStyleChange(style.value);
+                      setShowAllStyles(false);
+                    }}
+                    className={`relative p-3 rounded-xl border text-left transition-all ${
+                      selectedVideoStyle === style.value
+                        ? 'border-purple-500 bg-purple-500/10 ring-1 ring-purple-500/30'
+                        : 'border-zinc-700 bg-zinc-900/50 hover:border-zinc-600 hover:bg-zinc-800/50'
+                    }`}
+                  >
+                    <div className="w-full h-20 bg-zinc-800 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                      {style.value === 'none' ? (
+                        <div className="w-8 h-0.5 bg-zinc-600 rounded-full" />
+                      ) : (
+                        <span className="text-2xl">{
+                          style.value === 'cinematic' ? '🎬' :
+                          style.value === 'scribble' ? '✏️' :
+                          style.value === 'film-noir' ? '🎞️' :
+                          style.value === 'anime' ? '🎌' :
+                          style.value === 'watercolor' ? '🎨' :
+                          style.value === 'pixel-art' ? '👾' :
+                          style.value === 'cyberpunk' ? '🌃' :
+                          style.value === 'fantasy' ? '✨' :
+                          style.value === 'documentary' ? '📹' :
+                          style.value === 'horror' ? '🌑' :
+                          style.value === 'vintage' ? '📷' : '🎥'
+                        }</span>
+                      )}
+                    </div>
+                    <p className="font-medium text-sm">{style.label}</p>
+                    <p className="text-xs text-zinc-400 mt-1">{style.description}</p>
+                  </button>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {projectId && (
             <StyleReferenceUploader
