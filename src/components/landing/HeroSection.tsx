@@ -29,7 +29,7 @@ export function HeroSection({ headline, subheadline }: HeroSectionProps) {
               )}
             >
               <Sparkles className="w-4 h-4" />
-              Now in Public Beta
+              AI-Powered Creative Studio
               <ArrowRight className="w-3 h-3" />
             </span>
           </motion.div>
@@ -118,7 +118,7 @@ export function HeroSection({ headline, subheadline }: HeroSectionProps) {
               ))}
             </div>
             <p className="text-sm text-white/40">
-              Trusted by <span className="text-white/60 font-medium">500+</span> creators and brands
+              Trusted by <span className="text-white/60 font-medium">2,000+</span> creators, agencies, and brands worldwide
             </p>
           </motion.div>
         </div>

@@ -159,6 +159,18 @@ const Landing = () => {
               Features
             </a>
             <a
+              href="/docs"
+              className="relative px-3 py-2 text-white/50 hover:text-white transition-colors cursor-pointer whitespace-nowrap"
+            >
+              Documentation
+            </a>
+            <a
+              href="/api"
+              className="relative px-3 py-2 text-white/50 hover:text-white transition-colors cursor-pointer whitespace-nowrap"
+            >
+              API
+            </a>
+            <a
               className="relative px-3 py-2 text-white/50 hover:text-white transition-colors cursor-pointer whitespace-nowrap"
               onClick={(e) => {
                 e.preventDefault();
@@ -281,6 +293,18 @@ const Landing = () => {
               >
                 Features
               </button>
+              <Link
+                to="/docs"
+                className="text-left px-4 py-3 text-lg font-medium text-white/50 hover:text-white transition-colors rounded-xl hover:bg-white/5"
+              >
+                Documentation
+              </Link>
+              <Link
+                to="/api"
+                className="text-left px-4 py-3 text-lg font-medium text-white/50 hover:text-white transition-colors rounded-xl hover:bg-white/5"
+              >
+                API
+              </Link>
               <button
                 onClick={() => handleMobileNavClick('pricing')}
                 className="text-left px-4 py-3 text-lg font-medium text-white/50 hover:text-white transition-colors rounded-xl hover:bg-white/5"
@@ -357,12 +381,12 @@ const Landing = () => {
 
         {/* Hero Content */}
         <HeroSection
-          headline="Your AI Video Production Studio. No Agency Required."
-          subheadline="Create scroll-stopping UGC, music videos, and ad content 10x faster. Indie labels and DTC brands use MOG Studio to automate what agencies charge $50K+ for."
+          headline="Turn Ideas Into Cinema-Quality Content in Minutes"
+          subheadline="WZRD Studio combines AI image generation, video production, lip sync, 3D worldbuilding, and a complete timeline editor — all in one powerful creative platform."
         />
 
         {/* Trust Indicators Section — Card-based */}
-        <section className="py-20 px-4">
+        <section className="py-24 md:py-32 px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
