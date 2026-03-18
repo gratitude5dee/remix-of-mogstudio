@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Plus, ChevronRight, Loader2 } from 'lucide-react';
+import { Plus, ChevronRight, Loader2, X } from 'lucide-react';
 import { useProjectContext } from './ProjectContext';
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseService } from '@/services/supabaseService';
@@ -14,6 +14,12 @@ import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { StyleReferenceUploader } from './StyleReferenceUploader';
 import { VoiceOverSelector } from './VoiceOverSelector';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface SettingsTabProps {
   projectData: ProjectData;
