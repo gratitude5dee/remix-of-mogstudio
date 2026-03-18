@@ -8677,6 +8677,10 @@ export type Database = {
       }
       cleanup_expired_idempotency: { Args: never; Returns: undefined }
       cleanup_mrkt_decision_logs: { Args: never; Returns: undefined }
+      deduct_credits: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: number
+      }
       generate_board_slug: { Args: { board_title: string }; Returns: string }
       generate_invoice_number: { Args: never; Returns: string }
       get_available_credits: { Args: never; Returns: number }
