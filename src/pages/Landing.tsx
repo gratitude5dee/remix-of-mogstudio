@@ -293,6 +293,18 @@ const Landing = () => {
               >
                 Features
               </button>
+              <Link
+                to="/docs"
+                className="text-left px-4 py-3 text-lg font-medium text-white/50 hover:text-white transition-colors rounded-xl hover:bg-white/5"
+              >
+                Documentation
+              </Link>
+              <Link
+                to="/api"
+                className="text-left px-4 py-3 text-lg font-medium text-white/50 hover:text-white transition-colors rounded-xl hover:bg-white/5"
+              >
+                API
+              </Link>
               <button
                 onClick={() => handleMobileNavClick('pricing')}
                 className="text-left px-4 py-3 text-lg font-medium text-white/50 hover:text-white transition-colors rounded-xl hover:bg-white/5"
