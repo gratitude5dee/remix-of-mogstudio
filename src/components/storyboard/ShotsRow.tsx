@@ -79,6 +79,7 @@ const placeholderCopy: Record<ShotStreamStatus, string> = {
 const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected = false }: ShotsRowProps) => {
   const { settings: projectSettings } = useProjectSettingsStore();
   const selectedImageModel = projectSettings?.baseImageModel;
+  const [showConfirmGenerate, setShowConfirmGenerate] = useState(false);
   const selectedVideoModel = projectSettings?.baseVideoModel;
   const [shots, setShots] = useState<ShotDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
