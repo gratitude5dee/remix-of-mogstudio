@@ -27,7 +27,22 @@ interface SettingsTabProps {
 }
 
 type AspectRatioOption = '16:9' | '1:1' | '9:16';
-type VideoStyleOption = 'none' | 'cinematic' | 'scribble' | 'film-noir';
+type VideoStyleOption = 'none' | 'cinematic' | 'scribble' | 'film-noir' | 'anime' | 'watercolor' | 'pixel-art' | 'cyberpunk' | 'fantasy' | 'documentary' | 'horror' | 'vintage';
+
+const ALL_VIDEO_STYLES: { value: VideoStyleOption; label: string; description: string }[] = [
+  { value: 'none', label: 'None', description: 'No style applied' },
+  { value: 'cinematic', label: 'Cinematic', description: 'Film-like color grading, lens flares, shallow depth of field' },
+  { value: 'scribble', label: 'Scribble', description: 'Hand-drawn / sketch aesthetic' },
+  { value: 'film-noir', label: 'Film Noir', description: 'High contrast black & white with dramatic lighting' },
+  { value: 'anime', label: 'Anime', description: 'Japanese animation style' },
+  { value: 'watercolor', label: 'Watercolor', description: 'Soft, painterly watercolor look' },
+  { value: 'pixel-art', label: 'Pixel Art', description: 'Retro pixel-style rendering' },
+  { value: 'cyberpunk', label: 'Cyberpunk', description: 'Neon-lit, futuristic dystopia' },
+  { value: 'fantasy', label: 'Fantasy', description: 'Ethereal, magical atmosphere' },
+  { value: 'documentary', label: 'Documentary', description: 'Realistic, natural lighting' },
+  { value: 'horror', label: 'Horror', description: 'Dark, desaturated, unsettling mood' },
+  { value: 'vintage', label: 'Vintage', description: 'Aged film grain, warm tones, vignette' },
+];
 
 const SettingsTab = ({ projectData, updateProjectData }: SettingsTabProps) => {
   const { projectId, generationCompletedSignal } = useProjectContext();
