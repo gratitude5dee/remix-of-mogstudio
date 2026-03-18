@@ -176,72 +176,48 @@ export async function reserveCredits(input: ReserveCreditsInput): Promise<Credit
     };
   }
 
-  const MAX_RETRIES = 6;
+  // Use atomic PostgreSQL function with row-level locking
+  const { data, error } = await input.supabase.rpc('deduct_credits', {
+    p_user_id: input.userId,
+    p_amount: requestedAmount,
+  });
 
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const { data: creditRow, error: fetchError } = await input.supabase
-      .from('user_credits')
-      .select('total_credits, used_credits')
-      .eq('user_id', input.userId)
-      .single();
-
-    if (fetchError || !creditRow) {
-      throw new InsufficientCreditsError(requestedAmount, 0);
-    }
-
-    const available = (creditRow.total_credits ?? 0) - (creditRow.used_credits ?? 0);
-    if (available < requestedAmount) {
+  if (error) {
+    // Parse the error to distinguish insufficient credits from other failures
+    const msg = error.message || '';
+    if (msg.includes('Insufficient credits')) {
+      const match = msg.match(/available=(\d+)/);
+      const available = match ? parseInt(match[1], 10) : 0;
       throw new InsufficientCreditsError(requestedAmount, available);
     }
-
-    const expectedUsedCredits = creditRow.used_credits ?? 0;
-    const newUsedCredits = expectedUsedCredits + requestedAmount;
-
-    const { data: atomicResult, error: atomicError } = await input.supabase
-      .from('user_credits')
-      .update({ used_credits: newUsedCredits, updated_at: new Date().toISOString() })
-      .eq('user_id', input.userId)
-      .eq('used_credits', expectedUsedCredits)
-      .select('used_credits');
-
-    if (atomicError) {
-      throw new Error(`Credit deduction failed: ${atomicError.message}`);
+    if (msg.includes('No credit record found')) {
+      throw new InsufficientCreditsError(requestedAmount, 0);
     }
-
-    // CAS failed — another request modified credits concurrently, retry
-    if (!atomicResult || atomicResult.length === 0) {
-      if (attempt < MAX_RETRIES - 1) {
-        // Small backoff before retry
-        await new Promise((r) => setTimeout(r, 50 * (attempt + 1) + Math.floor(Math.random() * 100)));
-        continue;
-      }
-      throw new Error('Credit deduction failed after retries: concurrent modification detected. Please retry.');
-    }
-
-    // Success — record transaction
-    await input.supabase.from('credit_transactions').insert({
-      user_id: input.userId,
-      amount: -requestedAmount,
-      transaction_type: 'usage',
-      resource_type: input.resourceType,
-      metadata: {
-        ...(input.metadata || {}),
-        reference_type: input.referenceType,
-        reference_id: input.referenceId,
-        idempotency_key: input.idempotencyKey,
-      },
-    });
-
-    return {
-      holdId: input.referenceId,
-      requestedAmount,
-      availableAfter: available - requestedAmount,
-      skipped: false,
-    };
+    throw new Error(`Credit deduction failed: ${msg}`);
   }
 
-  // Should not reach here, but TypeScript needs a return
-  throw new Error('Credit deduction failed: unexpected retry exhaustion.');
+  const availableAfter = typeof data === 'number' ? data : 0;
+
+  // Record transaction
+  await input.supabase.from('credit_transactions').insert({
+    user_id: input.userId,
+    amount: -requestedAmount,
+    transaction_type: 'usage',
+    resource_type: input.resourceType,
+    metadata: {
+      ...(input.metadata || {}),
+      reference_type: input.referenceType,
+      reference_id: input.referenceId,
+      idempotency_key: input.idempotencyKey,
+    },
+  });
+
+  return {
+    holdId: input.referenceId,
+    requestedAmount,
+    availableAfter,
+    skipped: false,
+  };
 }
 
 interface CreditSettleInput {
