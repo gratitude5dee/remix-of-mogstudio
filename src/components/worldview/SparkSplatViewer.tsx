@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { Loader2, Globe2, AlertCircle } from 'lucide-react';
+
+export interface SparkSplatViewerHandle {
+  captureFrame: () => string | null;
+}
 
 /**
  * SparkSplatViewer — Renders a Gaussian splat (.spz/.ply/.splat) file
@@ -7,22 +11,41 @@ import { Loader2, Globe2, AlertCircle } from 'lucide-react';
  *
  * Falls back to an iframe viewer or static image if SparkJS fails to load.
  */
-export function SparkSplatViewer({
-  splatUrl,
-  viewerUrl,
-  fallbackImageUrl,
-  displayName,
-  className = '',
-}: {
-  splatUrl?: string;
-  viewerUrl?: string;
-  fallbackImageUrl?: string;
-  displayName?: string;
-  className?: string;
-}) {
+export const SparkSplatViewer = forwardRef<
+  SparkSplatViewerHandle,
+  {
+    splatUrl?: string;
+    viewerUrl?: string;
+    fallbackImageUrl?: string;
+    displayName?: string;
+    className?: string;
+  }
+>(function SparkSplatViewer(
+  { splatUrl, viewerUrl, fallbackImageUrl, displayName, className = '' },
+  ref,
+) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [wasmFailed, setWasmFailed] = useState(false);
+
+  // Store renderer internals for capture
+  const internalsRef = useRef<{
+    renderer: import('three').WebGLRenderer;
+    scene: import('three').Scene;
+    camera: import('three').PerspectiveCamera;
+  } | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    captureFrame() {
+      const internals = internalsRef.current;
+      if (!internals) return null;
+      const { renderer, scene, camera } = internals;
+      // Force a render so the buffer is fresh
+      renderer.render(scene, camera);
+      return renderer.domElement.toDataURL('image/png');
+    },
+  }));
 
   useEffect(() => {
     const container = containerRef.current;
@@ -53,8 +76,12 @@ export function SparkSplatViewer({
 
         const { SparkRenderer, SplatMesh } = sparkModule;
 
-        // Create THREE renderer
-        renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+        // Create THREE renderer with preserveDrawingBuffer for capture
+        renderer = new THREE.WebGLRenderer({
+          antialias: false,
+          alpha: true,
+          preserveDrawingBuffer: true,
+        });
         renderer.setSize(container!.clientWidth, container!.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container!.innerHTML = '';
@@ -71,19 +98,37 @@ export function SparkSplatViewer({
         camera.position.set(0, 1.6, 3);
         camera.lookAt(0, 0, 0);
 
-        // Init SparkJS renderer (only takes renderer option)
+        // Init SparkJS renderer
         const spark = new SparkRenderer({ renderer });
 
-        // Load splat via SplatMesh
-        const splatMesh = new SplatMesh({
-          url: splatUrl!,
-          onLoad: () => {
-            if (!cancelled) {
-              setLoading(false);
-            }
-          },
-        });
+        // Add spark to scene (required by SparkJS docs)
+        scene.add(spark as unknown as import('three').Object3D);
+
+        // Load splat via SplatMesh — wrapped for WASM failure
+        let splatMesh: InstanceType<typeof SplatMesh>;
+        try {
+          splatMesh = new SplatMesh({
+            url: splatUrl!,
+            onLoad: () => {
+              if (!cancelled) {
+                setLoading(false);
+              }
+            },
+          });
+        } catch (wasmErr) {
+          console.warn('SplatMesh WASM init failed, falling back to iframe:', wasmErr);
+          if (!cancelled) {
+            setWasmFailed(true);
+            setLoading(false);
+            renderer?.dispose?.();
+          }
+          return;
+        }
+
         scene.add(splatMesh as unknown as import('three').Object3D);
+
+        // Store internals for capture
+        internalsRef.current = { renderer, scene, camera };
 
         // Simple orbit controls via pointer
         let isDragging = false;
@@ -154,6 +199,7 @@ export function SparkSplatViewer({
       } catch (err) {
         if (!cancelled) {
           console.warn('SparkJS init failed, falling back:', err);
+          setWasmFailed(true);
           setError((err as Error).message ?? 'Failed to load 3D viewer');
           setLoading(false);
         }
@@ -164,13 +210,28 @@ export function SparkSplatViewer({
 
     return () => {
       cancelled = true;
+      internalsRef.current = null;
       if (animId) cancelAnimationFrame(animId);
       resizeObserver?.disconnect();
       renderer?.dispose?.();
     };
   }, [splatUrl]);
 
-  // Fallback: use iframe viewer URL
+  // If WASM failed and we have a viewerUrl, seamlessly show iframe
+  if (wasmFailed && viewerUrl) {
+    return (
+      <div className={`relative ${className}`}>
+        <iframe
+          src={viewerUrl}
+          title="World Viewer"
+          className="absolute inset-0 h-full w-full border-0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope"
+        />
+      </div>
+    );
+  }
+
+  // Fallback: use iframe viewer URL (no splat URL provided)
   if (!splatUrl && viewerUrl) {
     return (
       <div className={`relative ${className}`}>
@@ -230,7 +291,7 @@ export function SparkSplatViewer({
       )}
 
       {/* Error state - fall back to iframe or image */}
-      {error && (
+      {error && !wasmFailed && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/80">
           <AlertCircle className="h-6 w-6 text-amber-400" />
           <p className="text-sm text-zinc-400">SparkJS renderer unavailable</p>
@@ -257,4 +318,4 @@ export function SparkSplatViewer({
       <div ref={containerRef} className="absolute inset-0 h-full w-full" />
     </div>
   );
-}
+});
