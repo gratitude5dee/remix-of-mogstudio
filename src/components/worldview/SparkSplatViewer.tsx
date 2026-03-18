@@ -23,35 +23,38 @@ export function SparkSplatViewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const sparkInstanceRef = useRef<unknown>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // If no splat URL, skip SparkJS
     if (!splatUrl) {
       setLoading(false);
       return;
     }
 
     let cancelled = false;
+    let animId: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let renderer: any;
+    let resizeObserver: ResizeObserver;
 
     async function initSpark() {
       try {
         setLoading(true);
         setError(null);
 
-        // Dynamic import to avoid SSR/build issues
-        const sparkModule = await import('@sparkjsdev/spark');
-        const THREE = await import('three');
+        const [sparkModule, THREE] = await Promise.all([
+          import('@sparkjsdev/spark'),
+          import('three'),
+        ]);
 
         if (cancelled) return;
 
-        const { SparkRenderer } = sparkModule;
+        const { SparkRenderer, SplatMesh } = sparkModule;
 
-        // Create renderer
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        // Create THREE renderer
+        renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
         renderer.setSize(container!.clientWidth, container!.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container!.innerHTML = '';
@@ -68,18 +71,21 @@ export function SparkSplatViewer({
         camera.position.set(0, 1.6, 3);
         camera.lookAt(0, 0, 0);
 
-        // Init SparkJS renderer
-        const spark = new SparkRenderer({ renderer, camera });
+        // Init SparkJS renderer (only takes renderer option)
+        const spark = new SparkRenderer({ renderer });
 
-        // Load splat
-        await spark.load(splatUrl!);
-
-        if (cancelled) {
-          renderer.dispose();
-          return;
-        }
-
-        sparkInstanceRef.current = spark;
+        // Load splat via SplatMesh
+        const splatMesh = new SplatMesh({
+          url: splatUrl!,
+          onLoad: () => {
+            if (!cancelled) {
+              setLoading(false);
+            }
+          },
+        });
+        scene.add(splatMesh);
+        // Also add spark to scene
+        scene.add(spark as unknown as THREE.Object3D);
 
         // Simple orbit controls via pointer
         let isDragging = false;
@@ -130,7 +136,7 @@ export function SparkSplatViewer({
         canvas.addEventListener('wheel', onWheel, { passive: false });
 
         // Resize handler
-        const resizeObserver = new ResizeObserver(() => {
+        resizeObserver = new ResizeObserver(() => {
           if (!container) return;
           const w = container.clientWidth;
           const h = container.clientHeight;
@@ -141,29 +147,12 @@ export function SparkSplatViewer({
         resizeObserver.observe(container!);
 
         // Render loop
-        let animId: number;
         const animate = () => {
           if (cancelled) return;
           animId = requestAnimationFrame(animate);
-          spark.render(scene, camera);
           renderer.render(scene, camera);
         };
         animate();
-
-        setLoading(false);
-
-        // Cleanup
-        return () => {
-          cancelled = true;
-          cancelAnimationFrame(animId);
-          canvas.removeEventListener('pointerdown', onPointerDown);
-          canvas.removeEventListener('pointermove', onPointerMove);
-          canvas.removeEventListener('pointerup', onPointerUp);
-          canvas.removeEventListener('wheel', onWheel);
-          resizeObserver.disconnect();
-          renderer.dispose();
-          spark.dispose?.();
-        };
       } catch (err) {
         if (!cancelled) {
           console.warn('SparkJS init failed, falling back:', err);
@@ -173,11 +162,13 @@ export function SparkSplatViewer({
       }
     }
 
-    const cleanup = initSpark();
+    void initSpark();
 
     return () => {
       cancelled = true;
-      cleanup?.then?.((fn) => fn?.());
+      if (animId) cancelAnimationFrame(animId);
+      resizeObserver?.disconnect();
+      renderer?.dispose?.();
     };
   }, [splatUrl]);
 
