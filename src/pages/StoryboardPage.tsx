@@ -20,6 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { appRoutes } from '@/lib/routes';
 import { getShotImageCredits, getShotVideoCredits, DIRECTORS_CUT_CREDITS } from '@/lib/constants/credits';
 import { useProjectSettingsStore } from '@/store/projectSettingsStore';
+import { ConfirmGenerateDialog } from '@/components/ui/ConfirmGenerateDialog';
 
 const StoryboardPage = () => {
   const { projectId } = useParams<{ projectId?: string }>();
