@@ -55,6 +55,7 @@ const SettingsTab = ({ projectData, updateProjectData }: SettingsTabProps) => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoadingCharacters, setIsLoadingCharacters] = useState(true);
   const [isAddingCharacter, setIsAddingCharacter] = useState(false);
+  const [showAllStyles, setShowAllStyles] = useState(false);
 
   // Fetch characters when projectId changes or after generation completes
   useEffect(() => {
