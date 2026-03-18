@@ -19,6 +19,7 @@ import { useAutoGenerate } from '@/hooks/useAutoGenerate';
 import { supabase } from '@/integrations/supabase/client';
 import { getShotImageCredits, getShotVideoCredits } from '@/lib/constants/credits';
 import { useProjectSettingsStore } from '@/store/projectSettingsStore';
+import { ConfirmGenerateDialog } from '@/components/ui/ConfirmGenerateDialog';
 
 interface ShotConnection {
   id: string;
