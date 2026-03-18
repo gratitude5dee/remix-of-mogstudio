@@ -1071,7 +1071,9 @@ export default function KanvasPage() {
       const job = await submitKanvasJob(request);
       setJobs((current) => mergeJobs(current, [job]));
       setSelectedJobId(job.id);
-      toast.success("Generation queued");
+      toast.info(`Generation started — ${currentModel?.name ?? 'Unknown model'}`, {
+        description: `Studio: ${KANVAS_STUDIO_META[studio].label}`,
+      });
     } catch (error) {
       if (error instanceof InsufficientCreditsError) {
         setCreditsInfo({
@@ -1084,6 +1086,13 @@ export default function KanvasPage() {
       }
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  function handleRetryLastFailed() {
+    const lastFailed = currentStudioJobs.find((j) => j.status === 'failed');
+    if (lastFailed) {
+      void handleGenerate();
     }
   }
 
