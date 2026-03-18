@@ -157,10 +157,15 @@ export const documentService = {
       throw new Error('Invalid response from document parser');
     }
 
+    const resultText = data.text as string;
+    const chapters = detectChapters(resultText);
+
     return {
-      text: data.text,
+      text: resultText,
       pageCount: data.pageCount,
       format: data.format,
+      chapters: chapters.length > 0 ? chapters : undefined,
+      isBook: chapters.length > 1,
     };
   },
 
