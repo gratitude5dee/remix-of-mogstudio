@@ -493,12 +493,13 @@ const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected =
       className={cn(
         'relative group mb-8 p-6 rounded-[24px] backdrop-blur-xl transition-all duration-300',
         'bg-[rgba(17,17,17,0.88)]',
-        'border border-white/[0.06] hover:border-white/[0.12]',
+        'border border-purple-500/[0.08] hover:border-purple-500/[0.18]',
         'shadow-[0_8px_40px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)]',
         isSelected && [
-          'border-[#f97316]/40',
-          'shadow-[0_0_0_4px_rgba(249,115,22,0.08),0_12px_48px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.05)]',
-          'bg-[rgba(18,24,20,0.92)]'
+          'border-purple-500/40',
+          'shadow-[0_0_0_4px_rgba(139,92,246,0.08),0_12px_48px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.05)]',
+          'ring-2 ring-purple-500/30',
+          'bg-[rgba(18,14,24,0.92)]'
         ]
       )}
     >
