@@ -257,6 +257,9 @@ serve(async (req) => {
         storyline_id = storylineRecord.id;
         console.log(`Created instant skeleton with ID: ${storyline_id}`);
 
+        // Delay between Groq calls to reduce rate limit pressure
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
         // ========== PHASE 2: TRUE STREAMING ==========
         // Stream the full story narrative token-by-token
         console.log('Phase 2: Starting true Groq streaming for story narrative...');
