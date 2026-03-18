@@ -586,6 +586,34 @@ const StoryboardPage = () => {
           <SettingsPanel projectId={projectId} onClose={() => setIsSettingsPanelOpen(false)} />
         </div>
       )}
+
+      <ConfirmGenerateDialog
+        open={showProjectConfirmGenerate}
+        onOpenChange={setShowProjectConfirmGenerate}
+        onConfirm={() => {
+          setShowProjectConfirmGenerate(false);
+          startProjectAutoGenerate();
+        }}
+        title="Confirm Auto-Generate All"
+        description="Are you sure you wish to auto-generate across all scenes?"
+        estimatedCredits={
+          projectNextPhase === 'images'
+            ? getShotImageCredits(selectedImageModel) * (projectAutoGenState.progress.total || scenes.length * 3)
+            : getShotVideoCredits(selectedVideoModel) * (projectAutoGenState.progress.total || scenes.length * 3)
+        }
+      />
+
+      <ConfirmGenerateDialog
+        open={showDirectorsCutConfirm}
+        onOpenChange={setShowDirectorsCutConfirm}
+        onConfirm={() => {
+          setShowDirectorsCutConfirm(false);
+          if (projectId) navigate(appRoutes.projects.directorsCut(projectId));
+        }}
+        title="Confirm Director's Cut"
+        description="Are you sure you wish to proceed with Director's Cut?"
+        estimatedCredits={DIRECTORS_CUT_CREDITS}
+      />
     </div>
   );
 };
