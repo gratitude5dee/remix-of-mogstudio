@@ -1188,6 +1188,7 @@ export default function KanvasPage() {
                   studio={studio}
                   selectedJob={selectedJob}
                   currentModel={currentModel}
+                  onRetry={handleRetryLastFailed}
                 />
 
                 <Card className="rounded-[36px] border-white/10 bg-[#09090b]/90 p-6 text-white shadow-[0_20px_80px_rgba(0,0,0,0.35)]">

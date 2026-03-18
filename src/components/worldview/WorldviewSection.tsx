@@ -32,6 +32,7 @@ import { useWorldviewStore } from '@/lib/stores/worldview-store';
 import { useCanvasStore } from '@/lib/stores/canvas-store';
 import { worldLabsService } from '@/services/worldLabsService';
 import { supabase } from '@/integrations/supabase/client';
+import { SparkSplatViewer } from './SparkSplatViewer';
 import type {
   AspectRatioType,
   CharacterRef,
