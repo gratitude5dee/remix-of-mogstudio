@@ -83,9 +83,7 @@ export function SparkSplatViewer({
             }
           },
         });
-        scene.add(splatMesh);
-        // Also add spark to scene
-        scene.add(spark as unknown as THREE.Object3D);
+        scene.add(splatMesh as unknown as import('three').Object3D);
 
         // Simple orbit controls via pointer
         let isDragging = false;
