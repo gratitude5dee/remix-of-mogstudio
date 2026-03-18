@@ -63,8 +63,8 @@ serve(async (req) => {
       requestBody.response_format = { type: "json_object" };
     }
 
-    // Make request to Groq API
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    // Make request to Groq API with retry on 429
+    const response = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${groqApiKey}`,

@@ -376,6 +376,8 @@ serve(async (req) => {
         let analysisData: AnalysisResponseData | null = null;
         if (!generate_alternative) {
           try {
+            // Delay between Groq calls to reduce rate limit pressure
+            await new Promise(resolve => setTimeout(resolve, 2000));
             console.log('Analyzing storyline for characters and settings...');
             const analysisSystemPrompt = getAnalysisSystemPrompt();
             const analysisUserPrompt = getAnalysisUserPrompt(fullStoryText);
