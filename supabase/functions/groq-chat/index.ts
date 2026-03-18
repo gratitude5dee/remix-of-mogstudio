@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { authenticateRequest } from '../_shared/auth.ts';
 import { corsHeaders, errorResponse, successResponse, handleCors } from '../_shared/response.ts';
+import { fetchWithRetry } from '../_shared/retry.ts';
 
 serve(async (req) => {
   // Handle CORS preflight requests
