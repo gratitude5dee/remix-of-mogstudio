@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders, errorResponse, successResponse, handleCors } from '../_shared/response.ts';
+import { fetchWithRetry } from '../_shared/retry.ts';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -44,7 +45,7 @@ serve(async (req) => {
 
     let response;
     try {
-      response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      response = await fetchWithRetry("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${GROQ_API_KEY}`,

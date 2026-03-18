@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { authenticateRequest } from '../_shared/auth.ts';
 import { corsHeaders, errorResponse, successResponse, handleCors } from '../_shared/response.ts';
+import { fetchWithRetry } from '../_shared/retry.ts';
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -62,8 +63,8 @@ serve(async (req) => {
       requestBody.response_format = { type: "json_object" };
     }
 
-    // Make request to Groq API
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    // Make request to Groq API with retry on 429
+    const response = await fetchWithRetry('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${groqApiKey}`,

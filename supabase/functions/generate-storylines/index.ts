@@ -257,6 +257,9 @@ serve(async (req) => {
         storyline_id = storylineRecord.id;
         console.log(`Created instant skeleton with ID: ${storyline_id}`);
 
+        // Delay between Groq calls to reduce rate limit pressure
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
         // ========== PHASE 2: TRUE STREAMING ==========
         // Stream the full story narrative token-by-token
         console.log('Phase 2: Starting true Groq streaming for story narrative...');
@@ -291,6 +294,9 @@ serve(async (req) => {
         // Process the stream and update DB in real-time
         const fullStoryText = await processGroqStream(streamResponse, supabaseClient, storyline_id);
         console.log(`Completed streaming story: ${fullStoryText.length} characters`);
+
+        // Delay between Groq calls to reduce rate limit pressure
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         // ========== PHASE 3: STRUCTURED DATA ==========
         // Generate scenes with JSON mode (existing logic)
@@ -370,6 +376,8 @@ serve(async (req) => {
         let analysisData: AnalysisResponseData | null = null;
         if (!generate_alternative) {
           try {
+            // Delay between Groq calls to reduce rate limit pressure
+            await new Promise(resolve => setTimeout(resolve, 2000));
             console.log('Analyzing storyline for characters and settings...');
             const analysisSystemPrompt = getAnalysisSystemPrompt();
             const analysisUserPrompt = getAnalysisUserPrompt(fullStoryText);
