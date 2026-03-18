@@ -118,7 +118,7 @@ export function HeroSection({ headline, subheadline }: HeroSectionProps) {
               ))}
             </div>
             <p className="text-sm text-white/40">
-              Trusted by <span className="text-white/60 font-medium">500+</span> creators and brands
+              Trusted by <span className="text-white/60 font-medium">2,000+</span> creators, agencies, and brands worldwide
             </p>
           </motion.div>
         </div>

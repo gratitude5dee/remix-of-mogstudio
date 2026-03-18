@@ -1087,7 +1087,7 @@ export default function KanvasPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Badge className="bg-lime-300 text-black hover:bg-lime-300">fal-native</Badge>
+              
               <Button
                 type="button"
                 variant="ghost"

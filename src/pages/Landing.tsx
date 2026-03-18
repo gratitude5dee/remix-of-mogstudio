@@ -386,7 +386,7 @@ const Landing = () => {
         />
 
         {/* Trust Indicators Section — Card-based */}
-        <section className="py-20 px-4">
+        <section className="py-24 md:py-32 px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
