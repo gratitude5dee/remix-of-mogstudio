@@ -295,6 +295,9 @@ serve(async (req) => {
         const fullStoryText = await processGroqStream(streamResponse, supabaseClient, storyline_id);
         console.log(`Completed streaming story: ${fullStoryText.length} characters`);
 
+        // Delay between Groq calls to reduce rate limit pressure
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
         // ========== PHASE 3: STRUCTURED DATA ==========
         // Generate scenes with JSON mode (existing logic)
         console.log('Phase 3: Generating structured scene data...');
