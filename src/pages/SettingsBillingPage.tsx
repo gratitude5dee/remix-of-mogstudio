@@ -12,13 +12,22 @@ import { appRoutes } from '@/lib/routes';
 
 const FALLBACK_PLANS: BillingPlan[] = [
   {
+    plan_code: 'free',
+    display_name: 'Free',
+    description: 'Get started with 100 credits per month.',
+    monthly_price_cents: 0,
+    yearly_price_cents: null,
+    monthly_quota: 100,
+    rollover_cap: 0,
+  },
+  {
     plan_code: 'pro',
     display_name: 'Pro',
     description: 'For independent creators and small teams.',
     monthly_price_cents: 4900,
     yearly_price_cents: null,
-    monthly_quota: 1200,
-    rollover_cap: 1200,
+    monthly_quota: 2000,
+    rollover_cap: 2000,
   },
   {
     plan_code: 'business',
@@ -26,8 +35,8 @@ const FALLBACK_PLANS: BillingPlan[] = [
     description: 'For larger teams with heavier generation volume.',
     monthly_price_cents: 14900,
     yearly_price_cents: null,
-    monthly_quota: 5000,
-    rollover_cap: 5000,
+    monthly_quota: 10000,
+    rollover_cap: 10000,
   },
   {
     plan_code: 'enterprise',
