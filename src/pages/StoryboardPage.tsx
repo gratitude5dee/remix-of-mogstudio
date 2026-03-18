@@ -34,7 +34,8 @@ const StoryboardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarData, setSidebarData] = useState<SidebarData | null>(null);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
-
+  const [showProjectConfirmGenerate, setShowProjectConfirmGenerate] = useState(false);
+  const [showDirectorsCutConfirm, setShowDirectorsCutConfirm] = useState(false);
   // Get user-selected models from project settings store
   const { settings: projectSettings, fetchSettings: fetchProjectSettings } = useProjectSettingsStore();
   const selectedImageModel = projectSettings?.baseImageModel;
