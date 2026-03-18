@@ -801,6 +801,7 @@ function GSplatViewer({
     >
       {/* SparkJS Gaussian Splat Viewer with fallbacks */}
       <SparkSplatViewer
+        ref={sparkRef}
         splatUrl={splatUrl}
         viewerUrl={viewerUrl}
         fallbackImageUrl={fallbackImageUrl}
