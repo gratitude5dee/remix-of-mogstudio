@@ -32,6 +32,7 @@ import { useWorldviewStore } from '@/lib/stores/worldview-store';
 import { useCanvasStore } from '@/lib/stores/canvas-store';
 import { worldLabsService } from '@/services/worldLabsService';
 import { supabase } from '@/integrations/supabase/client';
+import { SparkSplatViewer } from './SparkSplatViewer';
 import type {
   AspectRatioType,
   CharacterRef,
@@ -717,8 +718,6 @@ function GSplatViewer({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [lensOpen, setLensOpen] = useState(false);
-  const [iframeLoading, setIframeLoading] = useState(true);
-  const [iframeError, setIframeError] = useState(false);
 
   const activeLens = LENS_OPTIONS.find((l) => l.value === camera.lens);
   const activeRatio = ASPECT_RATIO_OPTIONS.find((r) => r.value === camera.aspectRatio);
@@ -726,6 +725,7 @@ function GSplatViewer({
   const viewfinderWidthPercent = Math.min(90, 60 * (camera.zoom / 100));
   const viewfinderRatio = activeRatio?.ratio ?? 16 / 9;
 
+  const splatUrl = world?.assets.splatUrl;
   const viewerUrl = world?.assets.viewerUrl;
   const fallbackImageUrl = world?.assets.panoramaUrl ?? world?.assets.thumbnailUrl;
 
@@ -765,7 +765,6 @@ function GSplatViewer({
 
     try {
       if (!imageSource) throw new Error('No image source available for capture');
-      // Use the panorama/thumbnail as capture source
       const url = imageSource;
       updateTakeStatus(takeId, 'ready');
       useWorldviewStore.setState((state) => ({
@@ -796,38 +795,14 @@ function GSplatViewer({
       ref={containerRef}
       className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-zinc-700/40 bg-black"
     >
-      {/* Iframe viewer or fallback image */}
-      {viewerUrl && !iframeError ? (
-        <>
-          {iframeLoading && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-              <div className="flex flex-col items-center gap-2">
-                <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
-                <span className="text-sm text-zinc-300">Loading 3D world…</span>
-              </div>
-            </div>
-          )}
-          <iframe
-            src={viewerUrl}
-            title="World Viewer"
-            className="absolute inset-0 h-full w-full border-0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope"
-            onLoad={() => setIframeLoading(false)}
-            onError={() => { setIframeError(true); setIframeLoading(false); }}
-          />
-        </>
-      ) : fallbackImageUrl ? (
-        <img
-          src={fallbackImageUrl}
-          alt={world?.displayName ?? 'World'}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      ) : (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Globe2 className="h-10 w-10 text-zinc-700" />
-          <span className="ml-2 text-sm text-zinc-500">No viewer available</span>
-        </div>
-      )}
+      {/* SparkJS Gaussian Splat Viewer with fallbacks */}
+      <SparkSplatViewer
+        splatUrl={splatUrl}
+        viewerUrl={viewerUrl}
+        fallbackImageUrl={fallbackImageUrl}
+        displayName={world?.displayName}
+        className="absolute inset-0 h-full w-full"
+      />
 
       {/* Camera HUD — top-left */}
       <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">

@@ -545,14 +545,27 @@ function HistoryRail({
   );
 }
 
+function getJobProgressLabel(job: KanvasJob): string {
+  if (job.status === 'queued') return 'Queued — waiting for a slot…';
+  if (job.status === 'processing') {
+    const pct = job.progress ?? 0;
+    if (pct < 30) return 'Processing — warming up model…';
+    if (pct < 70) return 'Processing — generating output…';
+    return 'Processing — finalizing…';
+  }
+  return job.status;
+}
+
 function PreviewStage({
   studio,
   selectedJob,
   currentModel,
+  onRetry,
 }: {
   studio: KanvasStudio;
   selectedJob: KanvasJob | null;
   currentModel: KanvasModel | null;
+  onRetry?: () => void;
 }) {
   const previewUrl = getJobPrimaryUrl(selectedJob);
   const meta = KANVAS_STUDIO_META[studio];
@@ -611,10 +624,37 @@ function PreviewStage({
               playsInline
               className="aspect-[16/9] w-full bg-black object-cover"
             />
+          ) : selectedJob?.status === "failed" ? (
+            <div className="flex aspect-[16/9] flex-col items-center justify-center gap-4 px-6 text-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[28px] border border-rose-500/30 bg-rose-500/10">
+                <Icon className="h-10 w-10 text-rose-400" />
+              </div>
+              <div>
+                <p className="text-xl font-semibold text-rose-300">Generation Failed</p>
+                <p className="mt-2 max-w-md text-sm text-zinc-500">
+                  {selectedJob.errorMessage ?? 'An unexpected error occurred.'}
+                </p>
+              </div>
+              {onRetry && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20"
+                  onClick={onRetry}
+                >
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  Retry Generation
+                </Button>
+              )}
+            </div>
           ) : (
             <div className="flex aspect-[16/9] flex-col items-center justify-center gap-4 px-6 text-center">
               <div className="flex h-20 w-20 items-center justify-center rounded-[28px] border border-lime-300/30 bg-lime-300/10">
-                <Icon className="h-10 w-10 text-lime-300" />
+                {selectedJob && isJobActive(selectedJob) ? (
+                  <Loader2 className="h-10 w-10 animate-spin text-lime-300" />
+                ) : (
+                  <Icon className="h-10 w-10 text-lime-300" />
+                )}
               </div>
               <div>
                 <p className="text-xl font-semibold text-white">
@@ -623,8 +663,8 @@ function PreviewStage({
                     : "Ready to generate"}
                 </p>
                 <p className="mt-2 text-sm text-zinc-500">
-                  {selectedJob?.errorMessage
-                    ? selectedJob.errorMessage
+                  {selectedJob && isJobActive(selectedJob)
+                    ? getJobProgressLabel(selectedJob)
                     : currentModel
                       ? `${currentModel.name} is selected for this studio.`
                       : "Load a model and start generating."}
@@ -1031,7 +1071,9 @@ export default function KanvasPage() {
       const job = await submitKanvasJob(request);
       setJobs((current) => mergeJobs(current, [job]));
       setSelectedJobId(job.id);
-      toast.success("Generation queued");
+      toast.info(`Generation started — ${currentModel?.name ?? 'Unknown model'}`, {
+        description: `Studio: ${KANVAS_STUDIO_META[studio].label}`,
+      });
     } catch (error) {
       if (error instanceof InsufficientCreditsError) {
         setCreditsInfo({
@@ -1044,6 +1086,13 @@ export default function KanvasPage() {
       }
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  function handleRetryLastFailed() {
+    const lastFailed = currentStudioJobs.find((j) => j.status === 'failed');
+    if (lastFailed) {
+      void handleGenerate();
     }
   }
 
@@ -1139,6 +1188,7 @@ export default function KanvasPage() {
                   studio={studio}
                   selectedJob={selectedJob}
                   currentModel={currentModel}
+                  onRetry={handleRetryLastFailed}
                 />
 
                 <Card className="rounded-[36px] border-white/10 bg-[#09090b]/90 p-6 text-white shadow-[0_20px_80px_rgba(0,0,0,0.35)]">

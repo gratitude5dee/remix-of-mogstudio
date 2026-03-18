@@ -26,6 +26,9 @@ export default defineConfig(({ mode }) => ({
       "framer-motion",
     ],
   },
+  optimizeDeps: {
+    exclude: ['@sparkjsdev/spark'],
+  },
   test: {
     globals: true,
     environment: "jsdom",
