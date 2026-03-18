@@ -381,8 +381,8 @@ const Landing = () => {
 
         {/* Hero Content */}
         <HeroSection
-          headline="Your AI Video Production Studio. No Agency Required."
-          subheadline="Create scroll-stopping UGC, music videos, and ad content 10x faster. Indie labels and DTC brands use MOG Studio to automate what agencies charge $50K+ for."
+          headline="Turn Ideas Into Cinema-Quality Content in Minutes"
+          subheadline="WZRD Studio combines AI image generation, video production, lip sync, 3D worldbuilding, and a complete timeline editor — all in one powerful creative platform."
         />
 
         {/* Trust Indicators Section — Card-based */}
