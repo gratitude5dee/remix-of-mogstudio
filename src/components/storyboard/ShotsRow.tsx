@@ -242,14 +242,25 @@ const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected =
 
         setShots(reorderedItems);
 
-        await Promise.all(
-          reorderedItems.map((shot) =>
-            supabaseService.shots.update(shot.id, { shot_number: shot.shot_number })
-          )
+        // Batch reorder: first set all to negative values to avoid unique constraint
+        const negativeUpdates = reorderedItems.map((shot, idx) =>
+          supabaseService.shots.update(shot.id, { shot_number: -(idx + 1) })
         );
+        await Promise.all(negativeUpdates);
+
+        // Then set final values
+        const finalUpdates = reorderedItems.map((shot) =>
+          supabaseService.shots.update(shot.id, { shot_number: shot.shot_number })
+        );
+        await Promise.all(finalUpdates);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error';
         toast.error(`Failed to save shot order: ${message}`);
+        // Refresh shots on error to get correct state
+        try {
+          const fetched = await supabaseService.shots.listByScene(sceneId);
+          setShots(fetched as ShotDetails[]);
+        } catch {}
       } finally {
         setIsSavingOrder(false);
       }
