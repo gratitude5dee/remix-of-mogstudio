@@ -72,7 +72,13 @@ serve(async (req) => {
     }
 
     if (!stripeCustomerId) {
-      return errorResponse('No billing customer found for this account', 404);
+      return successResponse({
+        success: false,
+        billing_mode: mode,
+        portal_available: false,
+        error: 'no_subscription',
+        message: 'No active subscription. Please choose a plan to get started.',
+      }, 200);
     }
 
     const returnUrl = body.return_url || getDefaultReturnUrl(req);

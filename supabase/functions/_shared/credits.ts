@@ -22,6 +22,36 @@ const MODEL_COST_OVERRIDES: Record<string, number> = {
   'fal-ai/ltx-2-19b/text-to-video': 18,
   'fal-ai/bytedance/seedance/v1/lite/text-to-video': 20,
   'fal-ai/bytedance/seedance/v1/pro/text-to-video': 30,
+  // New image models
+  'fal-ai/stable-diffusion-v35-large': 4,
+  'fal-ai/recraft-v3': 5,
+  'fal-ai/aura-flow': 3,
+  'fal-ai/hidream-i1-full': 6,
+  'fal-ai/omnigen-v1': 5,
+  'fal-ai/flux/dev/image-to-image': 6,
+  'fal-ai/flux-pro/v1.1-ultra/redux': 9,
+  'fal-ai/iclight-v2': 5,
+  'fal-ai/creative-upscaler': 4,
+  'fal-ai/clarity-upscaler': 4,
+  // New video models
+  'fal-ai/minimax/video-01-live': 25,
+  'fal-ai/minimax/video-01/image-to-video': 28,
+  'fal-ai/hunyuan-video': 22,
+  'fal-ai/wan/v2.1/1.3b/text-to-video': 18,
+  'fal-ai/wan/v2.1/1.3b/image-to-video': 20,
+  'fal-ai/cogvideox-5b': 20,
+  'fal-ai/vidu/v2.5/text-to-video': 24,
+  'fal-ai/vidu/v2.5/image-to-video': 26,
+  'fal-ai/kling-video/o3/standard/video-extend': 26,
+  'fal-ai/stable-video': 16,
+  // Lip-sync models
+  'fal-ai/kling-video/o3/pro/lip-sync': 30,
+  'fal-ai/kling-video/v2.5-turbo/lip-sync': 22,
+  'fal-ai/sadtalker': 12,
+  'fal-ai/liveportrait': 15,
+  'fal-ai/latentsync': 14,
+  'fal-ai/hallo2': 16,
+  'fal-ai/sonic': 18,
 };
 
 const WORKFLOW_COSTS: Record<string, number> = {

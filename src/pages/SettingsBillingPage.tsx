@@ -175,7 +175,11 @@ const SettingsBillingPage = () => {
             </Link>
             <h1 className="text-3xl font-semibold tracking-tight">Billing & Credits</h1>
             <p className="mt-2 text-sm text-zinc-400">
-              Monthly plan credits with top-up packs. Billing mode: <span className="font-medium text-zinc-200">{billingMode}</span>
+              {billingMode === 'disabled'
+                ? 'Billing is not configured. Contact support for assistance.'
+                : billingMode === 'test_only'
+                ? 'Billing is in test mode. Payments are simulated.'
+                : <>Monthly plan credits with top-up packs. Billing mode: <span className="font-medium text-zinc-200">{billingMode}</span></>}
             </p>
           </div>
           <div className="flex items-center gap-3">

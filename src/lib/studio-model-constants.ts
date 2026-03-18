@@ -1478,7 +1478,7 @@ export const getDefaultAudioModel = () => AUDIO_MODELS[0].id;
 export const getDefaultTextModel = () => TEXT_MODELS[0].id;
 
 export const getModelById = (id: string): StudioModel | undefined => {
-  return [...IMAGE_MODELS, ...VIDEO_MODELS, ...AUDIO_MODELS, ...TEXT_MODELS].find((model) => model.id === id);
+  return [...IMAGE_MODELS, ...VIDEO_MODELS, ...LIPSYNC_MODELS, ...AUDIO_MODELS, ...TEXT_MODELS].find((model) => model.id === id);
 };
 
 export const getModelsByType = (type: StudioModelMediaType): StudioModel[] => {
@@ -1486,7 +1486,7 @@ export const getModelsByType = (type: StudioModelMediaType): StudioModel[] => {
     case 'image':
       return IMAGE_MODELS;
     case 'video':
-      return VIDEO_MODELS;
+      return [...VIDEO_MODELS, ...LIPSYNC_MODELS];
     case 'audio':
       return AUDIO_MODELS;
     case 'text':
@@ -1501,8 +1501,11 @@ export const getModelsByTypeAndGroup = (
   uiGroup: StudioModelUiGroup
 ): StudioModel[] => getModelsByType(type).filter((model) => model.uiGroup === uiGroup);
 
+export const getLipsyncModels = (): StudioModel[] => LIPSYNC_MODELS;
+
 // For dropdowns and quick pickers
 export const IMAGE_MODEL_OPTIONS = IMAGE_MODELS.map((model) => ({ id: model.id, label: model.name }));
 export const VIDEO_MODEL_OPTIONS = VIDEO_MODELS.map((model) => ({ id: model.id, label: model.name }));
+export const LIPSYNC_MODEL_OPTIONS = LIPSYNC_MODELS.map((model) => ({ id: model.id, label: model.name }));
 export const AUDIO_MODEL_OPTIONS = AUDIO_MODELS.map((model) => ({ id: model.id, label: model.name }));
 export const TEXT_MODEL_OPTIONS = TEXT_MODELS.map((model) => ({ id: model.id, label: model.name }));
