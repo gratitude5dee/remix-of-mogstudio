@@ -750,7 +750,6 @@ function GSplatViewer({
   const handleCaptureTake = useCallback(async () => {
     if (capturing || !activeSceneId) return;
     const takeId = crypto.randomUUID();
-    const imageSource = fallbackImageUrl ?? '';
 
     const take: WorldviewTake = {
       id: takeId,
@@ -766,14 +765,17 @@ function GSplatViewer({
     setCapturing(true);
 
     try {
-      if (!imageSource) throw new Error('No image source available for capture');
-      const url = imageSource;
+      // Try capturing from SparkJS canvas first, fall back to static image
+      const canvasCapture = sparkRef.current?.captureFrame();
+      const imageUrl = canvasCapture || fallbackImageUrl || '';
+      if (!imageUrl) throw new Error('No image source available for capture');
+
       updateTakeStatus(takeId, 'ready');
       useWorldviewStore.setState((state) => ({
         scenes: state.scenes.map((s) => ({
           ...s,
           takes: s.takes.map((t) =>
-            t.id === takeId ? { ...t, imageUrl: url, status: 'ready' as const } : t,
+            t.id === takeId ? { ...t, imageUrl, status: 'ready' as const } : t,
           ),
         })),
       }));
