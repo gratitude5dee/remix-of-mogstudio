@@ -425,7 +425,7 @@ const StorylineTab = ({ projectData, updateProjectData }: StorylineTabProps) => 
 
           {/* Main Storyline Editor - Now spans 2 columns */}
           <div className="md:col-span-2">
-            <div className="bg-black rounded-lg border border-zinc-800 p-6 min-h-[400px]">
+            <div className="bg-black rounded-xl border border-white/5 p-6 md:p-8 min-h-[400px]">
               {/* Show generation progress indicator */}
               <StorylineProgress 
                 status={streamingStatus}
@@ -441,7 +441,7 @@ const StorylineTab = ({ projectData, updateProjectData }: StorylineTabProps) => 
                 </div>
               ) : selectedStoryline || streamingStory ? (
                 <>
-                  <h2 className="text-2xl font-bold mb-4 text-white">
+                  <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">
                     {selectedStoryline?.title || <Skeleton className="h-8 w-64" />}
                   </h2>
                   <div className="flex flex-wrap gap-2 mb-6">
@@ -454,23 +454,38 @@ const StorylineTab = ({ projectData, updateProjectData }: StorylineTabProps) => 
                       </Badge>
                     ))}
                   </div>
+
+                  {/* Word count and read time */}
+                  {(streamingStory || selectedStoryline?.full_story) && (
+                    <div className="flex items-center gap-4 mb-6 text-xs text-zinc-500">
+                      <span>{(streamingStory || selectedStoryline?.full_story || '').split(/\s+/).filter(Boolean).length} words</span>
+                      <span>~{Math.max(1, Math.ceil((streamingStory || selectedStoryline?.full_story || '').split(/\s+/).filter(Boolean).length / 200))} min read</span>
+                    </div>
+                  )}
                   
                   {/* Display streaming or final story */}
-                  <div className="prose prose-invert max-w-none">
+                  <div className="prose prose-invert max-w-none space-y-4">
                     {['creating', 'generating', 'scenes', 'characters'].includes(streamingStatus) && streamingStory ? (
                       <StreamingTextAnimate
                         text={streamingStory}
                         isStreaming={streamingStatus !== 'complete'}
-                        className="text-zinc-300"
+                        className="text-zinc-300 text-base md:text-lg leading-relaxed"
                       />
                     ) : selectedStoryline?.full_story ? (
-                      <TextAnimate 
-                        animation="fadeIn" 
-                        by="word"
-                        className="text-zinc-300 whitespace-pre-line leading-relaxed"
-                      >
-                        {selectedStoryline.full_story}
-                      </TextAnimate>
+                      <div className="text-zinc-300 text-base md:text-lg leading-relaxed whitespace-pre-line space-y-4">
+                        {selectedStoryline.full_story.split('\n\n').map((paragraph, idx) => {
+                          // Detect scene headings
+                          if (/^(scene|act|chapter|part)\s+\d/i.test(paragraph.trim())) {
+                            return (
+                              <React.Fragment key={idx}>
+                                {idx > 0 && <div className="my-8 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />}
+                                <h3 className="text-xl font-semibold mt-8 mb-3 text-white">{paragraph.trim()}</h3>
+                              </React.Fragment>
+                            );
+                          }
+                          return <p key={idx} className="mb-4">{paragraph}</p>;
+                        })}
+                      </div>
                     ) : streamingStatus === 'creating' ? (
                       <div className="space-y-3">
                         <Skeleton className="h-4 w-full animate-shimmer" />
