@@ -615,7 +615,7 @@ const ShotsRow = ({ sceneId, sceneNumber, projectId, onSceneDelete, isSelected =
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      onClick={isAutoGenerating ? cancelAutoGenerate : startAutoGenerate}
+                      onClick={isAutoGenerating ? cancelAutoGenerate : () => setShowConfirmGenerate(true)}
                       size="sm"
                       className={cn(
                         'relative overflow-hidden backdrop-blur-sm',
