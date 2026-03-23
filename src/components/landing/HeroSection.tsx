@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, ArrowDown } from 'lucide-react';
+import ScrollingPartners from '@/components/landing/ScrollingPartners';
 
 interface HeroSectionProps {
   headline?: string;
@@ -156,6 +157,16 @@ export function HeroSection({
             </div>
           </motion.div>
         </div>
+
+          {/* Built With Partners */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+            className="mt-8"
+          >
+            <ScrollingPartners />
+          </motion.div>
 
         {/* Scroll indicator */}
         <motion.div
