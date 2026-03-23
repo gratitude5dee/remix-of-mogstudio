@@ -157,15 +157,10 @@ export function HeroSection({
                 <div className="flex-1 flex flex-col">
                   {/* Preview Window */}
                   <div className="flex-1 p-3">
-                    <div className="bg-gradient-to-br from-white/[0.03] to-transparent rounded-lg h-full flex items-center justify-center border border-white/[0.05] relative overflow-hidden min-h-[160px]">
+                    <div className="bg-black rounded-lg h-full flex items-center justify-center border border-white/[0.05] relative overflow-hidden min-h-[160px]">
+                      <img src={wzrdIntroGif} alt="WZRD Studio Preview" className="absolute inset-0 w-full h-full object-cover" />
                       {/* Subtle film grain overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
-                      <div className="relative text-center">
-                        <div className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center mx-auto mb-2 transition-all cursor-pointer hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                          <Play className="w-5 h-5 text-white/50 ml-0.5" />
-                        </div>
-                        <span className="text-[10px] text-white/20 font-mono">1920 × 1080 • 24fps</span>
-                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10" />
                     </div>
                   </div>
 
