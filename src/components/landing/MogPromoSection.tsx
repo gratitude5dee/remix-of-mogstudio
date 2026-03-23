@@ -1,21 +1,53 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
 const clientLogos = [
   'NYU', 'Pentagram', "Levi's", 'Lionsgate', 'R/GA', 'WPP', 'AKQA', 'NBCUniversal',
 ];
 
 export function MogPromoSection() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [hasVideoError, setHasVideoError] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const handleCanPlay = () => setIsVideoLoaded(true);
+    const handleError = () => setHasVideoError(true);
+    video.addEventListener('canplaythrough', handleCanPlay);
+    video.addEventListener('error', handleError);
+    if (video.readyState >= 4) setIsVideoLoaded(true);
+    return () => {
+      video.removeEventListener('canplaythrough', handleCanPlay);
+      video.removeEventListener('error', handleError);
+    };
+  }, []);
+
   return (
     <section className="py-24 px-4 relative overflow-hidden">
-      {/* Background */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background: 'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(16,185,129,0.06), transparent 70%)',
-        }}
-      />
+      {/* Video Background */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #0a0a0a 0%, #111111 25%, #0d0d0d 50%, #141414 75%, #0a0a0a 100%)' }} />
+        {!hasVideoError && (
+          <AnimatePresence>
+            <motion.video
+              ref={videoRef}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isVideoLoaded ? 0.4 : 0 }}
+              transition={{ duration: 1.5, ease: 'easeInOut' }}
+              autoPlay loop muted playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+              src="/bgvid.mp4"
+              aria-hidden="true"
+            />
+          </AnimatePresence>
+        )}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.8) 100%)' }} />
+      </div>
 
       <div className="container mx-auto max-w-6xl relative z-10">
         {/* Social Proof */}
@@ -49,11 +81,6 @@ export function MogPromoSection() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-center relative"
         >
-          {/* Organic blur */}
-          <div className="absolute inset-0 -z-10 flex items-center justify-center">
-            <div className="w-[600px] h-[300px] bg-emerald-500/[0.04] rounded-full blur-[100px]" />
-          </div>
-
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             Generative workflows{' '}
             <em style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }} className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-300 to-teal-200">

@@ -1,12 +1,18 @@
 import { motion } from 'framer-motion';
+import cyberImg from '@/assets/cards/cybersecurity-dashboard.jpg';
+import saasImg from '@/assets/cards/saas-launch.jpg';
+import filmImg from '@/assets/cards/film-key-art.jpg';
+import brandImg from '@/assets/cards/brand-identity.jpg';
+import motionImg from '@/assets/cards/motion-graphics.jpg';
+import productImg from '@/assets/cards/3d-product-viz.jpg';
 
 const showcaseItems = [
-  { title: 'Cybersecurity Dashboard UI', gradient: 'from-cyan-600/40 via-blue-900/60 to-slate-900/80', tag: 'Enterprise Security' },
-  { title: 'SaaS Product Launch', gradient: 'from-violet-600/40 via-purple-900/60 to-slate-900/80', tag: 'Go-to-Market' },
-  { title: 'Film Key Art', gradient: 'from-orange-600/40 via-red-900/60 to-slate-900/80', tag: 'Entertainment' },
-  { title: 'Brand Identity System', gradient: 'from-emerald-600/40 via-teal-900/60 to-slate-900/80', tag: 'Branding' },
-  { title: 'Motion Graphics', gradient: 'from-pink-600/40 via-rose-900/60 to-slate-900/80', tag: 'Animation' },
-  { title: '3D Product Visualization', gradient: 'from-amber-600/40 via-yellow-900/60 to-slate-900/80', tag: 'E-Commerce' },
+  { title: 'Cybersecurity Dashboard UI', image: cyberImg, tag: 'Enterprise Security' },
+  { title: 'SaaS Product Launch', image: saasImg, tag: 'Go-to-Market' },
+  { title: 'Film Key Art', image: filmImg, tag: 'Entertainment' },
+  { title: 'Brand Identity System', image: brandImg, tag: 'Branding' },
+  { title: 'Motion Graphics', image: motionImg, tag: 'Animation' },
+  { title: '3D Product Visualization', image: productImg, tag: 'E-Commerce' },
 ];
 
 export function GeneratedShowcaseSection() {
@@ -40,16 +46,10 @@ export function GeneratedShowcaseSection() {
               transition={{ delay: i * 0.08 }}
               className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer border border-white/[0.06] hover:border-white/[0.15] transition-all duration-300"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient}`} />
-              {/* Grid texture */}
-              <div
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: 'radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px)',
-                  backgroundSize: '16px 16px',
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <img src={item.image} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+              {/* Noise overlay */}
+              <div className="absolute inset-0 opacity-[0.08] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")' }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <span className="inline-block px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider bg-white/10 text-white/60 mb-3">
                   {item.tag}
