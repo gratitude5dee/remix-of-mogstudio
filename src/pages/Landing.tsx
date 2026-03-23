@@ -385,8 +385,6 @@ const Landing = () => {
             subheadline="WZRD Studio combines AI image generation, video production, lip sync, 3D worldbuilding, and a complete timeline editor — all in one powerful creative platform."
           />
 
-          {/* Scrolling Partners — below hero CTA buttons */}
-          <ScrollingPartners />
         </div>
       </div>
 

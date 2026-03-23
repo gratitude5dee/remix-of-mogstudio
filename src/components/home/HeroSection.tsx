@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { enableDemoMode } from "@/utils/demoMode";
 import { appRoutes } from "@/lib/routes";
+import ScrollingPartners from "@/components/landing/ScrollingPartners";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ export const HeroSection = () => {
 
         {/* CTAs */}
         <motion.div 
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
@@ -100,8 +101,11 @@ export const HeroSection = () => {
           </Button>
         </motion.div>
 
+        {/* Scrolling Partners */}
+        <ScrollingPartners />
+
         {/* Trust Indicators */}
-        <motion.p 
+        <motion.p
           className="text-white/50 text-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
