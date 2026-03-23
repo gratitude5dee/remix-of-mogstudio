@@ -103,7 +103,7 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen w-full relative">
+    <div className="min-h-screen w-full relative bg-black">
       {/* Cinematic Intro — lazy-loaded to keep Three.js out of main bundle */}
       <AnimatePresence>
         {!introComplete && (
@@ -114,9 +114,6 @@ const Landing = () => {
           </Suspense>
         )}
       </AnimatePresence>
-
-      {/* Fullscreen Background Video with Dark Overlay & Fallback */}
-      <VideoBackground />
 
       {/* Desktop Header */}
       <header
