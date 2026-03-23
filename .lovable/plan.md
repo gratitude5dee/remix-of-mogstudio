@@ -1,50 +1,83 @@
 
 
-# Redesign Hero Section + Move ScrollingPartners
+# Redesign Mock Editor Panel — Premium Cardboard-Inspired UI
 
-## 1. Move ScrollingPartners below Trust Indicators section
+## Current State
+The mock editor (lines 86–157) is a simplified placeholder with basic track bars and a small AI Director pane. It lacks the detail and polish described in the prompt.
 
-**File: `src/components/landing/MogPromoSection.tsx`**
-- Remove the `ScrollingPartners` import and its `<div className="mb-16">` wrapper (lines 4, 61-64)
+## Redesign
 
-**File: `src/pages/Landing.tsx`**
-- Insert `<ScrollingPartners />` after the Trust Indicators section (after line 450), before the Features section divider. Add a "Built With" label is already in the component. Wrap in a simple `<div>`.
+### Structure (left to right)
 
-## 2. Redesign HeroSection — Cardboard-inspired premium design
+```text
+┌──────────────────────────────────────────────────────────────┐
+│ Top Bar: "WZRD"  │  "Project Timeline"  │  Export │ ● Ready  │
+├────┬─────────────────────────────────────────────────┬───────┤
+│Icon│  ┌─────────────────────────────────────┐        │Director│
+│Bar │  │     16:9 Preview Window             │        │       │
+│    │  │         ▶ Play icon                 │        │ Chat  │
+│    │  └─────────────────────────────────────┘        │bubbles│
+│    │  ◀  ▶  ▶▶    ━━━━━━━ 100%  🔊          │       │       │
+│    ├─────────────────────────────────────────┤       │       │
+│    │ 00:00  00:15  00:30  00:45  01:00       │ "What │       │
+│    │ B-Roll  ▓▓▓░░░▓▓░░░░░░░░░░░░            │story  │       │
+│    │ Main    ▓▓▓▓▓▓▓▓▓▓░░▓▓▓▓▓▓▓            │do you │       │
+│    │ Music   ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈            │want?" │       │
+│    │         ┃ playhead                      │       │       │
+├────┴─────────────────────────────────────────┴───────┘       │
+│Media│ Media Library                                          │
+│     │ Search assets… [Add]                                   │
+│     │ ┌──┐┌──┐┌──┐┌──┐                                      │
+│     │ └──┘└──┘└──┘└──┘                                      │
+└──────────────────────────────────────────────────────────────┘
+```
 
-**File: `src/components/landing/HeroSection.tsx`** — Full rewrite with these elements:
+### 1. Top bar
+- Slim bar: "WZRD" left, "Project Timeline" center, "Export" button + green dot "Ready" right
+- `bg-white/[0.04]`, `text-[10px]` uppercase mono labels
 
-### Layout & Typography
-- Full viewport height (`min-h-screen`), centered content
-- Headline: extra-bold, 48-72px responsive (`text-5xl sm:text-6xl lg:text-7xl xl:text-8xl`), gradient from white to white/60 — keep existing gradient text approach
-- Subheadline: `text-lg sm:text-xl lg:text-2xl`, `text-white/50`, max-w-2xl, generous leading
-- Remove the badge pill at top — cleaner, more minimal
+### 2. Left icon bar
+- Narrow 36px column with 5 icons (Film, Music, Type, Sparkles, Layers) stacked vertically
+- White/30 default, white/60 on hover, one active with orange accent
+- `border-r border-white/[0.06]`
 
-### CTA Buttons — Cardboard style
-- **Primary**: White/light button with dark text, rounded-xl, right-arrow icon, slight hover lift + glow. Label: "Get Started"
-- **Secondary**: Ghost button with play icon, border-white/10, label: "Watch Demo"
-- Both use `px-8 py-4`, consistent sizing
+### 3. Media Library sub-panel
+- Below icon bar (or as expandable area under icons)
+- "Media Library" header, search input placeholder, "Add" button
+- 2×2 grid of empty thumbnail placeholders (rounded `bg-white/[0.04]` squares)
+- Keep this compact — it's a decorative mockup
 
-### Mock Editor UI Panel
-- Below CTAs, add a rounded dark container (`bg-white/[0.03] border border-white/[0.08] rounded-2xl`) showing a simplified timeline editor mockup
-- Contains: a preview window area, 3 track lanes (labeled "B-Roll", "Main", "Music") with colored bars, and a small "AI Director" chat pane on the right
-- This panel overlaps slightly into the next section via negative margin-bottom (`-mb-20 relative z-20`)
-- Staggered entrance animation with delay
+### 4. Central preview
+- 16:9 aspect ratio preview area with subtle gradient background
+- Centered play button icon
+- Below: transport controls row (SkipBack, Play, SkipForward icons), zoom "100%" label, volume icon
+- All `text-white/30`, hover brightens
 
-### Scroll indicator
-- Keep the existing mouse-wheel scroll indicator at bottom
+### 5. Timeline
+- Time ruler with markers: 00:00, 00:15, 00:30, 00:45, 01:00
+- Three tracks with labels:
+  - **B-Roll**: grey/purple clip blocks
+  - **Main**: orange clip blocks (2-3 segments with thumbnail-like fills)
+  - **Music**: teal/green waveform-style block spanning most of track
+- Vertical playhead line (orange/teal, 1px) at ~30% position with triangular handle at top
+- Clips have rounded corners, subtle borders, hover glow effect via CSS
 
-### Stars/trust line
-- Remove from HeroSection (it's redundant with the Trust Indicators section below)
+### 6. Director panel (right)
+- 160px wide, dark bg
+- "Director" header with green dot
+- 2-3 chat bubbles with placeholder AI prompts
+- "Planning the next cut…" style text
+- Bottom: input with "What story do you want to tell?" + send icon
+- Subtle separator line from main content
 
-### Animations
-- Staggered motion entrance: headline (0.1s), subheadline (0.2s), CTAs (0.3s), editor mockup (0.6s)
-- Smooth hover transitions on buttons (scale, shadow elevation)
+### 7. Styling details
+- Backgrounds: `#0a0a0a` to `#1a1a1a` range
+- Accent: muted teal (`emerald-400/40`) for status, orange for active clips/playhead
+- All text `font-mono`, uppercase labels `tracking-wide`
+- Hover states: icons brighten, clips get subtle glow (`shadow-[0_0_8px_rgba(...)`)
+- `max-w-5xl` (slightly wider than current 4xl) for more room
+- Min-height increased to ~380px for detail
 
-## Files changed
-| File | Change |
-|------|--------|
-| `src/components/landing/HeroSection.tsx` | Full redesign with Cardboard-inspired layout + mock editor panel |
-| `src/components/landing/MogPromoSection.tsx` | Remove ScrollingPartners import + JSX |
-| `src/pages/Landing.tsx` | Insert ScrollingPartners after Trust Indicators section |
+### File changed
+- `src/components/landing/HeroSection.tsx` — Replace the mock editor div (lines 86–157) with the detailed Cardboard-inspired editor mockup
 
