@@ -9,10 +9,16 @@ interface Logo {
 const logos: Logo[] = [
   { id: '1', name: '5DEE Studios', scale: 1 },
   { id: '2', name: 'Anthropic', scale: 1 },
-  { id: '3', name: 'Thirdweb', scale: 1.1 },
+  { id: '3', name: 'Sora', scale: 1.1 },
   { id: '4', name: 'ElevenLabs', scale: 1 },
   { id: '5', name: 'Story Protocol', scale: 1 },
   { id: '6', name: 'Human.tech', scale: 1 },
+  { id: '7', name: 'Veo 3.1', scale: 1 },
+  { id: '8', name: 'Nanobanana 2', scale: 1 },
+  { id: '9', name: 'Seedream 2', scale: 1 },
+  { id: '10', name: 'Seedance 2', scale: 1 },
+  { id: '11', name: 'WAN 2.6', scale: 1 },
+  { id: '12', name: 'Runway 4.5', scale: 1 },
 ];
 
 const ScrollingPartners: React.FC = () => {
@@ -25,8 +31,8 @@ const ScrollingPartners: React.FC = () => {
       </div>
       <div className="relative w-full">
         {/* Fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-r from-black to-transparent pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-l from-black to-transparent pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-40 z-10 pointer-events-none" style={{ background: 'linear-gradient(to right, #000000 0%, #000000cc 30%, transparent 100%)' }} />
+        <div className="absolute right-0 top-0 bottom-0 w-40 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, #000000 0%, #000000cc 30%, transparent 100%)' }} />
 
         <div className="flex animate-marquee" style={{ '--duration': '25s' } as React.CSSProperties}>
           {[...Array(3)].map((_, setIndex) => (
