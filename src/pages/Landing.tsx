@@ -417,13 +417,6 @@ const Landing = () => {
         />
 
         <div className="relative z-10">
-          {/* Scrolling Partners */}
-          <ScrollingPartners />
-
-          {/* Section Divider */}
-          <div className="mx-auto max-w-6xl px-4">
-            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
-          </div>
 
           {/* Trust Indicators Section */}
           <section className="py-24 md:py-32 px-4">
