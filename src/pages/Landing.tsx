@@ -369,22 +369,21 @@ const Landing = () => {
       <div className="relative overflow-hidden">
         <VideoBackground />
         <div className="relative z-10">
-          {/* Mog Platform Promo - Featured at Top */}
-          <div id="mog">
-            <MogPromoSection />
-          </div>
-
-          {/* Section Divider */}
-          <div className="mx-auto max-w-6xl px-4">
-            <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-          </div>
-
           {/* Hero Content */}
           <HeroSection
             headline="Turn Ideas Into Cinema-Quality Content in Minutes"
             subheadline="WZRD Studio combines AI image generation, video production, lip sync, 3D worldbuilding, and a complete timeline editor — all in one powerful creative platform."
           />
 
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
+          </div>
+
+          {/* Mog Platform Promo */}
+          <div id="mog">
+            <MogPromoSection />
+          </div>
         </div>
       </div>
 
@@ -449,10 +448,6 @@ const Landing = () => {
             </motion.div>
           </section>
 
-          {/* Scrolling Partners */}
-          <div className="relative z-10 pt-24">
-            <ScrollingPartners />
-          </div>
 
           {/* Section Divider */}
           <div className="mx-auto max-w-6xl px-4">
