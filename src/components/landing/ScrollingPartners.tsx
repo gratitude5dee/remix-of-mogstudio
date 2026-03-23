@@ -9,10 +9,16 @@ interface Logo {
 const logos: Logo[] = [
   { id: '1', name: '5DEE Studios', scale: 1 },
   { id: '2', name: 'Anthropic', scale: 1 },
-  { id: '3', name: 'Thirdweb', scale: 1.1 },
+  { id: '3', name: 'Sora', scale: 1.1 },
   { id: '4', name: 'ElevenLabs', scale: 1 },
   { id: '5', name: 'Story Protocol', scale: 1 },
   { id: '6', name: 'Human.tech', scale: 1 },
+  { id: '7', name: 'Veo 3.1', scale: 1 },
+  { id: '8', name: 'Nanobanana 2', scale: 1 },
+  { id: '9', name: 'Seedream 2', scale: 1 },
+  { id: '10', name: 'Seedance 2', scale: 1 },
+  { id: '11', name: 'WAN 2.6', scale: 1 },
+  { id: '12', name: 'Runway 4.5', scale: 1 },
 ];
 
 const ScrollingPartners: React.FC = () => {
