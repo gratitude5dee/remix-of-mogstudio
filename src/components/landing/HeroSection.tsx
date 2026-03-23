@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, Sparkles, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import ScrollingPartners from '@/components/landing/ScrollingPartners';
+
 
 interface HeroSectionProps {
   headline: string;
@@ -105,10 +105,6 @@ export function HeroSection({ headline, subheadline }: HeroSectionProps) {
             </Link>
           </motion.div>
 
-          {/* Scrolling Partners */}
-          <div className="mb-10">
-            <ScrollingPartners />
-          </div>
 
           <motion.div
             initial={{ opacity: 0 }}
