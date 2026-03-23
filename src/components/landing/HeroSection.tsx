@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, Sparkles, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ScrollingPartners from '@/components/landing/ScrollingPartners';
 
 interface HeroSectionProps {
   headline: string;
@@ -66,7 +67,7 @@ export function HeroSection({ headline, subheadline }: HeroSectionProps) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
           >
             <Link
               to="/login?mode=signup"
@@ -103,6 +104,11 @@ export function HeroSection({ headline, subheadline }: HeroSectionProps) {
               Watch Demo
             </Link>
           </motion.div>
+
+          {/* Scrolling Partners */}
+          <div className="mb-10">
+            <ScrollingPartners />
+          </div>
 
           <motion.div
             initial={{ opacity: 0 }}
