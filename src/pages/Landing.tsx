@@ -415,40 +415,6 @@ const Landing = () => {
 
         <div className="relative z-10">
 
-          {/* Trust Indicators Section */}
-          <section className="py-24 md:py-32 px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="container mx-auto max-w-5xl"
-            >
-              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-10 md:p-12">
-                <p className="text-center text-white/30 text-xs mb-8 uppercase tracking-[0.3em] font-medium">
-                  Powered by Industry Leaders
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14">
-                  {[
-                    'Runway 4.5',
-                    'Kling 2.6',
-                    "Google's Veo 3",
-                    'WAN 2.6',
-                    'Luma Ray 3',
-                  ].map((name) => (
-                    <span
-                      key={name}
-                      className="text-white/40 font-semibold text-lg tracking-tight hover:text-white/60 transition-colors"
-                    >
-                      {name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </section>
-
-
           {/* Section Divider */}
           <div className="mx-auto max-w-6xl px-4">
             <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
