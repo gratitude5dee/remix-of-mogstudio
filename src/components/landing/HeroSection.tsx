@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Play, ArrowDown } from 'lucide-react';
+import { ArrowRight, Play, ArrowDown, Film, Music, Type, Sparkles, Layers, SkipBack, SkipForward, Volume2, Search, Plus, Send } from 'lucide-react';
 import ScrollingPartners from '@/components/landing/ScrollingPartners';
 
 interface HeroSectionProps {
