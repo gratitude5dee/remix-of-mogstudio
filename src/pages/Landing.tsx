@@ -14,6 +14,7 @@ import FAQAccordion from '@/components/landing/FAQAccordion';
 import { PricingSectionRedesigned } from '@/components/landing/PricingSectionRedesigned';
 import { StickyFooter } from '@/components/landing/StickyFooter';
 import { VideoBackground } from '@/components/landing/VideoBackground';
+import ScrollingPartners from '@/components/landing/ScrollingPartners';
 import { useAuth } from '@/providers/AuthProvider';
 import wzrdLogo from '@/assets/wzrd-logo.png';
 
@@ -102,7 +103,7 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen w-full relative">
+    <div className="min-h-screen w-full relative bg-black">
       {/* Cinematic Intro — lazy-loaded to keep Three.js out of main bundle */}
       <AnimatePresence>
         {!introComplete && (
@@ -113,9 +114,6 @@ const Landing = () => {
           </Suspense>
         )}
       </AnimatePresence>
-
-      {/* Fullscreen Background Video with Dark Overlay & Fallback */}
-      <VideoBackground />
 
       {/* Desktop Header */}
       <header
@@ -367,125 +365,165 @@ const Landing = () => {
         </div>
       )}
 
-      {/* ===== PAGE CONTENT — card-based sections over video background ===== */}
-      <div className="relative z-10">
-        {/* Mog Platform Promo - Featured at Top */}
-        <div id="mog">
-          <MogPromoSection />
-        </div>
+      {/* ===== HERO AREA — with contained video background ===== */}
+      <div className="relative overflow-hidden">
+        <VideoBackground />
+        <div className="relative z-10">
+          {/* Mog Platform Promo - Featured at Top */}
+          <div id="mog">
+            <MogPromoSection />
+          </div>
 
-        {/* Section Divider */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-        </div>
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
+          </div>
 
-        {/* Hero Content */}
-        <HeroSection
-          headline="Turn Ideas Into Cinema-Quality Content in Minutes"
-          subheadline="WZRD Studio combines AI image generation, video production, lip sync, 3D worldbuilding, and a complete timeline editor — all in one powerful creative platform."
+          {/* Hero Content */}
+          <HeroSection
+            headline="Turn Ideas Into Cinema-Quality Content in Minutes"
+            subheadline="WZRD Studio combines AI image generation, video production, lip sync, 3D worldbuilding, and a complete timeline editor — all in one powerful creative platform."
+          />
+        </div>
+      </div>
+
+      {/* ===== REST OF PAGE — dark styled background ===== */}
+      <div
+        className="relative"
+        style={{
+          background: 'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(139,92,246,0.12) 0%, transparent 50%), radial-gradient(ellipse 60% 40% at 80% 20%, rgba(59,130,246,0.08) 0%, transparent 50%), #000',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        {/* Dot grid texture overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.15] pointer-events-none"
+          style={{
+            backgroundImage: 'radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }}
         />
 
-        {/* Trust Indicators Section — Card-based */}
-        <section className="py-24 md:py-32 px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="container mx-auto max-w-5xl"
-          >
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-10 md:p-12">
-              <p className="text-center text-white/30 text-xs mb-8 uppercase tracking-[0.3em] font-medium">
-                Powered by Industry Leaders
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14">
-                {[
-                  'Runway 4.5',
-                  'Kling 2.6',
-                  "Google's Veo 3",
-                  'WAN 2.6',
-                  'Luma Ray 3',
-                ].map((name) => (
-                  <span
-                    key={name}
-                    className="text-white/40 font-semibold text-lg tracking-tight hover:text-white/60 transition-colors"
-                  >
-                    {name}
-                  </span>
-                ))}
+        {/* Floating purple orb accent */}
+        <div
+          className="absolute top-40 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(139,92,246,0.05) 40%, transparent 70%)',
+            filter: 'blur(60px)',
+          }}
+        />
+
+        <div className="relative z-10">
+          {/* Scrolling Partners */}
+          <ScrollingPartners />
+
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+          </div>
+
+          {/* Trust Indicators Section */}
+          <section className="py-24 md:py-32 px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="container mx-auto max-w-5xl"
+            >
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-10 md:p-12">
+                <p className="text-center text-white/30 text-xs mb-8 uppercase tracking-[0.3em] font-medium">
+                  Powered by Industry Leaders
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14">
+                  {[
+                    'Runway 4.5',
+                    'Kling 2.6',
+                    "Google's Veo 3",
+                    'WAN 2.6',
+                    'Luma Ray 3',
+                  ].map((name) => (
+                    <span
+                      key={name}
+                      className="text-white/40 font-semibold text-lg tracking-tight hover:text-white/60 transition-colors"
+                    >
+                      {name}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        </section>
+            </motion.div>
+          </section>
 
-        {/* Section Divider */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-        </div>
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+          </div>
 
-        {/* Features Section */}
-        <div id="features" className="relative">
-          <FeatureGrid />
-        </div>
+          {/* Features Section */}
+          <div id="features" className="relative">
+            <FeatureGrid />
+          </div>
 
-        {/* Section Divider */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-        </div>
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+          </div>
 
-        {/* Use Cases Section */}
-        <div className="relative">
-          <UseCasesSection />
-        </div>
+          {/* Use Cases Section */}
+          <div className="relative">
+            <UseCasesSection />
+          </div>
 
-        {/* Section Divider */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-        </div>
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+          </div>
 
-        {/* Testimonials Section */}
-        <div id="testimonials" className="relative">
-          <TestimonialsSection />
-        </div>
+          {/* Testimonials Section */}
+          <div id="testimonials" className="relative">
+            <TestimonialsSection />
+          </div>
 
-        {/* Section Divider */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-        </div>
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+          </div>
 
-        {/* New Release Promo */}
-        <div className="relative">
-          <NewReleasePromo />
-        </div>
+          {/* New Release Promo */}
+          <div className="relative">
+            <NewReleasePromo />
+          </div>
 
-        {/* Section Divider */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-        </div>
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+          </div>
 
-        {/* Pricing Section */}
-        <div id="pricing" className="relative">
-          <PricingSectionRedesigned />
-        </div>
+          {/* Pricing Section */}
+          <div id="pricing" className="relative">
+            <PricingSectionRedesigned />
+          </div>
 
-        {/* Section Divider */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-        </div>
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+          </div>
 
-        {/* FAQ Section */}
-        <div id="faq" className="relative">
-          <FAQAccordion items={faqItems} />
-        </div>
+          {/* FAQ Section */}
+          <div id="faq" className="relative">
+            <FAQAccordion items={faqItems} />
+          </div>
 
-        {/* Section Divider */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
-        </div>
+          {/* Section Divider */}
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+          </div>
 
-        {/* Sticky Footer */}
-        <div>
-          <StickyFooter />
+          {/* Sticky Footer */}
+          <div>
+            <StickyFooter />
+          </div>
         </div>
       </div>
     </div>
