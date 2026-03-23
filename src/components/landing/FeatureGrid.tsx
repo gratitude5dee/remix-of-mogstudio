@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion';
-import { Video, Music2, Wand2, TrendingUp, Sparkles, Clock, DollarSign, Zap } from 'lucide-react';
+import { Shield, Zap, Network, Sparkles, Layers, Workflow } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const features = [
-  { icon: Video, title: 'UGC at Scale', description: 'Generate authentic user-generated content that converts. Create 100+ ad variations in the time it takes agencies to make one.', highlight: '100x faster', color: 'orange' },
-  { icon: Music2, title: 'Music Video Production', description: 'From visualizers to full narratives. Perfect for indie labels who need professional music videos without the $20K+ price tag.', highlight: 'Save 90%', color: 'orange' },
-  { icon: Wand2, title: 'AI-Powered Creative', description: 'Let AI handle the heavy lifting. Generate storyboards, visuals, and edits from a simple text prompt or reference.', highlight: 'Text to Video', color: 'orange' },
-  { icon: TrendingUp, title: 'Platform-Ready Formats', description: 'Export optimized for TikTok, Instagram, YouTube Shorts, and paid ads. Every aspect ratio, every platform, instantly.', highlight: 'All Platforms', color: 'orange' },
-  { icon: Clock, title: 'Hours, Not Weeks', description: 'What takes traditional production weeks, MOG Studio delivers in hours. Rapid iteration means you can test more, learn faster.', highlight: '48hr Turnaround', color: 'orange' },
-  { icon: DollarSign, title: 'Agency Costs, Eliminated', description: 'Stop paying agency markups for AI-generated content. Own your creative pipeline and scale without the overhead.', highlight: '10x ROI', color: 'orange' },
+  { icon: Zap, title: 'Content at Scale', description: 'Generate hundreds of ad variations, social assets, and marketing content for SaaS go-to-market teams in minutes, not weeks.', highlight: '100x Output', color: 'orange' },
+  { icon: Shield, title: 'Secure Asset Pipeline', description: 'Enterprise-grade security for cybersecurity firms. SOC 2 compliant workflows with encrypted asset management and audit trails.', highlight: 'SOC 2 Ready', color: 'orange' },
+  { icon: Network, title: 'Distribution Engine', description: 'Media & entertainment distribution at scale. Transcode, format, and deliver content across every platform and territory automatically.', highlight: 'Global Reach', color: 'orange' },
+  { icon: Sparkles, title: 'AI-Powered Creative', description: 'Let AI handle the heavy lifting. Generate storyboards, visuals, and edits from a simple text prompt or reference image.', highlight: 'Text to Video', color: 'orange' },
+  { icon: Layers, title: 'Platform-Ready Formats', description: 'Export optimized for TikTok, Instagram, YouTube Shorts, CTV, and paid ads. Every aspect ratio, every platform, instantly.', highlight: 'All Platforms', color: 'orange' },
+  { icon: Workflow, title: 'Enterprise Workflows', description: 'Approval chains, brand governance, and team permissions. Built for organizations that need control without sacrificing speed.', highlight: 'Team Scale', color: 'orange' },
 ];
 
 export function FeatureGrid() {
@@ -21,19 +21,18 @@ export function FeatureGrid() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-20">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-sm text-orange-300 mb-6">
             <Sparkles className="w-3.5 h-3.5" />
-            Why Creators Choose MOG Studio
+            Platform Capabilities
           </span>
 
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
-            Replace Your Agency.
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400">
-              Keep Your Budget.
-            </span>
+            An editor with{' '}
+            <em style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }} className="bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-amber-200">
+              superpowers.
+            </em>
           </h2>
 
-          <p className="text-lg text-white/60 max-w-2xl mx-auto">
-            The same AI tools major studios use, now accessible to indie labels, DTC brands, and content teams who refuse to overpay.
+          <p className="text-lg text-white/50 max-w-2xl mx-auto">
+            A full suite of AI features that speed up the boring parts, without taking control away.
           </p>
         </motion.div>
 
@@ -64,14 +63,6 @@ export function FeatureGrid() {
               <p className="text-white/50 leading-relaxed">{feature.description}</p>
             </motion.div>
           ))}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }} className="text-center mt-16">
-          <p className="text-white/40 mb-6">Join 500+ indie labels and brands already creating with MOG Studio</p>
-          <a href="/login?mode=signup" className={cn('inline-flex items-center gap-2 px-6 py-3 rounded-xl', 'bg-white/5 border border-white/10', 'hover:bg-white/10 text-white font-medium', 'transition-all duration-300')}>
-            Start Free Trial
-            <Zap className="w-4 h-4" />
-          </a>
         </motion.div>
       </div>
     </section>

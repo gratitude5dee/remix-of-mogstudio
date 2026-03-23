@@ -9,8 +9,8 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ 
-  headline = "Create at the speed\nof thought.", 
-  subheadline = "Go from raw ideas to polished, publish-ready content in minutes. AI-powered tools that enhance your creative flow." 
+  headline, 
+  subheadline = "Bring your ideas to life faster than ever before. Every creative AI tool, one unified process — built for SaaS, cybersecurity, and media distribution teams." 
 }: HeroSectionProps) {
   const scrollToContent = () => {
     window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
@@ -32,14 +32,28 @@ export function HeroSection({
 
       <div className="relative z-10 container mx-auto px-4 py-32 lg:py-40">
         <div className="max-w-5xl mx-auto text-center">
+          {/* Pill Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+            className="mb-8"
+          >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              New: 50+ AI models now live on WZRD
+              <Link to="/login?mode=signup" className="text-emerald-300 hover:text-emerald-200 underline underline-offset-2 ml-1 transition-colors">Try now →</Link>
+            </span>
+          </motion.div>
+
           {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[0.95] mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 whitespace-pre-line"
+            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[0.95] mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
           >
-            {headline}
+            {headline || <>Your <em className="font-serif italic not-italic bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-amber-200" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>creative</em> environment.</>}
           </motion.h1>
 
           {/* Subheadline */}
