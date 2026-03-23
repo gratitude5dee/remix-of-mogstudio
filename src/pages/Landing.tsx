@@ -14,6 +14,7 @@ import FAQAccordion from '@/components/landing/FAQAccordion';
 import { PricingSectionRedesigned } from '@/components/landing/PricingSectionRedesigned';
 import { StickyFooter } from '@/components/landing/StickyFooter';
 import { VideoBackground } from '@/components/landing/VideoBackground';
+import ScrollingPartners from '@/components/landing/ScrollingPartners';
 import { useAuth } from '@/providers/AuthProvider';
 import wzrdLogo from '@/assets/wzrd-logo.png';
 

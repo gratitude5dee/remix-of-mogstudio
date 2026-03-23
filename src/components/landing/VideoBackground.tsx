@@ -33,7 +33,7 @@ export function VideoBackground() {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-0">
+    <div className="absolute inset-0 z-0">
       {/* Fallback gradient — always present, fades when video loads */}
       <div
         className="absolute inset-0"
