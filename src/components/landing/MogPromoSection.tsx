@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Play, Heart, MessageCircle, Bot, Coins } from 'lucide-react';
-import ScrollingPartners from '@/components/landing/ScrollingPartners';
+
 
 export function MogPromoSection() {
   return (
@@ -58,10 +58,6 @@ export function MogPromoSection() {
           </Link>
         </motion.div>
 
-        {/* Scrolling Partners */}
-        <div className="mb-16">
-          <ScrollingPartners />
-        </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Features List */}

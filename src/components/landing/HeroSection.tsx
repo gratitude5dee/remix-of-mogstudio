@@ -1,150 +1,174 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Play, Sparkles, Zap } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
+import { ArrowRight, Play, ArrowDown } from 'lucide-react';
 
 interface HeroSectionProps {
-  headline: string;
-  subheadline: string;
+  headline?: string;
+  subheadline?: string;
 }
 
-export function HeroSection({ headline, subheadline }: HeroSectionProps) {
+export function HeroSection({ 
+  headline = "Create at the speed\nof thought.", 
+  subheadline = "Go from raw ideas to polished, publish-ready content in minutes. AI-powered tools that enhance your creative flow." 
+}: HeroSectionProps) {
+  const scrollToContent = () => {
+    window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+  };
+
   return (
-    <section className="relative min-h-[90vh] lg:min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Gradient accents */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          background: `
+            radial-gradient(ellipse 70% 50% at 50% -10%, rgba(255,107,74,0.15), transparent 70%),
+            radial-gradient(ellipse 40% 30% at 80% 20%, rgba(249,115,22,0.06), transparent 60%),
+            radial-gradient(ellipse 40% 30% at 20% 80%, rgba(139,92,246,0.04), transparent 60%)
+          `,
+        }}
+      />
 
       <div className="relative z-10 container mx-auto px-4 py-32 lg:py-40">
         <div className="max-w-5xl mx-auto text-center">
-          <motion.div
+          {/* Headline */}
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
-            <span
-              className={cn(
-                'inline-flex items-center gap-2 px-4 py-2 rounded-full',
-                'bg-orange-500/10 border border-orange-500/20',
-                'text-sm text-orange-300 font-medium',
-                'backdrop-blur-sm',
-              )}
-            >
-              <Sparkles className="w-4 h-4" />
-              AI-Powered Creative Studio
-              <ArrowRight className="w-3 h-3" />
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className={cn(
-              'text-5xl sm:text-6xl lg:text-7xl xl:text-8xl',
-              'font-bold tracking-tight',
-              'bg-clip-text text-transparent',
-              'bg-gradient-to-b from-white via-white to-white/60',
-              'leading-[1.1] mb-8',
-            )}
+            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[0.95] mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 whitespace-pre-line"
           >
             {headline}
           </motion.h1>
 
+          {/* Subheadline */}
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className={cn(
-              'text-lg sm:text-xl lg:text-2xl',
-              'text-white/60 max-w-3xl mx-auto',
-              'leading-relaxed mb-12',
-            )}
+            className="text-lg sm:text-xl lg:text-2xl text-white/50 max-w-2xl mx-auto leading-relaxed font-light mb-10"
           >
             {subheadline}
           </motion.p>
 
+          {/* CTA Buttons */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
             <Link
               to="/login?mode=signup"
-              className={cn(
-                'group relative inline-flex items-center gap-3',
-                'px-8 py-4 rounded-xl',
-                'bg-gradient-to-r from-orange-600 to-orange-700',
-                'hover:from-orange-500 hover:to-orange-600',
-                'text-white font-semibold text-lg',
-                'shadow-[0_0_40px_rgba(255,107,74,0.3)]',
-                'hover:shadow-[0_0_60px_rgba(255,107,74,0.5)]',
-                'transition-all duration-300',
-                'hover:-translate-y-1',
-              )}
+              className="group inline-flex items-center gap-2.5 px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(255,255,255,0.15)] transition-all duration-200 text-base"
             >
-              <Zap className="w-5 h-5" />
-              Start Creating Free
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Get Started
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
 
             <Link
               to="/demo"
-              className={cn(
-                'inline-flex items-center gap-3',
-                'px-8 py-4 rounded-xl',
-                'bg-white/5 border border-white/10',
-                'hover:bg-white/10 hover:border-white/20',
-                'text-white font-medium text-lg',
-                'backdrop-blur-sm',
-                'transition-all duration-300',
-              )}
+              className="inline-flex items-center gap-2.5 px-8 py-4 border border-white/10 text-white/80 font-medium rounded-xl hover:bg-white/[0.05] hover:border-white/20 transition-all duration-200 text-base"
             >
-              <Play className="w-5 h-5" />
+              <Play className="w-4 h-4" />
               Watch Demo
             </Link>
           </motion.div>
 
-
+          {/* Mock Editor Panel */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="flex flex-col items-center gap-4"
+            className="relative -mb-20 z-20 mx-auto max-w-4xl"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.6 }}
           >
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, i) => (
-                <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
+            <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-1 backdrop-blur-sm shadow-2xl shadow-black/50">
+              <div className="rounded-xl overflow-hidden">
+                {/* Editor Header */}
+                <div className="flex items-center gap-2 px-4 py-3 bg-white/[0.03] border-b border-white/[0.06]">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                  </div>
+                  <span className="text-[11px] text-white/30 ml-2 font-mono">WZRD Studio — Project Timeline</span>
+                </div>
+
+                {/* Editor Content */}
+                <div className="flex min-h-[280px]">
+                  {/* Preview + Timeline */}
+                  <div className="flex-1 p-4">
+                    {/* Mini Preview */}
+                    <div className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-lg h-32 mb-4 flex items-center justify-center border border-white/[0.05]">
+                      <div className="text-center">
+                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-2">
+                          <Play className="w-4 h-4 text-white/40 ml-0.5" />
+                        </div>
+                        <span className="text-[10px] text-white/20 font-mono">00:00:00 / 00:02:34</span>
+                      </div>
+                    </div>
+
+                    {/* Timeline Tracks */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-white/30 w-12 text-right font-mono shrink-0">B-Roll</span>
+                        <div className="flex-1 h-6 bg-white/[0.02] rounded relative overflow-hidden">
+                          <div className="absolute left-[5%] top-1 bottom-1 w-[25%] rounded bg-purple-500/30 border border-purple-400/20" />
+                          <div className="absolute left-[55%] top-1 bottom-1 w-[20%] rounded bg-purple-500/20 border border-purple-400/15" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-white/30 w-12 text-right font-mono shrink-0">Main</span>
+                        <div className="flex-1 h-6 bg-white/[0.02] rounded relative overflow-hidden">
+                          <div className="absolute left-[2%] top-1 bottom-1 w-[45%] rounded bg-orange-500/30 border border-orange-400/20" />
+                          <div className="absolute left-[50%] top-1 bottom-1 w-[35%] rounded bg-orange-500/25 border border-orange-400/15" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-white/30 w-12 text-right font-mono shrink-0">Music</span>
+                        <div className="flex-1 h-6 bg-white/[0.02] rounded relative overflow-hidden">
+                          <div className="absolute left-0 top-1 bottom-1 w-[90%] rounded bg-emerald-500/20 border border-emerald-400/15" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* AI Director Pane */}
+                  <div className="w-48 border-l border-white/[0.06] p-3 flex flex-col">
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
+                      <span className="text-[10px] text-white/40 font-semibold tracking-wide uppercase">AI Director</span>
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      <div className="bg-white/[0.04] rounded-lg px-2.5 py-2 border border-white/[0.05]">
+                        <p className="text-[10px] text-white/40 leading-relaxed">"Tighten the cut at 1:24 — remove the 2s pause."</p>
+                      </div>
+                      <div className="bg-orange-500/[0.08] rounded-lg px-2.5 py-2 border border-orange-500/[0.12]">
+                        <p className="text-[10px] text-orange-400/60 leading-relaxed">"Add cinematic color grade to B-roll clips."</p>
+                      </div>
+                    </div>
+                    <div className="mt-2 bg-white/[0.03] rounded-lg px-2.5 py-2 border border-white/[0.05]">
+                      <span className="text-[10px] text-white/20">Ask AI anything...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className="text-sm text-white/40">
-              Trusted by <span className="text-white/60 font-medium">2,000+</span> creators, agencies, and brands worldwide
-            </p>
           </motion.div>
         </div>
 
+        {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          transition={{ delay: 1.2 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer"
+          onClick={scrollToContent}
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="flex flex-col items-center gap-2"
-          >
-            <span className="text-xs text-white/30 uppercase tracking-widest">Scroll</span>
-            <div className="w-6 h-10 rounded-full border-2 border-white/20 flex items-start justify-center p-1">
-              <motion.div
-                animate={{ y: [0, 16, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-1.5 h-3 rounded-full bg-orange-400"
-              />
-            </div>
-          </motion.div>
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-xs text-white/20 uppercase tracking-widest">Scroll</span>
+            <ArrowDown className="w-4 h-4 text-white/20 animate-bounce" />
+          </div>
         </motion.div>
       </div>
     </section>
