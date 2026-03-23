@@ -1,18 +1,17 @@
 
 
-# Move ScrollingPartners Inside HeroSection
+# Move ScrollingPartners Under MogPromoSection CTA Buttons
 
-The `ScrollingPartners` is currently a sibling of `<HeroSection />` in `Landing.tsx`. It needs to render **inside** the hero, directly under the "Start Creating Free" / "Watch Demo" buttons and before the star ratings.
+The "Explore Feed" and "API Documentation" buttons are in `MogPromoSection.tsx`, not `HeroSection.tsx`. The ScrollingPartners needs to go inside that component, right after those CTA buttons.
 
 ## Changes
 
-### 1. `src/components/landing/HeroSection.tsx`
+### 1. `src/components/landing/MogPromoSection.tsx`
 - Import `ScrollingPartners`
-- Insert `<ScrollingPartners />` between the CTA buttons `motion.div` (line 105) and the trust/stars `motion.div` (line 107)
-- Reduce the `mb-16` on the CTA container to `mb-8` to tighten spacing
+- Insert `<ScrollingPartners />` after the CTA `motion.div` (after line 181), before the closing `</div>` and `</section>`
 
-### 2. `src/pages/Landing.tsx`
-- Remove the standalone `<ScrollingPartners />` from line 389 (it will now render inside HeroSection)
+### 2. `src/components/landing/HeroSection.tsx`
+- Remove the `<ScrollingPartners />` and its import (added in previous edit around the CTA buttons area)
 
-Two files changed, minimal edit.
+Two files, minimal edit.
 
