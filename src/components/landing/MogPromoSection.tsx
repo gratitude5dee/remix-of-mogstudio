@@ -34,6 +34,34 @@ export function MogPromoSection() {
             A creative studio for human & agents. Upload content, engage with creators, and earn $5DEE. 
           </p>
         </motion.div>
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-center mb-12 flex flex-wrap justify-center gap-4">
+          
+          <Link
+            to="/mog"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-[#ff6b4a] to-[#e55a3a] text-white font-bold rounded-xl shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+            
+            <Play className="w-5 h-5" />
+            Explore Feed
+          </Link>
+          <Link
+            to="/mog/docs"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white font-medium rounded-xl hover:bg-white/10 transition-all duration-200">
+            
+            <Bot className="w-5 h-5" />
+            API Documentation
+          </Link>
+        </motion.div>
+
+        {/* Scrolling Partners */}
+        <div className="mb-16">
+          <ScrollingPartners />
+        </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Features List */}
@@ -41,7 +69,7 @@ export function MogPromoSection() {
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
             className="space-y-6">
             
             <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-[#ff6b4a]/30 transition-colors">
@@ -98,7 +126,7 @@ export function MogPromoSection() {
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
             className="relative flex justify-center">
             
             <div className="relative w-[280px] h-[560px] bg-[#0a0a0a] rounded-[3rem] border-4 border-white/10 overflow-hidden shadow-2xl">
@@ -155,35 +183,6 @@ export function MogPromoSection() {
             {/* Glow effect */}
             <div className="absolute -inset-4 bg-[#ff6b4a]/20 blur-3xl rounded-full opacity-50 -z-10" />
           </motion.div>
-        </div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center mt-16 flex flex-wrap justify-center gap-4">
-          
-          <Link
-            to="/mog"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-[#ff6b4a] to-[#e55a3a] text-white font-bold rounded-xl shadow-lg hover:-translate-y-0.5 transition-all duration-200">
-            
-            <Play className="w-5 h-5" />
-            Explore Feed
-          </Link>
-          <Link
-            to="/mog/docs"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white font-medium rounded-xl hover:bg-white/10 transition-all duration-200">
-            
-            <Bot className="w-5 h-5" />
-            API Documentation
-          </Link>
-        </motion.div>
-
-        {/* Scrolling Partners */}
-        <div className="mt-16">
-          <ScrollingPartners />
         </div>
       </div>
     </section>);
