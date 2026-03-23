@@ -695,3 +695,8 @@ body::after {
 .animate-marquee {
   animation: marquee var(--duration, 30s) linear infinite;
 }
+
+.partners-fade-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+}
