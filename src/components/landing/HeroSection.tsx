@@ -33,70 +33,12 @@ export function HeroSection({
 
       <div className="relative z-10 container mx-auto px-4 py-32 lg:py-40">
         <div className="max-w-5xl mx-auto text-center">
-          {/* Pill Badge */}
+          {/* Mock Editor Panel — now at top */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-            className="mb-8"
-          >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium tracking-wide">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              New: 50+ AI models now live on WZRD
-              <Link to="/login?mode=signup" className="text-emerald-300 hover:text-emerald-200 underline underline-offset-2 ml-1 transition-colors">Try now →</Link>
-            </span>
-          </motion.div>
-
-          {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[0.95] mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
-          >
-            {headline || <>Your <em className="font-serif italic not-italic bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-amber-200" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>creative</em> environment.</>}
-          </motion.h1>
-
-          {/* Subheadline */}
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-lg sm:text-xl lg:text-2xl text-white/50 max-w-2xl mx-auto leading-relaxed font-light mb-10"
-          >
-            {subheadline}
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
-          >
-            <Link
-              to="/login?mode=signup"
-              className="group inline-flex items-center gap-2.5 px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(255,255,255,0.15)] transition-all duration-200 text-base"
-            >
-              Get Started
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-
-            <Link
-              to="/demo"
-              className="inline-flex items-center gap-2.5 px-8 py-4 border border-white/10 text-white/80 font-medium rounded-xl hover:bg-white/[0.05] hover:border-white/20 transition-all duration-200 text-base"
-            >
-              <Play className="w-4 h-4" />
-              Watch Demo
-            </Link>
-          </motion.div>
-
-          {/* Mock Editor Panel */}
-          <motion.div
-            className="relative -mb-20 z-20 mx-auto max-w-4xl"
+            className="relative mb-16 z-20 mx-auto max-w-4xl"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.6 }}
+            transition={{ duration: 0.9, delay: 0.1 }}
           >
             <div className="bg-[#0c0c0c] border border-white/[0.08] rounded-2xl overflow-hidden shadow-2xl shadow-black/60">
               {/* Top Bar */}
@@ -159,7 +101,6 @@ export function HeroSection({
                   <div className="flex-1 p-3">
                     <div className="bg-black rounded-lg h-full flex items-center justify-center border border-white/[0.05] relative overflow-hidden min-h-[160px]">
                       <img src={wzrdIntroGif} alt="WZRD Studio Preview" className="absolute inset-0 w-full h-full object-cover" />
-                      {/* Subtle film grain overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10" />
                     </div>
                   </div>
@@ -182,7 +123,6 @@ export function HeroSection({
 
                   {/* Timeline */}
                   <div className="border-t border-white/[0.06]">
-                    {/* Time Ruler */}
                     <div className="flex items-end px-4 pt-2 pb-1 ml-14">
                       {['00:00', '00:15', '00:30', '00:45', '01:00'].map((t, i) => (
                         <div key={i} className="flex-1 relative">
@@ -192,14 +132,11 @@ export function HeroSection({
                       ))}
                     </div>
 
-                    {/* Tracks */}
                     <div className="relative pb-3">
-                      {/* Playhead */}
                       <div className="absolute top-0 bottom-0 left-[calc(14%+3.5rem)] z-10 w-px bg-orange-400/70 shadow-[0_0_6px_rgba(251,146,60,0.3)]">
                         <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent border-t-orange-400" />
                       </div>
 
-                      {/* B-Roll Track */}
                       <div className="flex items-center gap-3 px-4 py-1">
                         <span className="text-[9px] text-white/25 w-12 text-right font-mono shrink-0 uppercase tracking-wide">B-Roll</span>
                         <div className="flex-1 h-7 bg-white/[0.015] rounded relative overflow-hidden">
@@ -209,7 +146,6 @@ export function HeroSection({
                         </div>
                       </div>
 
-                      {/* Main Track */}
                       <div className="flex items-center gap-3 px-4 py-1">
                         <span className="text-[9px] text-white/25 w-12 text-right font-mono shrink-0 uppercase tracking-wide">Main</span>
                         <div className="flex-1 h-7 bg-white/[0.015] rounded relative overflow-hidden">
@@ -227,12 +163,10 @@ export function HeroSection({
                         </div>
                       </div>
 
-                      {/* Music Track */}
                       <div className="flex items-center gap-3 px-4 py-1">
                         <span className="text-[9px] text-white/25 w-12 text-right font-mono shrink-0 uppercase tracking-wide">Music</span>
                         <div className="flex-1 h-7 bg-white/[0.015] rounded relative overflow-hidden">
                           <div className="absolute left-0 top-1 bottom-1 w-[88%] rounded-sm bg-emerald-500/15 border border-emerald-400/12 hover:bg-emerald-500/25 hover:shadow-[0_0_8px_rgba(52,211,153,0.15)] transition-all cursor-pointer">
-                            {/* Waveform visualization */}
                             <div className="absolute inset-0 flex items-center px-1 gap-px overflow-hidden">
                               {[...Array(40)].map((_, i) => (
                                 <div
@@ -257,7 +191,6 @@ export function HeroSection({
                   </div>
 
                   <div className="flex-1 p-2.5 space-y-2 overflow-hidden">
-                    {/* AI chat bubbles */}
                     <div className="bg-white/[0.04] rounded-lg px-2.5 py-2 border border-white/[0.05]">
                       <p className="text-[9px] text-white/35 leading-relaxed">Analyzing footage pacing…</p>
                     </div>
@@ -272,7 +205,6 @@ export function HeroSection({
                     </div>
                   </div>
 
-                  {/* Director Input */}
                   <div className="p-2.5 border-t border-white/[0.06]">
                     <div className="flex items-center gap-1.5 bg-white/[0.03] rounded-lg px-2.5 py-2 border border-white/[0.05]">
                       <span className="text-[9px] text-white/20 flex-1 truncate">What story do you want to tell?</span>
@@ -282,6 +214,64 @@ export function HeroSection({
                 </div>
               </div>
             </div>
+          </motion.div>
+
+          {/* Pill Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mb-8"
+          >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              New: 50+ AI models now live on WZRD
+              <Link to="/login?mode=signup" className="text-emerald-300 hover:text-emerald-200 underline underline-offset-2 ml-1 transition-colors">Try now →</Link>
+            </span>
+          </motion.div>
+
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5 }}
+            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[0.95] mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
+          >
+            {headline || <>Your <em className="font-serif italic not-italic bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-amber-200" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>creative</em> environment.</>}
+          </motion.h1>
+
+          {/* Subheadline */}
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.6 }}
+            className="text-lg sm:text-xl lg:text-2xl text-white/50 max-w-2xl mx-auto leading-relaxed font-light mb-10"
+          >
+            {subheadline}
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.7 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+          >
+            <Link
+              to="/login?mode=signup"
+              className="group inline-flex items-center gap-2.5 px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(255,255,255,0.15)] transition-all duration-200 text-base"
+            >
+              Get Started
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+
+            <Link
+              to="/demo"
+              className="inline-flex items-center gap-2.5 px-8 py-4 border border-white/10 text-white/80 font-medium rounded-xl hover:bg-white/[0.05] hover:border-white/20 transition-all duration-200 text-base"
+            >
+              <Play className="w-4 h-4" />
+              Watch Demo
+            </Link>
           </motion.div>
         </div>
 

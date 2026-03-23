@@ -171,7 +171,6 @@ const Landing = () => {
 
       {/* ===== HERO AREA ===== */}
       <div className="relative overflow-hidden">
-        <VideoBackground />
         <div className="relative z-10">
           <HeroSection />
 
