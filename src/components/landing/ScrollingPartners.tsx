@@ -31,8 +31,8 @@ const ScrollingPartners: React.FC = () => {
       </div>
       <div className="relative w-full">
         {/* Fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-r from-black to-transparent pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-l from-black to-transparent pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-40 z-10 pointer-events-none" style={{ background: 'linear-gradient(to right, #000000 0%, #000000cc 30%, transparent 100%)' }} />
+        <div className="absolute right-0 top-0 bottom-0 w-40 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, #000000 0%, #000000cc 30%, transparent 100%)' }} />
 
         <div className="flex animate-marquee" style={{ '--duration': '25s' } as React.CSSProperties}>
           {[...Array(3)].map((_, setIndex) => (
