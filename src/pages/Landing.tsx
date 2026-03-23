@@ -384,6 +384,9 @@ const Landing = () => {
             headline="Turn Ideas Into Cinema-Quality Content in Minutes"
             subheadline="WZRD Studio combines AI image generation, video production, lip sync, 3D worldbuilding, and a complete timeline editor — all in one powerful creative platform."
           />
+
+          {/* Scrolling Partners — below hero CTA buttons */}
+          <ScrollingPartners />
         </div>
       </div>
 
@@ -414,13 +417,6 @@ const Landing = () => {
         />
 
         <div className="relative z-10">
-          {/* Scrolling Partners */}
-          <ScrollingPartners />
-
-          {/* Section Divider */}
-          <div className="mx-auto max-w-6xl px-4">
-            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
-          </div>
 
           {/* Trust Indicators Section */}
           <section className="py-24 md:py-32 px-4">
