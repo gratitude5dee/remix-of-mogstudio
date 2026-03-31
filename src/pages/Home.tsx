@@ -217,7 +217,6 @@ export default function Home() {
           <Sidebar
             activeView={activeView}
             onViewChange={setActiveView}
-            auraProjectId={latestProjectForAura?.id ?? null}
           />
         </div>
 
