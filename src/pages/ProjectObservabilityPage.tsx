@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangle, ArrowLeft, CheckCircle2, Clock, Loader2, RefreshCcw, Sparkles, XCircle, Activity, Eye, Shield, Zap, BarChart3, GitBranch } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, Loader2, RefreshCcw, Sparkles, XCircle, Activity, Eye, Shield, Zap, BarChart3, GitBranch } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
 import { appRoutes } from '@/lib/routes';
 import { observabilityService, type ProjectObservabilityData } from '@/services/observabilityService';
 import { toast } from 'sonner';
