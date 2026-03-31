@@ -162,7 +162,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
       >
         <div className={cn(
           "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
-          isActive ? "bg-accent-purple/15" : "bg-surface-2 dark:bg-white/[0.04]"
+          isActive ? "bg-[rgba(249,115,22,0.15)]" : "bg-surface-2 dark:bg-white/[0.04]"
         )}>
           <Icon className={cn("w-4 h-4", isActive && "text-accent-purple")} />
         </div>
