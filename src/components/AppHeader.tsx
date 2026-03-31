@@ -204,7 +204,7 @@ export const AppHeader = ({
   return (
     <TooltipProvider delayDuration={300}>
       <header className={cn(
-        'w-full h-14 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/50 px-4 flex items-center justify-between relative z-50',
+        'w-full h-14 bg-zinc-950/80 backdrop-blur-xl border-b border-[rgba(249,115,22,0.08)] px-4 flex items-center justify-between relative z-50',
         className
       )}>
         {/* Left: Logo + Project Name */}
