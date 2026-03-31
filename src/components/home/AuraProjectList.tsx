@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ArrowRight, Activity, AlertTriangle, CheckCircle2, Clock, Sparkles, Loader2 } from 'lucide-react';
+import { ChevronDown, ArrowRight, Activity, AlertTriangle, CheckCircle2, Clock, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes';
 import { observabilityService, type ObservabilityOverview } from '@/services/observabilityService';
