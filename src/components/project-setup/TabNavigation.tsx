@@ -1,13 +1,50 @@
-import { startTransition } from 'react';
+import { startTransition, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, Check } from 'lucide-react';
+import { Check, SlidersHorizontal } from 'lucide-react';
 import { useProjectContext } from './ProjectContext';
 import { ProjectSetupTab } from './types';
 import { cn } from '@/lib/utils';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
+import { getModelsByTypeAndGroup } from '@/lib/studio-model-constants';
+import { formatModelLabel, STORYLINE_MODEL_OPTIONS, formatStorylineModelLabel } from '@/lib/constants/credits';
 
 const TabNavigation = () => {
-  const { activeTab, setActiveTab, getVisibleTabs } = useProjectContext();
+  const { activeTab, setActiveTab, getVisibleTabs, projectData, updateProjectData } = useProjectContext();
   const visibleTabs = getVisibleTabs();
+
+  const imageGenerationModels = useMemo(() => getModelsByTypeAndGroup('image', 'generation'), []);
+  const videoGenerationModels = useMemo(() => getModelsByTypeAndGroup('video', 'generation'), []);
+  const storylineModelOptions = STORYLINE_MODEL_OPTIONS;
+
+  const [storylineSettingsText, setStorylineSettingsText] = useState(
+    JSON.stringify(projectData.storylineTextSettings || {}, null, 2)
+  );
+  const [storylineSettingsError, setStorylineSettingsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setStorylineSettingsText(JSON.stringify(projectData.storylineTextSettings || {}, null, 2));
+  }, [projectData.storylineTextSettings]);
+
+  const handleStorylineSettingsBlur = () => {
+    const trimmed = storylineSettingsText.trim();
+    if (!trimmed) {
+      setStorylineSettingsError(null);
+      updateProjectData({ storylineTextSettings: {} });
+      return;
+    }
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        setStorylineSettingsError('JSON override must be an object.');
+        return;
+      }
+      setStorylineSettingsError(null);
+      updateProjectData({ storylineTextSettings: parsed });
+    } catch {
+      setStorylineSettingsError('Invalid JSON syntax.');
+    }
+  };
 
   const handleTabChange = (tab: ProjectSetupTab) => {
     if (tab === activeTab) return;
@@ -69,7 +106,6 @@ const TabNavigation = () => {
                     ]
                   )}
                 >
-                  {/* Step number or checkmark */}
                   <span className={cn(
                     "flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-all duration-300",
                     isActive && "bg-[#FF6B4A] text-white shadow-[0_0_16px_rgba(255,107,74,0.5)]",
@@ -81,7 +117,6 @@ const TabNavigation = () => {
                   
                   <span className="hidden sm:inline">{getTabLabel(tab)}</span>
                   
-                  {/* Active indicator line */}
                   {isActive && (
                     <motion.div
                       className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent rounded-full"
@@ -91,7 +126,6 @@ const TabNavigation = () => {
                   )}
                 </button>
                 
-                {/* Connector */}
                 {index < visibleTabs.length - 1 && (
                   <div className={cn(
                     "mx-2 w-8 h-px transition-colors duration-300",
@@ -103,6 +137,135 @@ const TabNavigation = () => {
               </motion.div>
             );
           })}
+
+          {/* Generation Models Settings Button */}
+          <div className="ml-4 pl-4 border-l border-white/[0.06]">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className={cn(
+                    "flex items-center gap-2 px-3.5 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
+                    "backdrop-blur-md border",
+                    "bg-white/[0.03] text-muted-foreground border-[rgba(249,115,22,0.15)]",
+                    "hover:text-foreground hover:bg-[rgba(249,115,22,0.06)] hover:border-[rgba(249,115,22,0.3)]",
+                    "hover:shadow-[0_0_20px_rgba(249,115,22,0.1)]"
+                  )}
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  <span className="hidden sm:inline">Models</span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                sideOffset={12}
+                className={cn(
+                  "w-[420px] p-0 rounded-xl",
+                  "bg-[#0f0f13] border-[rgba(249,115,22,0.15)]",
+                  "shadow-[0_8px_40px_rgba(0,0,0,0.5),0_0_0_1px_rgba(249,115,22,0.08)]"
+                )}
+              >
+                <div className="p-5 border-b border-[rgba(249,115,22,0.1)]">
+                  <h3 className="text-sm font-semibold text-white tracking-wide">Generation Models</h3>
+                  <p className="mt-1 text-xs text-zinc-500">
+                    Configure project defaults for storyline and media generation.
+                  </p>
+                </div>
+
+                <div className="p-5 space-y-4 max-h-[400px] overflow-y-auto">
+                  {/* Storyline model */}
+                  <label className="block space-y-1.5">
+                    <span className="text-[11px] uppercase tracking-widest text-zinc-500 font-medium">
+                      Storyline model
+                    </span>
+                    <select
+                      className={cn(
+                        "w-full rounded-lg px-3 py-2.5 text-sm text-zinc-200",
+                        "bg-[rgba(255,255,255,0.03)] border border-[rgba(249,115,22,0.15)]",
+                        "focus:border-[rgba(249,115,22,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(249,115,22,0.2)]",
+                        "transition-all duration-200"
+                      )}
+                      value={projectData.storylineTextModel || 'llama-3.3-70b-versatile'}
+                      onChange={(e) => updateProjectData({ storylineTextModel: e.target.value })}
+                    >
+                      {storylineModelOptions.map((model) => (
+                        <option key={model.id} value={model.id}>
+                          {formatStorylineModelLabel(model)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {/* Image model */}
+                  <label className="block space-y-1.5">
+                    <span className="text-[11px] uppercase tracking-widest text-zinc-500 font-medium">
+                      Default image model
+                    </span>
+                    <select
+                      className={cn(
+                        "w-full rounded-lg px-3 py-2.5 text-sm text-zinc-200",
+                        "bg-[rgba(255,255,255,0.03)] border border-[rgba(249,115,22,0.15)]",
+                        "focus:border-[rgba(249,115,22,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(249,115,22,0.2)]",
+                        "transition-all duration-200"
+                      )}
+                      value={projectData.baseImageModel || imageGenerationModels[0]?.id || 'fal-ai/nano-banana-2'}
+                      onChange={(e) => updateProjectData({ baseImageModel: e.target.value })}
+                    >
+                      {imageGenerationModels.map((model) => (
+                        <option key={model.id} value={model.id}>
+                          {formatModelLabel(model)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {/* Video model */}
+                  <label className="block space-y-1.5">
+                    <span className="text-[11px] uppercase tracking-widest text-zinc-500 font-medium">
+                      Default video model
+                    </span>
+                    <select
+                      className={cn(
+                        "w-full rounded-lg px-3 py-2.5 text-sm text-zinc-200",
+                        "bg-[rgba(255,255,255,0.03)] border border-[rgba(249,115,22,0.15)]",
+                        "focus:border-[rgba(249,115,22,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(249,115,22,0.2)]",
+                        "transition-all duration-200"
+                      )}
+                      value={projectData.baseVideoModel || videoGenerationModels[0]?.id || 'fal-ai/kling-video/o3/standard/text-to-video'}
+                      onChange={(e) => updateProjectData({ baseVideoModel: e.target.value })}
+                    >
+                      {videoGenerationModels.map((model) => (
+                        <option key={model.id} value={model.id}>
+                          {formatModelLabel(model)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {/* JSON override */}
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] uppercase tracking-widest text-zinc-500 font-medium">
+                      Storyline JSON override
+                    </span>
+                    <Textarea
+                      value={storylineSettingsText}
+                      onChange={(e) => setStorylineSettingsText(e.target.value)}
+                      onBlur={handleStorylineSettingsBlur}
+                      placeholder='{"temperature":0.7,"maxTokens":2048}'
+                      className={cn(
+                        'min-h-[80px] text-xs font-mono text-zinc-300 rounded-lg',
+                        'bg-[rgba(255,255,255,0.03)] border-[rgba(249,115,22,0.15)]',
+                        'focus:border-[rgba(249,115,22,0.4)] focus-visible:ring-[rgba(249,115,22,0.2)]',
+                        storylineSettingsError ? 'border-red-500/70' : ''
+                      )}
+                    />
+                    {storylineSettingsError && (
+                      <p className="text-xs text-red-400">{storylineSettingsError}</p>
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
     </div>
