@@ -292,7 +292,7 @@ function NodeInspector({
           </div>
         </section>
 
-        <section className="space-y-3 rounded-[22px] border border-white/10 bg-[#111111]/98 p-4">
+        <section className="space-y-3 rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
           <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Actions</div>
           <div className="flex flex-wrap items-center gap-2.5">
             <ActionIconButton icon={Play} label="Generate" onClick={() => void generateNode(node.id)} />
