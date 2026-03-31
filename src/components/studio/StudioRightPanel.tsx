@@ -674,7 +674,7 @@ export function StudioRightPanel({
                       ) : (
                         <div className="flex h-full flex-col bg-transparent">
                           <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
-                            <section className="space-y-3 rounded-[26px] border border-white/10 bg-[#101010]/98 px-5 py-5 shadow-[0_18px_40px_rgba(0,0,0,0.32)]">
+                            <section className="space-y-3 rounded-[26px] border border-[rgba(249,115,22,0.12)] bg-[#101010]/98 px-5 py-5 shadow-[0_18px_40px_rgba(0,0,0,0.32)]">
                               <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Nodes</div>
                               <div className="text-[30px] font-medium leading-[1.05] tracking-[-0.03em] text-white">
                                 Build the graph from the rail.
