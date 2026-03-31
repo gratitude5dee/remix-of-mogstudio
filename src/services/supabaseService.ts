@@ -1075,7 +1075,7 @@ export const shotService = {
     try {
       const { data, error } = await supabase
         .from('shots')
-        .insert(shot)
+        .insert(shot as any)
         .select('id')
         .single();
         
