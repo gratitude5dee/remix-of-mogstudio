@@ -3,7 +3,7 @@ import { TestimonialCard } from './TestimonialCard';
 
 const testimonials = [
   {
-    quote: "The Creator Dashboard in MOG Studio is incredible. Built for creators and designers connecting our AI models has never been this smooth.",
+    quote: "The Creator Dashboard in WZRD Studio is incredible. Built for creators and designers connecting our AI models has never been this smooth.",
     author: "Sara Lin",
     handle: "@sara.codes",
     featured: true,
