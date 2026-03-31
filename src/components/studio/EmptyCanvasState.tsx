@@ -133,7 +133,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
             duration={0.6}
             delay={0.2}
           >
-            or drag and drop media files, seed the FLORA example, or select a preset
+            or drag and drop media files, seed the WZRD example, or select a preset
           </TextAnimate>
         </div>
 
