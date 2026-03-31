@@ -4,6 +4,7 @@ import { Loader2, UserPlus, Plus, FolderKanban, Activity, Image, Sparkles, Setti
 import { motion } from 'framer-motion';
 import wzrdLogo from '@/assets/wzrd-logo.png';
 import { ProjectList } from '@/components/home/ProjectList';
+import { AuraProjectList } from '@/components/home/AuraProjectList';
 import { ProjectListView } from '@/components/home/ProjectListView';
 import { Sidebar } from '@/components/home/Sidebar';
 import { MobileBottomNav } from '@/components/home/MobileBottomNav';
