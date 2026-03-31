@@ -203,7 +203,7 @@ export const OutputNode = memo(({ id, data, selected }: NodeProps) => {
     >
       <NodeStatusBadge status={status} progress={progress} error={error} />
       <div className={cn(
-        "w-72 bg-[#1a1a1a] border border-zinc-800 rounded-lg overflow-hidden",
+        "w-72 bg-[#1a1a1a] border border-[rgba(249,115,22,0.15)] rounded-lg overflow-hidden shadow-[0_0_8px_rgba(249,115,22,0.06)]",
         selected && "ring-2 ring-orange-500/50"
       )}>
         {/* Header */}
