@@ -193,7 +193,7 @@ export function LocationSection({
                   value={data.timeOfDay}
                   onValueChange={(value: any) => handleDataChange({ timeOfDay: value })}
                 >
-                  <SelectTrigger className="mt-1 h-9 bg-zinc-900/50 border-zinc-800/50">
+                  <SelectTrigger className="mt-1 h-9 bg-zinc-900/50 border-[#f97316]/15">
                     <SelectValue placeholder="Select time..." />
                   </SelectTrigger>
                   <SelectContent>
