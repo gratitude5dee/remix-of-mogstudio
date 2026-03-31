@@ -9,13 +9,13 @@ interface StudioInspectorPanelProps {
 
 const StudioInspectorPanel = ({ activeJobs = 0, onGenerate }: StudioInspectorPanelProps) => {
   return (
-    <aside className="w-80 bg-[#0f0f0f] border-l border-zinc-800 flex flex-col p-4 gap-4">
+    <aside className="w-80 bg-[#0f0f0f] border-l border-[rgba(249,115,22,0.15)] flex flex-col p-4 gap-4 shadow-[0_0_8px_rgba(249,115,22,0.06)]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-orange-400" />
           <span className="text-white font-medium">Generate</span>
         </div>
-        <Button variant="outline" size="sm" className="border-zinc-700 text-white">
+        <Button variant="outline" size="sm" className="border-[rgba(249,115,22,0.2)] text-white">
           <Share2 className="w-4 h-4 mr-2" />
           Share
         </Button>
@@ -24,7 +24,7 @@ const StudioInspectorPanel = ({ activeJobs = 0, onGenerate }: StudioInspectorPan
       <div className="space-y-2">
         <label className="text-sm text-zinc-400">Model</label>
         <Select defaultValue="gpt-5">
-          <SelectTrigger className="bg-[#0a0a0a] border-zinc-800 text-white">
+          <SelectTrigger className="bg-[#0a0a0a] border-[rgba(249,115,22,0.15)] text-white">
             <SelectValue placeholder="Select model" />
           </SelectTrigger>
           <SelectContent>
@@ -42,7 +42,7 @@ const StudioInspectorPanel = ({ activeJobs = 0, onGenerate }: StudioInspectorPan
         Generate
       </Button>
 
-      <div className="mt-auto pt-4 border-t border-zinc-800">
+      <div className="mt-auto pt-4 border-t border-[rgba(249,115,22,0.15)]">
         <div className="text-sm text-zinc-400">Queue</div>
         <div className="text-white text-lg leading-tight">{activeJobs} active</div>
       </div>

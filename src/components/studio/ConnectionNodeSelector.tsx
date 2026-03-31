@@ -65,11 +65,11 @@ export const ConnectionNodeSelector: React.FC<ConnectionNodeSelectorProps> = ({
     >
       <div
         className={cn(
-          'overflow-hidden rounded-[22px] border border-white/10 bg-[#111111]/97 shadow-[0_20px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all',
+          'overflow-hidden rounded-[22px] border border-[rgba(249,115,22,0.15)] bg-[#111111]/97 shadow-[0_0_12px_rgba(249,115,22,0.06),0_20px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all',
           isTransforming && 'shadow-[0_0_30px_rgba(249,115,22,0.18)]'
         )}
       >
-        <div className="border-b border-zinc-800/60 bg-gradient-to-b from-zinc-800/35 to-transparent px-4 py-3">
+        <div className="border-b border-[rgba(249,115,22,0.12)] bg-gradient-to-b from-zinc-800/35 to-transparent px-4 py-3">
           <div className="text-[11px] font-semibold tracking-[0.22em] text-zinc-500">
             TURN INTO
           </div>
@@ -134,7 +134,7 @@ export const ConnectionNodeSelector: React.FC<ConnectionNodeSelectorProps> = ({
           ))}
         </div>
 
-        <div className="border-t border-zinc-800/60 bg-gradient-to-t from-zinc-800/30 to-transparent px-4 py-3">
+        <div className="border-t border-[rgba(249,115,22,0.12)] bg-gradient-to-t from-zinc-800/30 to-transparent px-4 py-3">
           <div className="flex items-center justify-between text-[10px] tracking-[0.16em] text-zinc-500">
             <span>Tab: Navigate</span>
             <span>↵ Select</span>

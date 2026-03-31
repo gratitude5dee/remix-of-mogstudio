@@ -103,11 +103,11 @@ export const UploadVideoNode = memo(({ id, data, selected }: NodeProps) => {
     >
       <NodeStatusBadge status={status} progress={progress} error={error} />
       <div className={cn(
-        "w-72 bg-[#1a1a1a] border border-zinc-800 rounded-lg overflow-hidden",
+        "w-72 bg-[#1a1a1a] border border-[rgba(249,115,22,0.15)] rounded-lg overflow-hidden shadow-[0_0_8px_rgba(249,115,22,0.06)]",
         selected && "ring-2 ring-purple-500/50"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 bg-[#0f0f0f] border-b border-zinc-800">
+        <div className="flex items-center justify-between px-3 py-2 bg-[#0f0f0f] border-b border-[rgba(249,115,22,0.12)]">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-md bg-purple-500/10">
               <Video className="w-3.5 h-3.5 text-purple-400" />
@@ -146,7 +146,7 @@ export const UploadVideoNode = memo(({ id, data, selected }: NodeProps) => {
             <div
               onClick={handleClick}
               className={cn(
-                "h-32 rounded-lg border-2 border-dashed border-zinc-700 bg-zinc-900/60",
+                "h-32 rounded-lg border-2 border-dashed border-[rgba(249,115,22,0.2)] bg-zinc-900/60",
                 "flex flex-col items-center justify-center gap-2 cursor-pointer",
                 "hover:border-purple-500/50 hover:bg-zinc-800/50 transition-colors",
                 isUploading && "opacity-50 pointer-events-none"

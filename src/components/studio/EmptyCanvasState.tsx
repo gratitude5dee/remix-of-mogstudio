@@ -47,7 +47,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
     },
     {
       id: 'flora',
-      title: 'FLORA Example',
+      title: 'WZRD Example',
       description: 'Seed the collaborative image edit graph',
       icon: Workflow,
       gradient: 'from-[#6d8060] to-[#2d4635]',
@@ -110,7 +110,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
               shimmerDuration="2.5s"
               borderRadius="12px"
               background="#171717"
-              className="gap-2 border border-white/10 text-sm font-medium px-5 py-2.5 text-white"
+              className="gap-2 border border-[rgba(249,115,22,0.2)] text-sm font-medium px-5 py-2.5 text-white"
               onClick={() => onAddBlock('text')}
             >
               <Plus className="w-4 h-4" />
@@ -122,7 +122,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
                 className="rounded-full border border-[#f97316]/35 bg-[#181510] px-5 py-2.5 text-sm font-medium text-[#dfe8d9] transition hover:border-[#f97316]/60 hover:bg-[#1e1810]"
                 onClick={onStartFloraExample}
               >
-                Start FLORA example
+                Start WZRD example
               </button>
             ) : null}
           </div>
@@ -133,7 +133,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
             duration={0.6}
             delay={0.2}
           >
-            or drag and drop media files, seed the FLORA example, or select a preset
+            or drag and drop media files, seed the WZRD example, or select a preset
           </TextAnimate>
         </div>
 
@@ -158,8 +158,8 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
               className={cn(
                 'group relative flex flex-col overflow-hidden',
                 'aspect-[3/4] rounded-2xl',
-                'bg-[#141414]/92 border border-white/8',
-                'hover:border-white/16',
+              'bg-[#141414]/92 border border-[rgba(249,115,22,0.15)]',
+                'hover:border-[rgba(249,115,22,0.3)]',
                 'transition-colors duration-300'
               )}
               variants={{
@@ -227,7 +227,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
               </div>
 
               {/* Text Content - Bottom portion */}
-              <div className="p-4 bg-[#0d0d0d]/80 border-t border-white/6 backdrop-blur-sm">
+              <div className="p-4 bg-[#0d0d0d]/80 border-t border-[rgba(249,115,22,0.1)] backdrop-blur-sm">
                 <h3 className="mb-1 text-left text-sm font-semibold text-white">
                   {preset.title}
                 </h3>
@@ -254,7 +254,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
         >
           {/* Drag & Drop Hint */}
           <motion.div 
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-[#171717]/80 px-4 py-2 backdrop-blur-sm"
+            className="flex items-center gap-2 rounded-full border border-[rgba(249,115,22,0.15)] bg-[#171717]/80 px-4 py-2 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}

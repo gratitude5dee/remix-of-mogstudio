@@ -42,7 +42,7 @@ export const NodeHandle = ({
         position={position}
         className={cn(
           variant === 'flora'
-            ? `pointer-events-auto relative flex ${floraSize} items-center justify-center rounded-full border border-white/10 bg-[#171717]/96 backdrop-blur-sm`
+            ? `pointer-events-auto relative flex ${floraSize} items-center justify-center rounded-full border border-[rgba(249,115,22,0.2)] bg-[#171717]/96 backdrop-blur-sm`
             : 'pointer-events-auto relative flex h-4 w-4 items-center justify-center rounded-full border-2 bg-zinc-950/90',
           'transition-all duration-150 ease-out',
           variant === 'flora'

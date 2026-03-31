@@ -641,9 +641,9 @@ const StudioCanvasInner: React.FC<StudioCanvasProps> = ({
   const handleStartFloraExample = useCallback(() => {
     const center = getCanvasCenterPosition();
     const seedGraph = buildFloraSeedGraph({ x: center.x - 640, y: center.y - 220 });
-    addNodesAndEdgesAtomic(seedGraph.nodes, seedGraph.edges, 'Inserted FLORA example');
+    addNodesAndEdgesAtomic(seedGraph.nodes, seedGraph.edges, 'Inserted WZRD example');
     scheduleSave();
-    toast.success('FLORA example inserted.');
+    toast.success('WZRD example inserted.');
     requestAnimationFrame(() => {
       fitView({ padding: 0.22, duration: 420 });
     });

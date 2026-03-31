@@ -163,15 +163,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ projectId, onClose
 
   if (isLoading) {
     return (
-      <div className="w-80 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800/50 rounded-xl p-8 flex items-center justify-center">
+      <div className="w-80 bg-zinc-900/95 backdrop-blur-xl border border-[rgba(249,115,22,0.15)] rounded-xl p-8 flex items-center justify-center shadow-[0_0_12px_rgba(249,115,22,0.06)]">
         <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
       </div>
     );
   }
 
   return (
-    <div className="w-80 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800/50 rounded-xl overflow-hidden shadow-2xl">
-      <div className="px-4 py-3 border-b border-zinc-800/50 flex items-center justify-between">
+    <div className="w-80 bg-zinc-900/95 backdrop-blur-xl border border-[rgba(249,115,22,0.15)] rounded-xl overflow-hidden shadow-[0_0_12px_rgba(249,115,22,0.06)]">
+      <div className="px-4 py-3 border-b border-[rgba(249,115,22,0.12)] flex items-center justify-between">
         <div className="flex items-center gap-3">
           {onBack && (
             <motion.button
@@ -280,7 +280,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ projectId, onClose
         )}
       </div>
 
-      <div className="px-4 py-3 border-t border-zinc-800/50 bg-zinc-900/50">
+      <div className="px-4 py-3 border-t border-[rgba(249,115,22,0.12)] bg-zinc-900/50">
         <p className="text-[10px] text-zinc-500 text-center">
           Models apply to new nodes created in this project
         </p>
