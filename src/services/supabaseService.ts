@@ -940,7 +940,7 @@ export const characterService = {
     try {
       const { error } = await supabase
         .from('characters')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id);
         
       if (error) throw error;
