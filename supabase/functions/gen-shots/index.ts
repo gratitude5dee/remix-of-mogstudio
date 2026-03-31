@@ -172,11 +172,56 @@ serve(async (req) => {
       0
     );
 
-    const placeholderIdeas = Array.from({ length: desiredShotCount }).map((_, index) => {
+    const sceneContext = [
+      scene?.description && `Scene: ${scene.description}`,
+      scene?.location && `Location: ${scene.location}`,
+      scene?.lighting && `Lighting: ${scene.lighting}`,
+      scene?.weather && `Weather: ${scene.weather}`,
+    ].filter(Boolean).join('\n');
+
+    let placeholderIdeas: string[];
+    try {
+      const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Deno.env.get('LOVABLE_API_KEY')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-3-flash-preview',
+          messages: [
+            {
+              role: 'system',
+              content: 'You generate distinct cinematic shot descriptions for storyboards. Each shot must describe a DIFFERENT moment, angle, or subject. Do NOT include shot numbers or "Shot #:" prefixes. Return ONLY a JSON object with a "shots" array of strings.',
+            },
+            {
+              role: 'user',
+              content: `Generate exactly ${desiredShotCount} distinct shot descriptions for this scene:\n${sceneContext}\n\nVary shot types (wide establishing, medium, close-up detail, reaction, POV, etc). Each description should be 1-2 sentences capturing a specific visual moment. No numbering.`,
+            },
+          ],
+        }),
+      });
+      const aiData = await aiResp.json();
+      const content = aiData.choices?.[0]?.message?.content;
+      const parsed = JSON.parse(content);
+      const ideas = Array.isArray(parsed) ? parsed : parsed.shots || parsed.ideas || parsed.descriptions || [];
+      if (ideas.length >= desiredShotCount) {
+        placeholderIdeas = ideas.slice(0, desiredShotCount);
+      } else {
+        throw new Error('Insufficient ideas');
+      }
+    } catch {
       const sceneLabel = scene?.title || scene?.description || `Scene ${scene?.scene_number ?? ''}`;
       const location = scene?.location ? ` at ${scene.location}` : '';
-      return `Shot ${highestShotNumber + index + 1}: Cinematic moment in ${sceneLabel}${location}`;
-    });
+      const angles = [
+        'Establishing wide shot of', 'Character-focused moment in',
+        'Close-up detail from', 'Action beat in',
+        'Atmospheric insert from', 'Reaction shot in',
+      ];
+      placeholderIdeas = Array.from({ length: desiredShotCount }).map((_, i) =>
+        `${angles[i % angles.length]} ${sceneLabel}${location}`
+      );
+    }
 
     const stream = new ReadableStream({
       async start(controller) {
