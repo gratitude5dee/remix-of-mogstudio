@@ -212,7 +212,7 @@ export function ObjectSubjectSection({
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-white/8 bg-[#111111]/80">
+    <div className="overflow-hidden rounded-lg border border-[#f97316]/15 bg-[#111111]/80 shadow-[0_0_8px_rgba(249,115,22,0.05)]">
       {/* Toggle Header */}
       <div className="flex items-center justify-between bg-[#141414] p-3">
         <div className="flex items-center gap-2">
