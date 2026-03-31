@@ -14,7 +14,7 @@ interface Logo {
 }
 
 const logos: Logo[] = [
-  { id: '1', name: '5DEE Studios' },
+  { id: '1', name: '5DEE Studios', image: fiveDeeLogo },
   { id: '2', name: 'Anthropic', image: anthropicLogo },
   { id: '4', name: 'ElevenLabs', image: elevenlabsLogo },
   { id: '5', name: 'Story Protocol', image: storyLogo, height: 44 },
