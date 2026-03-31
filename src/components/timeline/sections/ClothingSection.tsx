@@ -216,7 +216,7 @@ export function ClothingSection({
                             updateCharacterData(char.id, { clothingPrompt: e.target.value })
                           }
                           placeholder="Describe the character's outfit... e.g., 'Worn leather jacket, faded blue jeans, combat boots'"
-                          className="mt-1 text-sm min-h-[60px] bg-zinc-900/50 border-zinc-800/50"
+                          className="mt-1 text-sm min-h-[60px] bg-zinc-900/50 border-[#f97316]/15"
                           rows={2}
                         />
                       </div>
