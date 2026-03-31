@@ -100,7 +100,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
             ? "bg-[rgba(249,115,22,0.15)] shadow-sm" 
             : "bg-surface-2 dark:bg-white/[0.04]"
         )}>
-          <Icon className={cn("w-4 h-4", isActive && "text-accent-purple")} />
+          <Icon className={cn("w-4 h-4", isActive && "text-[#f97316]")} />
         </div>
         <AnimatePresence mode="wait">
           {!isCollapsed && (
