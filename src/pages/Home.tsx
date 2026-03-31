@@ -404,8 +404,8 @@ export default function Home() {
                   whileTap={{ scale: 0.98 }}
                   className={cn(
                     "flex items-center gap-2 h-9 px-4 rounded-lg text-sm font-medium transition-all duration-200",
-                    "bg-surface-2 border border-border-default text-text-secondary",
-                    "hover:text-text-primary hover:border-border-strong hover:bg-surface-3"
+                    "bg-white/[0.03] border border-[rgba(249,115,22,0.15)] text-text-secondary",
+                    "hover:text-text-primary hover:border-[rgba(249,115,22,0.25)] hover:bg-[rgba(249,115,22,0.06)]"
                   )}
                 >
                   <UserPlus className="w-4 h-4" />
