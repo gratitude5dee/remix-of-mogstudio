@@ -10,7 +10,7 @@ const steps = [
       <div className="space-y-2 p-3">
         {['Brand concept A', 'Video treatment', 'Visual identity'].map((item, i) => (
           <div key={i} className="flex items-center gap-2 bg-white/[0.04] rounded-lg px-3 py-2 border border-white/[0.06]">
-            <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
+            <div className="w-2 h-2 rounded-full bg-orange-400/50" />
             <span className="text-[10px] text-white/40 font-mono">{item}</span>
           </div>
         ))}
@@ -53,7 +53,7 @@ const steps = [
     mockup: (
       <div className="p-3 space-y-2">
         {[
-          { w: '70%', color: 'bg-emerald-500/20 border-emerald-500/15' },
+          { w: '70%', color: 'bg-orange-500/20 border-orange-500/15' },
           { w: '50%', color: 'bg-blue-500/20 border-blue-500/15' },
           { w: '85%', color: 'bg-orange-500/20 border-orange-500/15' },
         ].map((bar, i) => (
@@ -68,7 +68,7 @@ const steps = [
         ))}
         <div className="flex items-center justify-between mt-2">
           <span className="text-[8px] text-white/20 font-mono">3 workflows active</span>
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
         </div>
       </div>
     ),
@@ -98,7 +98,7 @@ export function ThreeStepSection() {
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-xs font-mono text-white/20">{step.number}</span>
-                  <span className="text-xs font-mono uppercase tracking-widest text-emerald-400/60">{step.title}</span>
+                  <span className="text-xs font-mono uppercase tracking-widest text-orange-400/60">{step.title}</span>
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">{step.headline}</h3>
                 <p className="text-sm text-white/40 leading-relaxed">{step.description}</p>

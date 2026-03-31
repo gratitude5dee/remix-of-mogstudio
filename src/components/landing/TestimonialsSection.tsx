@@ -3,19 +3,19 @@ import { TestimonialCard } from './TestimonialCard';
 
 const testimonials = [
   {
-    quote: "The Creator Dashboard in MOG Studio is incredible. Built for creators and designers connecting our AI models has never been this smooth.",
+    quote: "The Creator Dashboard in WZRD Studio is incredible. Built for creators and designers connecting our AI models has never been this smooth.",
     author: "Sara Lin",
     handle: "@sara.codes",
     featured: true,
   },
   {
-    quote: "MOG Studio's storyboard view is a game-changer. Planning narratives shot-by-shot has never been easier.",
+    quote: "WZRD Studio's storyboard view is a game-changer. Planning narratives shot-by-shot has never been easier.",
     author: "Chloe Winters",
     handle: "@chloewinters",
     featured: true,
   },
   {
-    quote: "MOG Studio is a lifesaver when deadlines are tight. Build, connect, and run AI workflows instantly.",
+    quote: "WZRD Studio is a lifesaver when deadlines are tight. Build, connect, and run AI workflows instantly.",
     author: "James Roy",
     handle: "@jamesrdev",
     featured: true,

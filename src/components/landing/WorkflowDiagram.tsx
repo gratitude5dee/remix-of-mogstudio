@@ -15,7 +15,7 @@ export const WorkflowDiagram = ({ className = '' }: WorkflowDiagramProps) => {
   const rightNodes = [
     { id: 'generated-image', label: 'Generated Image', icon: Image, color: 'from-orange-500 to-red-500' },
     { id: 'video-output', label: 'Video Output', icon: Video, color: 'from-violet-500 to-purple-500' },
-    { id: 'text-result', label: 'Text Result', icon: FileText, color: 'from-teal-500 to-cyan-500' },
+    { id: 'text-result', label: 'Text Result', icon: FileText, color: 'from-orange-400 to-amber-500' },
   ];
 
   return (

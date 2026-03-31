@@ -7,7 +7,7 @@ import FeatureGrid from '@/components/landing/FeatureGrid';
 const CinematicIntro = lazy(() => import('@/components/landing/CinematicIntro'));
 import { UseCasesSection } from '@/components/landing/UseCasesSection';
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
-import { MogPromoSection } from '@/components/landing/MogPromoSection';
+
 import FAQAccordion from '@/components/landing/FAQAccordion';
 import { PricingSectionRedesigned } from '@/components/landing/PricingSectionRedesigned';
 import { StickyFooter } from '@/components/landing/StickyFooter';
@@ -178,7 +178,7 @@ const Landing = () => {
             <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
           </div>
 
-          <MogPromoSection />
+          
         </div>
       </div>
 
