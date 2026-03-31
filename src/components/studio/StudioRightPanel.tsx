@@ -595,7 +595,7 @@ export function StudioRightPanel({
                 <button
                   type="button"
                   onClick={() => setIsCollapsed(true)}
-                  className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#131313] text-zinc-400 transition-colors hover:border-white/15 hover:bg-[#191919] hover:text-white"
+                  className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(249,115,22,0.12)] bg-[#131313] text-zinc-400 transition-colors hover:border-[rgba(249,115,22,0.20)] hover:bg-[#191919] hover:text-white"
                   title="Collapse panel"
                   aria-label="Collapse panel"
                 >
