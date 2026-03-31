@@ -128,7 +128,7 @@ function ActionIconButton({
       type="button"
       title={label}
       onClick={onClick}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-[#131313] text-zinc-300 transition-colors hover:border-white/15 hover:bg-[#191919] hover:text-white"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[rgba(249,115,22,0.12)] bg-[#131313] text-zinc-300 transition-colors hover:border-[rgba(249,115,22,0.20)] hover:bg-[#191919] hover:text-white"
     >
       <Icon className="h-4 w-4" />
     </button>
@@ -213,12 +213,12 @@ function NodeInspector({
 
   return (
     <div className="flex h-full flex-col bg-transparent">
-      <div className="border-b border-white/8 px-5 py-4">
+      <div className="border-b border-[rgba(249,115,22,0.10)] px-5 py-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="mb-2 text-[11px] uppercase tracking-[0.22em] text-zinc-500">Selected node</div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className="rounded-full border border-white/8 bg-white/5 px-2.5 py-1 text-[11px] text-zinc-300">
+              <Badge className="rounded-full border border-[rgba(249,115,22,0.10)] bg-white/5 px-2.5 py-1 text-[11px] text-zinc-300">
                 {node.kind}
               </Badge>
               <Badge className="rounded-full border border-[#f97316]/20 bg-[#1a1510] px-2.5 py-1 text-[11px] text-[#fdba74]">
@@ -239,7 +239,7 @@ function NodeInspector({
           <Button
             type="button"
             variant="ghost"
-            className="h-9 w-9 rounded-full border border-white/10 bg-[#131313] p-0 text-zinc-400 hover:border-white/15 hover:bg-[#191919] hover:text-white"
+            className="h-9 w-9 rounded-full border border-[rgba(249,115,22,0.12)] bg-[#131313] p-0 text-zinc-400 hover:border-[rgba(249,115,22,0.20)] hover:bg-[#191919] hover:text-white"
             onClick={onClearSelection}
           >
             <X className="h-4 w-4" />
@@ -261,9 +261,9 @@ function NodeInspector({
           </section>
         ) : null}
 
-        <section className="space-y-3 rounded-[22px] border border-white/10 bg-[#101010]/98 px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.32)]">
+        <section className="space-y-3 rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#101010]/98 px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.32)]">
           {previewUrl ? (
-            <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[#141414] shadow-[0_12px_32px_rgba(0,0,0,0.24)]">
+            <div className="overflow-hidden rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#141414] shadow-[0_12px_32px_rgba(0,0,0,0.24)]">
               {node.kind === 'Video' ? (
                 <video src={previewUrl} className="aspect-[16/9] w-full object-cover" controls muted />
               ) : (
@@ -273,7 +273,7 @@ function NodeInspector({
           ) : null}
         </section>
 
-        <section className="space-y-3 rounded-[22px] border border-white/10 bg-[#111111]/98 p-4">
+        <section className="space-y-3 rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
           <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Metadata</div>
           <div className="space-y-3">
             <MetadataRow label="Model" value={resolvedModel?.name || selectedModel?.name || 'Not set'} />
@@ -292,7 +292,7 @@ function NodeInspector({
           </div>
         </section>
 
-        <section className="space-y-3 rounded-[22px] border border-white/10 bg-[#111111]/98 p-4">
+        <section className="space-y-3 rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
           <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Actions</div>
           <div className="flex flex-wrap items-center gap-2.5">
             <ActionIconButton icon={Play} label="Generate" onClick={() => void generateNode(node.id)} />
@@ -304,7 +304,7 @@ function NodeInspector({
         </section>
 
         {mediaType ? (
-          <section className="space-y-3 rounded-[22px] border border-white/10 bg-[#111111]/98 p-4">
+          <section className="space-y-3 rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
             <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Generate</div>
 
             <div className="space-y-2">
@@ -324,7 +324,7 @@ function NodeInspector({
                   <select
                     value={aspectRatioValue}
                     onChange={(event) => updateParams({ aspectRatio: event.target.value })}
-                    className="h-12 w-full rounded-[18px] border border-white/10 bg-[#131313] px-3 text-sm text-white outline-none"
+                    className="h-12 w-full rounded-[18px] border border-[rgba(249,115,22,0.12)] bg-[#131313] px-3 text-sm text-white outline-none"
                   >
                     <option value="Auto">Auto</option>
                     <option value="16:9">16:9</option>
@@ -338,7 +338,7 @@ function NodeInspector({
                   <select
                     value={resolutionValue}
                     onChange={(event) => updateParams({ resolution: event.target.value })}
-                    className="h-12 w-full rounded-[18px] border border-white/10 bg-[#131313] px-3 text-sm text-white outline-none"
+                    className="h-12 w-full rounded-[18px] border border-[rgba(249,115,22,0.12)] bg-[#131313] px-3 text-sm text-white outline-none"
                   >
                     <option value="1K">1K</option>
                     <option value="2K">2K</option>
@@ -349,7 +349,7 @@ function NodeInspector({
             ) : null}
 
             {node.kind === 'Text' ? (
-              <div className="flex items-center justify-between rounded-[22px] border border-white/10 bg-[#131313] px-4 py-3">
+              <div className="flex items-center justify-between rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#131313] px-4 py-3">
                 <div>
                   <div className="text-sm text-white">Web Search</div>
                   <div className="text-xs text-zinc-500">Use web context when prompting.</div>
@@ -366,7 +366,7 @@ function NodeInspector({
                   value={seedValue}
                   onChange={(event) => updateParams({ seed: event.target.value })}
                   placeholder="Random"
-                  className="h-12 rounded-[18px] border-white/10 bg-[#131313] font-mono text-white"
+                  className="h-12 rounded-[18px] border-[rgba(249,115,22,0.12)] bg-[#131313] font-mono text-white"
                 />
               </label>
             )}
@@ -382,7 +382,7 @@ function NodeInspector({
                       : { prompt: event.target.value }
                   )
                 }
-                className="min-h-[180px] rounded-[22px] border-white/10 bg-[#131313] text-white"
+                className="min-h-[180px] rounded-[22px] border-[rgba(249,115,22,0.12)] bg-[#131313] text-white"
                 placeholder="Describe what this node should create..."
               />
             </label>
@@ -390,9 +390,9 @@ function NodeInspector({
         ) : null}
 
         {textPreview ? (
-          <section className="space-y-3 rounded-[24px] border border-white/10 bg-[#111111]/98 p-4">
+          <section className="space-y-3 rounded-[24px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
             <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Preview</div>
-            <div className="max-h-56 overflow-y-auto rounded-[22px] border border-white/8 bg-[#131313] p-4 text-sm leading-6 text-zinc-200">
+            <div className="max-h-56 overflow-y-auto rounded-[22px] border border-[rgba(249,115,22,0.10)] bg-[#131313] p-4 text-sm leading-6 text-zinc-200">
               {textPreview}
             </div>
           </section>
@@ -418,7 +418,7 @@ function NodeCreationSection({
   }
 
   return (
-    <section className="space-y-4 rounded-[24px] border border-white/10 bg-[#111111]/98 p-4">
+    <section className="space-y-4 rounded-[24px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
       <div className="space-y-2">
         <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">{title}</div>
         {description ? <p className="text-sm leading-6 text-zinc-400">{description}</p> : null}
@@ -521,12 +521,12 @@ export function StudioRightPanel({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.92 }}
             onClick={() => setIsCollapsed(false)}
-            className="flex h-full w-[58px] flex-col items-center justify-between overflow-hidden rounded-[26px] border border-white/10 bg-[#090909]/98 px-2 py-4 shadow-[-20px_0_64px_rgba(0,0,0,0.38)] backdrop-blur-2xl"
+            className="flex h-full w-[58px] flex-col items-center justify-between overflow-hidden rounded-[26px] border border-[rgba(249,115,22,0.12)] bg-[#090909]/98 px-2 py-4 shadow-[-20px_0_64px_rgba(0,0,0,0.38)] backdrop-blur-2xl"
             title={`Expand ${activeTabConfig.label}`}
             aria-label={`Expand ${activeTabConfig.label}`}
           >
             <div className="flex flex-col items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-[#111111] text-zinc-200">
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[rgba(249,115,22,0.12)] bg-[#111111] text-zinc-200">
                 <ActiveTabIcon className="h-4 w-4" />
               </div>
               <span className="[writing-mode:vertical-rl] rotate-180 text-[10px] font-medium uppercase tracking-[0.22em] text-zinc-400">
@@ -563,11 +563,11 @@ export function StudioRightPanel({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 18 }}
             className={cn(
-              'relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/10 bg-[#090909]/98 shadow-[-24px_0_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl',
+              'relative flex h-full flex-col overflow-hidden rounded-[30px] border border-[rgba(249,115,22,0.12)] bg-[#090909]/98 shadow-[-24px_0_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl',
               activeTab === 'nodes' && selectedNode?.kind === 'ImageEdit' ? 'w-[960px]' : 'w-[372px]'
             )}
           >
-              <div className="flex items-center border-b border-white/8 bg-[#111111]/80 pr-2">
+              <div className="flex items-center border-b border-[rgba(249,115,22,0.10)] bg-[#111111]/80 pr-2">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -595,7 +595,7 @@ export function StudioRightPanel({
                 <button
                   type="button"
                   onClick={() => setIsCollapsed(true)}
-                  className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#131313] text-zinc-400 transition-colors hover:border-white/15 hover:bg-[#191919] hover:text-white"
+                  className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(249,115,22,0.12)] bg-[#131313] text-zinc-400 transition-colors hover:border-[rgba(249,115,22,0.20)] hover:bg-[#191919] hover:text-white"
                   title="Collapse panel"
                   aria-label="Collapse panel"
                 >
@@ -633,9 +633,9 @@ export function StudioRightPanel({
                     >
                       {selectedNode?.kind === 'ImageEdit' ? (
                         <div className="flex h-full min-h-0 flex-col">
-                          <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
+                          <div className="flex items-center justify-between border-b border-[rgba(249,115,22,0.10)] px-5 py-4">
                             <div className="flex items-center gap-2">
-                              <Badge className="rounded-full border border-white/8 bg-white/5 px-2.5 py-1 text-[11px] text-zinc-300">
+                              <Badge className="rounded-full border border-[rgba(249,115,22,0.10)] bg-white/5 px-2.5 py-1 text-[11px] text-zinc-300">
                                 {selectedNode.kind}
                               </Badge>
                               <span className="text-sm text-zinc-400">Selected node</span>
@@ -674,7 +674,7 @@ export function StudioRightPanel({
                       ) : (
                         <div className="flex h-full flex-col bg-transparent">
                           <div className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
-                            <section className="space-y-3 rounded-[26px] border border-white/10 bg-[#101010]/98 px-5 py-5 shadow-[0_18px_40px_rgba(0,0,0,0.32)]">
+                            <section className="space-y-3 rounded-[26px] border border-[rgba(249,115,22,0.12)] bg-[#101010]/98 px-5 py-5 shadow-[0_18px_40px_rgba(0,0,0,0.32)]">
                               <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Nodes</div>
                               <div className="text-[30px] font-medium leading-[1.05] tracking-[-0.03em] text-white">
                                 Build the graph from the rail.
