@@ -31,8 +31,8 @@ export const MobileSidebarDrawer = ({ isOpen, onClose, activeView, onViewChange 
 
   const mainNavItems = [
     { id: 'all', label: 'All Projects', icon: FolderKanban },
-    { id: 'aura', label: 'Aura', icon: Sparkles },
     { id: 'kanvas', label: 'Kanvas', icon: Layers, isRoute: true, showBadge: true },
+    { id: 'aura', label: 'Aura (Observability)', icon: Sparkles },
   ];
 
   const secondaryNavItems = [
