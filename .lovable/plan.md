@@ -1,36 +1,53 @@
 
 
-# Add 100 Credits to All Accounts
+# Fix Evaluation Job Failures + Switch to Gemini 3.1 Flash
 
-## Current State
-- 14 existing users in `user_credits` table
-- New account trigger (`grant_free_credits`) already grants 100 credits on profile creation — no change needed there
+## Root Cause
+
+The `evaluate-storyboard-packet` edge function fails because the remote `evaluation_runs` table has an **old schema** with `user_id NOT NULL`, `models NOT NULL`, and `tests NOT NULL` columns. The migration's `CREATE TABLE IF NOT EXISTS` was silently skipped (table already existed), so these old NOT NULL constraints remain. The edge function insert omits these fields, causing the constraint violation.
 
 ## Plan
 
-### 1. Database migration: Add 100 credits to all existing accounts
+### 1. Migration: Fix `evaluation_runs` schema drift
 
-Run a single SQL migration that:
-- Adds 100 to `total_credits` for every row in `user_credits`
-- Records a `credit_transactions` entry for each user (type `free`, resource `credit`, metadata noting "Bonus credits grant")
+New migration to reconcile the old table with the expected shape:
 
 ```sql
--- Add 100 credits to all existing users
-UPDATE public.user_credits
-SET total_credits = total_credits + 100,
-    updated_at = now();
+-- Make old NOT NULL columns nullable or provide defaults
+ALTER TABLE public.evaluation_runs ALTER COLUMN user_id DROP NOT NULL;
+ALTER TABLE public.evaluation_runs ALTER COLUMN models SET DEFAULT '[]'::jsonb;
+ALTER TABLE public.evaluation_runs ALTER COLUMN models DROP NOT NULL;
+ALTER TABLE public.evaluation_runs ALTER COLUMN tests SET DEFAULT '[]'::jsonb;
+ALTER TABLE public.evaluation_runs ALTER COLUMN tests DROP NOT NULL;
 
--- Record transactions for audit trail
-INSERT INTO public.credit_transactions (user_id, amount, transaction_type, resource_type, metadata)
-SELECT user_id, 100, 'free', 'credit', '{"description": "Bonus 100 credits grant"}'::jsonb
-FROM public.user_credits;
+-- Fix status default to match new schema
+ALTER TABLE public.evaluation_runs ALTER COLUMN status SET DEFAULT 'queued';
+
+-- Fix mode check constraint to allow new values
+ALTER TABLE public.evaluation_runs DROP CONSTRAINT IF EXISTS evaluation_runs_mode_check;
+ALTER TABLE public.evaluation_runs ADD CONSTRAINT evaluation_runs_mode_check
+  CHECK (mode IS NULL OR mode IN ('off', 'shadow', 'soft_gate', 'hard_gate', 'text-to-image'));
+
+-- Fix status check constraint
+ALTER TABLE public.evaluation_runs DROP CONSTRAINT IF EXISTS evaluation_runs_status_check;
+ALTER TABLE public.evaluation_runs ADD CONSTRAINT evaluation_runs_status_check
+  CHECK (status IS NULL OR status IN ('queued', 'running', 'completed', 'failed', 'pending'));
+
+-- Notify PostgREST to reload
+NOTIFY pgrst, 'reload schema';
 ```
 
-### 2. New accounts — already handled
-The existing `grant_free_credits` trigger on `profiles` already inserts 100 credits for every new user. No changes needed.
+### 2. Redeploy `evaluate-storyboard-packet` (no code changes needed)
+
+The edge function code is correct — it just needs the DB schema to match. Once migration is applied, existing code will work.
+
+### 3. LinkedIn/ad-blocker errors — not from your app
+
+The `px.ads.linkedin.com` and `ERR_BLOCKED_BY_CLIENT` errors are from an ad blocker blocking tracking pixels on the Lovable editor page. No action needed.
 
 ## Files changed
+
 | File | Change |
 |------|--------|
-| New migration SQL | Add 100 credits to all 14 existing accounts + transaction records |
+| New migration SQL | Fix `evaluation_runs` NOT NULL constraints and check constraints |
 
