@@ -226,7 +226,6 @@ export default function Home() {
           onClose={() => setIsMobileSidebarOpen(false)}
           activeView={activeView}
           onViewChange={setActiveView}
-          auraProjectId={latestProjectForAura?.id ?? null}
         />
 
         {/* Main Content */}
