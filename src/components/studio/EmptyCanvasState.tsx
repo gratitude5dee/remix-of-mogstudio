@@ -227,7 +227,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
               </div>
 
               {/* Text Content - Bottom portion */}
-              <div className="p-4 bg-[#0d0d0d]/80 border-t border-white/6 backdrop-blur-sm">
+              <div className="p-4 bg-[#0d0d0d]/80 border-t border-[rgba(249,115,22,0.1)] backdrop-blur-sm">
                 <h3 className="mb-1 text-left text-sm font-semibold text-white">
                   {preset.title}
                 </h3>
