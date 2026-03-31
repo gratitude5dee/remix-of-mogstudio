@@ -304,7 +304,7 @@ function NodeInspector({
         </section>
 
         {mediaType ? (
-          <section className="space-y-3 rounded-[22px] border border-white/10 bg-[#111111]/98 p-4">
+          <section className="space-y-3 rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
             <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Generate</div>
 
             <div className="space-y-2">
