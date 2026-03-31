@@ -27,9 +27,12 @@ interface EnhancedStoryboardSidebarProps {
 const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
   data,
   sceneId,
-  onUpdate
+  onUpdate,
+  onProjectUpdate
 }) => {
   const [sceneDesc, setSceneDesc] = useState(data.sceneDescription || '');
+  const [projectTitle, setProjectTitle] = useState(data.projectTitle || '');
+  const [projectDesc, setProjectDesc] = useState(data.projectDescription || '');
   const [openSections, setOpenSections] = useState({
     location: true,
     style: false,
