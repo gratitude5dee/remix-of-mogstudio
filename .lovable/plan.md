@@ -1,53 +1,48 @@
 
 
-# Fix Evaluation Job Failures + Switch to Gemini 3.1 Flash
+# Fix Evaluation Job Failures + Improve Observability UI
 
 ## Root Cause
 
-The `evaluate-storyboard-packet` edge function fails because the remote `evaluation_runs` table has an **old schema** with `user_id NOT NULL`, `models NOT NULL`, and `tests NOT NULL` columns. The migration's `CREATE TABLE IF NOT EXISTS` was silently skipped (table already existed), so these old NOT NULL constraints remain. The edge function insert omits these fields, causing the constraint violation.
+The `evaluate-storyboard-packet` edge function inserts into `evaluation_results` without providing `test_id` or `model_id`, both of which are `NOT NULL` in the remote DB. The shadow evaluator doesn't use these legacy columns (they're from an older text-to-image evaluation schema).
 
 ## Plan
 
-### 1. Migration: Fix `evaluation_runs` schema drift
-
-New migration to reconcile the old table with the expected shape:
+### 1. Migration: Make `test_id` and `model_id` nullable
 
 ```sql
--- Make old NOT NULL columns nullable or provide defaults
-ALTER TABLE public.evaluation_runs ALTER COLUMN user_id DROP NOT NULL;
-ALTER TABLE public.evaluation_runs ALTER COLUMN models SET DEFAULT '[]'::jsonb;
-ALTER TABLE public.evaluation_runs ALTER COLUMN models DROP NOT NULL;
-ALTER TABLE public.evaluation_runs ALTER COLUMN tests SET DEFAULT '[]'::jsonb;
-ALTER TABLE public.evaluation_runs ALTER COLUMN tests DROP NOT NULL;
+ALTER TABLE public.evaluation_results ALTER COLUMN test_id DROP NOT NULL;
+ALTER TABLE public.evaluation_results ALTER COLUMN model_id DROP NOT NULL;
 
--- Fix status default to match new schema
-ALTER TABLE public.evaluation_runs ALTER COLUMN status SET DEFAULT 'queued';
+-- Clean up stuck evaluation runs
+UPDATE public.evaluation_runs
+SET status = 'failed', completed_at = now(),
+    error_message = 'Orphaned by schema constraint failure'
+WHERE status = 'running'
+  AND started_at < now() - interval '5 minutes';
 
--- Fix mode check constraint to allow new values
-ALTER TABLE public.evaluation_runs DROP CONSTRAINT IF EXISTS evaluation_runs_mode_check;
-ALTER TABLE public.evaluation_runs ADD CONSTRAINT evaluation_runs_mode_check
-  CHECK (mode IS NULL OR mode IN ('off', 'shadow', 'soft_gate', 'hard_gate', 'text-to-image'));
-
--- Fix status check constraint
-ALTER TABLE public.evaluation_runs DROP CONSTRAINT IF EXISTS evaluation_runs_status_check;
-ALTER TABLE public.evaluation_runs ADD CONSTRAINT evaluation_runs_status_check
-  CHECK (status IS NULL OR status IN ('queued', 'running', 'completed', 'failed', 'pending'));
-
--- Notify PostgREST to reload
 NOTIFY pgrst, 'reload schema';
 ```
 
-### 2. Redeploy `evaluate-storyboard-packet` (no code changes needed)
+### 2. Redeploy `evaluate-storyboard-packet`
 
-The edge function code is correct — it just needs the DB schema to match. Once migration is applied, existing code will work.
+No code changes needed — the function is correct, it's just the DB constraints that were blocking it.
 
-### 3. LinkedIn/ad-blocker errors — not from your app
+### 3. Improve Observability Page UI
 
-The `px.ads.linkedin.com` and `ERR_BLOCKED_BY_CLIENT` errors are from an ad blocker blocking tracking pixels on the Lovable editor page. No action needed.
+Redesign `src/pages/ProjectObservabilityPage.tsx` with:
+
+- **Refined header**: Gradient accent bar, better hierarchy with a subtle system status indicator (green dot when healthy, amber when jobs failing)
+- **Overview tab**: Replace plain `MetricCard` with animated stat cards showing sparkline-style indicators; use color-coded status dots; add a mini timeline strip showing last 24h activity
+- **Runs tab**: Add status icon (check/x/spinner) per row, color-code the left border of each card by status (green=completed, red=failed, amber=running), add relative timestamps ("2 min ago"), add filter chips for status
+- **Judges tab**: Render score as a visual bar (not just text), show confidence as a subtle opacity gauge, better layout for criterion breakdowns
+- **Review tab**: Cleaner action buttons with better spacing, inline status transitions
+- **Overall**: Use consistent `border-l-2` status indicators, softer card backgrounds with glass effect, better typography hierarchy
 
 ## Files changed
 
 | File | Change |
 |------|--------|
-| New migration SQL | Fix `evaluation_runs` NOT NULL constraints and check constraints |
+| New migration SQL | Drop NOT NULL on `test_id`, `model_id`; fail stuck runs |
+| `src/pages/ProjectObservabilityPage.tsx` | UI redesign with status indicators, visual scores, better layout |
 
