@@ -69,7 +69,7 @@ export const ConnectionNodeSelector: React.FC<ConnectionNodeSelectorProps> = ({
           isTransforming && 'shadow-[0_0_30px_rgba(249,115,22,0.18)]'
         )}
       >
-        <div className="border-b border-zinc-800/60 bg-gradient-to-b from-zinc-800/35 to-transparent px-4 py-3">
+        <div className="border-b border-[rgba(249,115,22,0.12)] bg-gradient-to-b from-zinc-800/35 to-transparent px-4 py-3">
           <div className="text-[11px] font-semibold tracking-[0.22em] text-zinc-500">
             TURN INTO
           </div>
