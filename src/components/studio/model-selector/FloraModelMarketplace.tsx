@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Check, ChevronDown, ChevronRight, Dot, Info, Pin, Search } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -87,6 +87,20 @@ export function FloraModelMarketplace({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [activeProviderKey, setActiveProviderKey] = useState<string | null>(null);
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
+
+  const togglePin = useCallback((modelId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPinnedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(modelId)) {
+        next.delete(modelId);
+      } else {
+        next.add(modelId);
+      }
+      return next;
+    });
+  }, []);
 
   const pinnedModels = useMemo(
     () => getPinnedMarketplaceModels(mediaType, uiGroup).filter((model) => filterModel(model, search)),
@@ -180,6 +194,7 @@ export function FloraModelMarketplace({
 
   const renderModelRow = (model: MarketplaceModel, compactRow = false) => {
     const isSelected = value.selectedModelIds.includes(model.id);
+    const isPinned = pinnedIds.has(model.id) || model.isPinned;
 
     return (
       <button
@@ -187,57 +202,66 @@ export function FloraModelMarketplace({
         type="button"
         onClick={() => toggleModel(model.id)}
         className={cn(
-          'flex w-full items-start gap-3 border text-left transition-colors',
+          'group relative flex w-full items-start gap-3 text-left transition-all duration-150',
           compactRow
-            ? 'rounded-[16px] px-3 py-2.5'
+            ? 'rounded-[14px] px-3 py-2'
             : isToolbarVariant
-              ? 'rounded-[18px] px-3.5 py-3'
-              : 'rounded-[20px] px-4 py-3.5',
+              ? 'rounded-[16px] px-3 py-2.5'
+              : 'rounded-[18px] px-3.5 py-3',
           isSelected
-            ? 'border-[#fb923c]/35 bg-[#1a1510]'
-            : 'border-[rgba(249,115,22,0.06)] bg-[#121212] hover:border-[rgba(249,115,22,0.15)] hover:bg-[#191919]'
+            ? 'border-l-[3px] border-l-[#f97316] border-y border-r border-y-[rgba(249,115,22,0.12)] border-r-[rgba(249,115,22,0.12)] bg-[#1a1510]'
+            : 'border border-[rgba(249,115,22,0.06)] bg-[#121212] hover:border-[rgba(249,115,22,0.15)] hover:bg-[#161616]'
         )}
       >
-        <div className="mt-0.5 flex h-10 w-10 flex-none items-center justify-center rounded-2xl border border-[rgba(249,115,22,0.1)] bg-[#1D1D1D] text-xs font-semibold text-zinc-300">
-          {model.providerLabel.slice(0, 1)}
+        <div className={cn(
+          'mt-0.5 flex flex-none items-center justify-center rounded-xl border border-[rgba(249,115,22,0.1)] bg-[#1D1D1D] text-[10px] font-semibold tracking-wide text-zinc-300',
+          compactRow ? 'h-8 w-8' : 'h-9 w-9'
+        )}>
+          {model.providerLabel.slice(0, 2).toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium text-white">{model.name}</span>
+          <div className="flex items-center gap-1.5">
+            <span className={cn('truncate font-medium text-white', compactRow ? 'text-[13px]' : 'text-sm')}>{model.name}</span>
             {model.isNew ? (
-              <Badge className="h-5 rounded-full border border-[#fb923c]/30 bg-[#251c0e] px-2 text-[10px] text-[#fdba74]">
+              <span className="inline-flex h-[18px] items-center rounded-full border border-[#fb923c]/25 bg-[#251c0e] px-1.5 text-[9px] font-semibold uppercase tracking-wider text-[#fdba74]">
                 New
-              </Badge>
+              </span>
             ) : null}
           </div>
-          <div className={cn('text-xs leading-5 text-zinc-400', compactRow ? 'mt-0.5 line-clamp-1' : 'mt-1')}>
+          <div className={cn('text-xs leading-relaxed text-zinc-500', compactRow ? 'mt-0.5 line-clamp-1' : 'mt-0.5 line-clamp-2')}>
             {model.description}
           </div>
-          <div className={cn('flex flex-wrap items-center gap-1.5', compactRow ? 'mt-1.5' : 'mt-2')}>
-            <Badge className="h-5 rounded-full border border-[rgba(249,115,22,0.1)] bg-[#1E1E1E] px-2 text-[10px] text-zinc-300">
-              ⊕{model.credits}
-            </Badge>
-            <Badge className="h-5 rounded-full border border-[rgba(249,115,22,0.1)] bg-[#1E1E1E] px-2 text-[10px] text-zinc-300">
-              {model.time}
-            </Badge>
-            {model.capabilities.map((capability) => (
-              <Badge
-                key={`${model.id}-${capability}`}
-                className="h-5 rounded-full border border-[rgba(249,115,22,0.1)] bg-[#1E1E1E] px-2 text-[10px] text-zinc-400"
-              >
-                {capability}
-              </Badge>
+          <div className={cn('flex items-center gap-0 text-[10px] text-zinc-500', compactRow ? 'mt-1' : 'mt-1.5')}>
+            <span className="text-zinc-400">⊕{model.credits}</span>
+            <span className="mx-1.5 text-zinc-600">·</span>
+            <span>{model.time}</span>
+            {model.capabilities.map((capability, i) => (
+              <span key={`${model.id}-${capability}`} className="contents">
+                <span className="mx-1.5 text-zinc-600">·</span>
+                <span>{capability}</span>
+              </span>
             ))}
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          {model.isPinned ? <Pin className="h-3.5 w-3.5 text-zinc-500" /> : <span className="h-3.5 w-3.5" />}
+        <div className="flex flex-col items-end gap-1.5 pt-0.5">
+          <button
+            type="button"
+            onClick={(e) => togglePin(model.id, e)}
+            className={cn(
+              'flex h-5 w-5 items-center justify-center rounded-md transition-all',
+              isPinned
+                ? 'text-[#f97316]'
+                : 'text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-zinc-400'
+            )}
+          >
+            <Pin className={cn('h-3 w-3', isPinned && 'fill-current')} />
+          </button>
           {isSelected ? (
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#fb923c] text-black">
-              <Check className="h-3.5 w-3.5" />
+            <div className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#f97316]">
+              <Check className="h-3 w-3 text-black" />
             </div>
           ) : (
-            <div className="h-5 w-5 rounded-full border border-[rgba(249,115,22,0.12)] bg-[#101010]" />
+            <div className="h-4.5 w-4.5 rounded-full border border-[rgba(249,115,22,0.12)] bg-[#101010]" />
           )}
         </div>
       </button>
@@ -287,42 +311,55 @@ export function FloraModelMarketplace({
         )}
         style={{ maxHeight: resolvedMaxHeight, width: resolvedWidth }}
       >
-        <div className={cn('flex max-h-full flex-col gap-4 overflow-hidden', isToolbarVariant ? 'p-3.5' : 'p-4')}>
-          <div className="flex items-center gap-2 rounded-[20px] border border-[rgba(249,115,22,0.1)] bg-[#171717] px-3">
-            <Search className="h-4 w-4 text-zinc-500" />
+        <div className={cn('flex max-h-full flex-col gap-3 overflow-hidden', isToolbarVariant ? 'p-3' : 'p-3.5')}>
+          {/* Search bar with keyboard hint */}
+          <div className="flex items-center gap-2 rounded-[16px] border border-[rgba(249,115,22,0.1)] bg-[#171717] px-3">
+            <Search className="h-4.5 w-4.5 flex-none text-zinc-500" />
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search compatible models"
+              placeholder="Search models…"
               className={cn(
-                'border-0 bg-transparent px-0 text-sm text-white placeholder:text-zinc-500 focus-visible:ring-0',
+                'border-0 bg-transparent px-0 text-sm text-white placeholder:text-zinc-600 focus-visible:ring-0',
                 isToolbarVariant ? 'h-10' : 'h-11'
               )}
             />
+            <kbd className="hidden flex-none rounded-md border border-[rgba(249,115,22,0.08)] bg-[#1a1a1a] px-1.5 py-0.5 text-[10px] text-zinc-600 sm:inline-flex">
+              ⌘K
+            </kbd>
           </div>
 
           <div
             className="grid min-h-0 gap-3"
             style={{
-              gridTemplateColumns: isToolbarVariant ? '320px minmax(0, 1fr)' : '340px minmax(0, 1fr)',
+              gridTemplateColumns: isToolbarVariant ? '300px minmax(0, 1fr)' : '320px minmax(0, 1fr)',
             }}
           >
-            <div className="min-h-0 space-y-3">
-              <div className={cn('grid gap-3 rounded-[24px] border border-[rgba(249,115,22,0.08)] bg-[#141414]', isToolbarVariant ? 'p-3.5' : 'p-4')}>
+            {/* Left pane */}
+            <div className="min-h-0 space-y-2.5">
+              {/* Settings panel */}
+              <div className={cn('grid gap-2.5 rounded-[20px] border border-[rgba(249,115,22,0.08)] bg-[#141414]', isToolbarVariant ? 'p-3' : 'p-3.5')}>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-zinc-200">
-                    <span>Auto select model</span>
-                    <Info className="h-3.5 w-3.5 text-zinc-500" />
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[13px] text-zinc-200">
+                      <span>Auto select</span>
+                      <Info className="h-3 w-3 text-zinc-600" />
+                    </div>
+                    <div className="mt-0.5 text-[10px] leading-tight text-zinc-600">Let WZRD pick the best model</div>
                   </div>
                   <Switch
                     checked={value.auto}
                     onCheckedChange={(checked) => updateSelection({ auto: checked })}
                   />
                 </div>
+                <div className="h-px bg-[rgba(249,115,22,0.06)]" />
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-zinc-200">
-                    <span>Use multiple models</span>
-                    <Info className="h-3.5 w-3.5 text-zinc-500" />
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[13px] text-zinc-200">
+                      <span>Multi-model</span>
+                      <Info className="h-3 w-3 text-zinc-600" />
+                    </div>
+                    <div className="mt-0.5 text-[10px] leading-tight text-zinc-600">Generate with multiple models at once</div>
                   </div>
                   <Switch
                     checked={value.useMultipleModels}
@@ -336,34 +373,37 @@ export function FloraModelMarketplace({
                 </div>
               </div>
 
-              <section className="space-y-2">
-                <div className="px-1 text-[11px] uppercase tracking-[0.22em] text-zinc-500">
-                  Pinned models
+              {/* Pinned models */}
+              <section className="space-y-1.5">
+                <div className="px-1 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-600">
+                  Pinned
                 </div>
                 {pinnedModels.length > 0 ? (
-                  <div className="space-y-2">{pinnedModels.map((model) => renderModelRow(model, true))}</div>
+                  <div className="space-y-1.5">{pinnedModels.map((model) => renderModelRow(model, true))}</div>
                 ) : (
-                  <div className="rounded-[18px] border border-[rgba(249,115,22,0.08)] bg-[#141414] px-3 py-3 text-xs leading-5 text-zinc-500">
-                    Models you favorite will appear here.
+                  <div className="rounded-[14px] border border-dashed border-[rgba(249,115,22,0.08)] bg-[#131313] px-3 py-2.5 text-[11px] leading-relaxed text-zinc-600">
+                    Pin models for quick access
                   </div>
                 )}
               </section>
 
+              {/* Featured models */}
               {featuredModels.length > 0 ? (
-                <section className="space-y-2">
-                  <div className="px-1 text-[11px] uppercase tracking-[0.22em] text-zinc-500">
-                    Featured models
+                <section className="space-y-1.5">
+                  <div className="px-1 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-600">
+                    Featured
                   </div>
-                  <div className="space-y-2">{featuredModels.map((model) => renderModelRow(model, true))}</div>
+                  <div className="space-y-1.5">{featuredModels.map((model) => renderModelRow(model, true))}</div>
                 </section>
               ) : null}
 
-              <section className="space-y-2">
-                <div className="px-1 text-[11px] uppercase tracking-[0.22em] text-zinc-500">
+              {/* Providers */}
+              <section className="space-y-1.5">
+                <div className="px-1 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-600">
                   Providers
                 </div>
                 <ScrollArea className={cn('pr-2', !isToolbarVariant && 'pr-3')} style={{ maxHeight: providerListMaxHeight }}>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     {providers.map((provider) => {
                       const isActive = provider.key === activeProvider?.key;
                       return (
@@ -372,24 +412,30 @@ export function FloraModelMarketplace({
                           type="button"
                           onClick={() => setActiveProviderKey(provider.key)}
                           className={cn(
-                            'flex w-full items-center justify-between rounded-[18px] border px-3.5 py-3 text-left transition-colors',
+                            'relative flex w-full items-center justify-between rounded-[14px] border px-3 py-2.5 text-left transition-all duration-150 overflow-hidden',
                             isActive
                               ? 'border-[rgba(249,115,22,0.15)] bg-[#1B1B1B]'
-                              : 'border-[rgba(249,115,22,0.08)] bg-[#141414] hover:border-[rgba(249,115,22,0.15)] hover:bg-[#181818]'
+                              : 'border-[rgba(249,115,22,0.06)] bg-[#131313] hover:border-[rgba(249,115,22,0.12)] hover:bg-[#171717]'
                           )}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-[rgba(249,115,22,0.1)] bg-[#1D1D1D] text-xs font-semibold text-zinc-300">
-                              {provider.label.slice(0, 1)}
+                          {isActive && (
+                            <div className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-r-full bg-[#f97316]" />
+                          )}
+                          <div className="flex items-center gap-2.5">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-[rgba(249,115,22,0.1)] bg-[#1D1D1D] text-[10px] font-semibold tracking-wide text-zinc-400">
+                              {provider.label.slice(0, 2).toUpperCase()}
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-white">{provider.label}</div>
-                              <div className="text-xs text-zinc-500">
+                              <div className="text-[13px] font-medium text-white">{provider.label}</div>
+                              <div className="text-[10px] text-zinc-600">
                                 {provider.models.length} model{provider.models.length === 1 ? '' : 's'}
                               </div>
                             </div>
                           </div>
-                          <ChevronRight className="h-4 w-4 text-zinc-500" />
+                          <ChevronRight className={cn(
+                            'h-3.5 w-3.5 text-zinc-600 transition-transform duration-150',
+                            isActive && 'rotate-90 text-zinc-400'
+                          )} />
                         </button>
                       );
                     })}
@@ -398,29 +444,27 @@ export function FloraModelMarketplace({
               </section>
             </div>
 
-            <div className="min-h-0 overflow-hidden rounded-[24px] border border-[rgba(249,115,22,0.08)] bg-[#141414]">
+            {/* Right pane */}
+            <div className="min-h-0 overflow-hidden rounded-[20px] border border-[rgba(249,115,22,0.08)] bg-[#131313]">
               {activeProvider ? (
                 <>
-                  <div className="flex items-center justify-between border-b border-[rgba(249,115,22,0.08)] px-4 py-3">
-                    <div>
-                      <div className="text-sm font-medium text-white">{activeProvider.label}</div>
-                      <div className="text-xs text-zinc-500">
-                        {activeProvider.models.length} model{activeProvider.models.length === 1 ? '' : 's'}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 rounded-full border border-[rgba(249,115,22,0.1)] bg-[#181818] px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-                      <Dot className="h-3.5 w-3.5" />
-                      Models
+                  <div className="flex items-center justify-between px-3.5 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className="text-[13px] font-medium text-white">{activeProvider.label}</div>
+                      <span className="inline-flex h-[18px] items-center rounded-full border border-[rgba(249,115,22,0.1)] bg-[#1a1a1a] px-1.5 text-[10px] tabular-nums text-zinc-500">
+                        {activeProvider.models.length}
+                      </span>
                     </div>
                   </div>
-                  <ScrollArea className="pr-3" style={{ maxHeight: rightPaneMaxHeight }}>
-                    <div className="space-y-2 p-3">
+                  <div className="mx-3.5 h-px bg-[rgba(249,115,22,0.06)]" />
+                  <ScrollArea className="pr-2.5" style={{ maxHeight: rightPaneMaxHeight }}>
+                    <div className="space-y-1.5 p-2.5">
                       {activeProvider.models.map((model) => renderModelRow(model))}
                     </div>
                   </ScrollArea>
                 </>
               ) : (
-                <div className="flex h-full min-h-[260px] items-center justify-center px-6 text-sm text-zinc-500">
+                <div className="flex h-full min-h-[260px] items-center justify-center px-6 text-sm text-zinc-600">
                   No models match this search.
                 </div>
               )}
