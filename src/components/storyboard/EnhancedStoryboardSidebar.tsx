@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { SidebarData } from '@/types/storyboardTypes';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -20,14 +21,18 @@ interface EnhancedStoryboardSidebarProps {
     lighting?: string | null;
     weather?: string | null;
   }) => void;
+  onProjectUpdate?: (updates: { title?: string; description?: string }) => void;
 }
 
 const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
   data,
   sceneId,
-  onUpdate
+  onUpdate,
+  onProjectUpdate
 }) => {
   const [sceneDesc, setSceneDesc] = useState(data.sceneDescription || '');
+  const [projectTitle, setProjectTitle] = useState(data.projectTitle || '');
+  const [projectDesc, setProjectDesc] = useState(data.projectDescription || '');
   const [openSections, setOpenSections] = useState({
     location: true,
     style: false,
@@ -39,6 +44,11 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
   useEffect(() => {
     setSceneDesc(data.sceneDescription || '');
   }, [data.sceneDescription]);
+
+  useEffect(() => {
+    setProjectTitle(data.projectTitle || '');
+    setProjectDesc(data.projectDescription || '');
+  }, [data.projectTitle, data.projectDescription]);
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
@@ -86,12 +96,20 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
             )}>
               <div className="absolute top-0 right-0 h-20 w-20 rounded-full bg-[#f97316]/10 blur-2xl" />
 
-              <h2 className="relative z-10 mb-2 font-serif text-lg font-bold tracking-wide text-[#d4a574]">
-                {data.projectTitle || 'Project Title'}
-              </h2>
-              <p className="text-zinc-400 text-xs leading-relaxed line-clamp-3 relative z-10">
-                {data.projectDescription || 'No project description.'}
-              </p>
+              <Input
+                value={projectTitle}
+                onChange={(e) => setProjectTitle(e.target.value)}
+                onBlur={() => onProjectUpdate?.({ title: projectTitle })}
+                placeholder="Project Title"
+                className="relative z-10 mb-2 font-serif text-lg font-bold tracking-wide text-[#d4a574] bg-transparent border-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-[#d4a574]/40"
+              />
+              <Textarea
+                value={projectDesc}
+                onChange={(e) => setProjectDesc(e.target.value)}
+                onBlur={() => onProjectUpdate?.({ description: projectDesc })}
+                placeholder="Add a project description..."
+                className="text-zinc-400 text-xs leading-relaxed relative z-10 bg-transparent border-none p-0 min-h-[40px] resize-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-zinc-600"
+              />
             </div>
           </motion.div>
 
