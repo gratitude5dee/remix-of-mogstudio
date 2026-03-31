@@ -314,12 +314,12 @@ export const AppHeader = ({
                 Rename project
               </DropdownMenuItem>
               
-              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
               
               <DropdownMenuItem 
                 onClick={onUndo} 
                 disabled={!onUndo}
-                className="hover:bg-zinc-800 cursor-pointer"
+                className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
               >
                 <Undo className="mr-2 h-4 w-4" />
                 Undo
