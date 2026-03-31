@@ -1,61 +1,51 @@
 
 
-# NodeHoverMenu Gap + Model Marketplace UI Polish + Remove Idle Badge
+# Fix Model Marketplace Overflow — Make Left Pane Scrollable
 
-## 1. Reduce NodeHoverMenu gap by 5px
+## Problem
 
-**File: `src/components/studio/nodes/NodeHoverMenu.tsx` (line 148)**
+The left pane (settings + pinned + featured + providers) has no scroll container wrapping it as a whole. When there are enough pinned/featured models, the content overflows beyond the popover's max height and gets clipped — the user can't scroll to see all items.
 
-Change `-translate-y-[calc(100%+10px)]` → `-translate-y-[calc(100%+5px)]` on the outer static wrapper.
-
-## 2. Remove the "Idle" status badge
-
-**File: `src/components/studio/status/NodeStatusBadge.tsx`**
-
-Return `null` early when `status === 'idle'` (line ~22, before `getStatusConfig`). The default case currently renders a visible "Idle" pill — users should see nothing when a node is idle.
-
-## 3. Redesign FloraModelMarketplace dropdown
+## Fix
 
 **File: `src/components/studio/model-selector/FloraModelMarketplace.tsx`**
 
-Major UI improvements to match a world-class design standard:
+1. **Wrap the entire left pane in a `ScrollArea`** — The `<div className="min-h-0 space-y-2.5">` (line 338) needs to become a scroll container so all its children (settings, pinned, featured, providers) scroll together when content exceeds the available height.
 
-**Pin/unpin models:**
-- Add local state `pinnedIds` (Set) for user-pinned models
-- Replace the static `Pin` icon in `renderModelRow` with an interactive pin button that toggles pin state on click (with `e.stopPropagation()` to avoid selecting the model)
-- Pinned icon: filled `Pin` in orange; unpinned: outline `Pin` in zinc-500, visible on hover only
-- Pinned models appear in the "Pinned models" section dynamically
+2. **Remove the inner provider-only `ScrollArea`** (line 404) — It's redundant once the whole left pane scrolls. Keeping it creates nested scroll regions which is bad UX.
 
-**Model row improvements:**
-- Tighter, cleaner layout — reduce vertical padding slightly for compact rows
-- Add subtle hover animation (scale 1.005 or bg transition)
-- Selected state: stronger orange left-border accent (3px solid `#f97316` on left side) instead of full border color change
-- Capability badges: use dot-separated inline text instead of individual badges to reduce visual noise (e.g., `⊕13 · 8s · I · R`)
-- "New" badge: smaller, more refined pill
+3. **Ensure the grid row uses `min-h-0 overflow-hidden`** on both columns so flex/grid children respect the max-height constraint and allow scrolling.
 
-**Provider list improvements:**
-- Active provider: add a left accent bar (2px orange) instead of just border change
-- Provider icon: use first 2 letters instead of 1 for better recognition
-- Subtle chevron rotation on active provider
+### Specific changes (line 338):
 
-**Right pane (provider detail) header:**
-- Add model count badge with refined styling
-- Add a subtle separator line below header
+| Current | Updated |
+|---------|---------|
+| `<div className="min-h-0 space-y-2.5">` | `<ScrollArea className="min-h-0" style={{ maxHeight: rightPaneMaxHeight }}>` + inner `<div className="space-y-2.5 pr-2">` |
 
-**Search bar:**
-- Add a keyboard shortcut hint (`⌘K` or just `/`) as trailing element
-- Slightly larger search icon
+### Remove nested ScrollArea (line 404):
 
-**Settings panel (auto select / multi-model toggles):**
-- Add subtle descriptions under each toggle label in zinc-500 text
-- e.g., "Auto select model" → sub-text: "Let WZRD pick the best model"
-- e.g., "Use multiple models" → sub-text: "Generate with multiple models at once"
+Replace:
+```tsx
+<ScrollArea className={cn('pr-2', ...)} style={{ maxHeight: providerListMaxHeight }}>
+  <div className="space-y-1.5">
+    {providers.map(...)}
+  </div>
+</ScrollArea>
+```
+
+With just:
+```tsx
+<div className="space-y-1.5">
+  {providers.map(...)}
+</div>
+```
+
+4. **Reduce NodeHoverMenu gap** — Change `-translate-y-[calc(100%+10px)]` to `-translate-y-[calc(100%+5px)]` in `NodeHoverMenu.tsx` (line 148) to bring it 5px closer to the node.
 
 ## Files changed
 
 | File | Change |
 |------|--------|
+| `src/components/studio/model-selector/FloraModelMarketplace.tsx` | Wrap left pane in ScrollArea, remove nested provider ScrollArea |
 | `src/components/studio/nodes/NodeHoverMenu.tsx` | Reduce vertical gap from 10px to 5px |
-| `src/components/studio/status/NodeStatusBadge.tsx` | Return null for idle status |
-| `src/components/studio/model-selector/FloraModelMarketplace.tsx` | Pin/unpin interactivity, refined model rows, provider accent bars, search hint, toggle descriptions |
 
