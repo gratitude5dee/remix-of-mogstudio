@@ -122,7 +122,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
                 className="rounded-full border border-[#f97316]/35 bg-[#181510] px-5 py-2.5 text-sm font-medium text-[#dfe8d9] transition hover:border-[#f97316]/60 hover:bg-[#1e1810]"
                 onClick={onStartFloraExample}
               >
-                Start FLORA example
+                Start WZRD example
               </button>
             ) : null}
           </div>
