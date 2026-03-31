@@ -307,13 +307,13 @@ export default function Home() {
                     </DropdownMenuLabel>
                     
                     <DropdownMenuItem 
-                      className="hover:bg-surface-2 dark:hover:bg-zinc-800 cursor-pointer"
+                      className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
                     >
                       <Palette className="mr-2 h-4 w-4" />
                       Appearance
                     </DropdownMenuItem>
                     
-                    <DropdownMenuSeparator className="bg-border-default dark:bg-zinc-800" />
+                    <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
                     
                     <DropdownMenuItem 
                       onClick={async () => {
