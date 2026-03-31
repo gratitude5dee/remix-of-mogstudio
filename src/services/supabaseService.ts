@@ -1091,7 +1091,7 @@ export const shotService = {
     try {
       const { error } = await supabase
         .from('shots')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id);
         
       if (error) throw error;
