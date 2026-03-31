@@ -15,7 +15,7 @@ const StudioInspectorPanel = ({ activeJobs = 0, onGenerate }: StudioInspectorPan
           <Sparkles className="w-5 h-5 text-orange-400" />
           <span className="text-white font-medium">Generate</span>
         </div>
-        <Button variant="outline" size="sm" className="border-zinc-700 text-white">
+        <Button variant="outline" size="sm" className="border-[rgba(249,115,22,0.2)] text-white">
           <Share2 className="w-4 h-4 mr-2" />
           Share
         </Button>
