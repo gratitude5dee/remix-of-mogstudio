@@ -4,23 +4,22 @@ import thirdwebLogo from '@/assets/logos/thirdweb.webp';
 import humantechLogo from '@/assets/logos/humantech.svg';
 import elevenlabsLogo from '@/assets/logos/elevenlabs.png';
 import anthropicLogo from '@/assets/logos/anthropic.svg';
-import fiveDeeLogo from '@/assets/logos/5dee.svg';
+
 
 interface Logo {
   id: string;
   name: string;
   image?: string;
+  height?: number;
 }
 
 const logos: Logo[] = [
-  { id: '1', name: '5DEE Studios', image: fiveDeeLogo },
+  { id: '1', name: '5DEE Studios' },
   { id: '2', name: 'Anthropic', image: anthropicLogo },
-  { id: '3', name: 'Sora' },
   { id: '4', name: 'ElevenLabs', image: elevenlabsLogo },
-  { id: '5', name: 'Story Protocol', image: storyLogo },
-  { id: '6', name: 'Human.tech', image: humantechLogo },
+  { id: '5', name: 'Story Protocol', image: storyLogo, height: 44 },
+  { id: '6', name: 'Human.tech', image: humantechLogo, height: 44 },
   { id: '7', name: 'Veo 3.1' },
-  { id: '8', name: 'Nanobanana 2' },
   { id: '9', name: 'Seedream 2' },
   { id: '10', name: 'Seedance 2' },
   { id: '11', name: 'WAN 2.6' },
@@ -28,7 +27,7 @@ const logos: Logo[] = [
   { id: '13', name: 'thirdweb', image: thirdwebLogo },
 ];
 
-const LOGO_HEIGHT = 22;
+const DEFAULT_HEIGHT = 22;
 
 const ScrollingPartners: React.FC = () => {
   return (
@@ -51,13 +50,13 @@ const ScrollingPartners: React.FC = () => {
                     <img
                       src={logo.image}
                       alt={logo.name}
-                      style={{ height: LOGO_HEIGHT }}
+                      style={{ height: logo.height || DEFAULT_HEIGHT }}
                       className="object-contain brightness-0 invert opacity-40 hover:opacity-70 transition-opacity"
                     />
                   ) : (
                     <span
                       className="text-white/40 font-semibold text-lg md:text-xl tracking-tight hover:text-white/70 transition-colors"
-                      style={{ lineHeight: `${LOGO_HEIGHT}px` }}
+                      style={{ lineHeight: `${DEFAULT_HEIGHT}px` }}
                     >
                       {logo.name}
                     </span>
