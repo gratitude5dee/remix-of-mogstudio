@@ -294,7 +294,7 @@ export const AppHeader = ({
                 <Home className="mr-2 h-4 w-4" />
                 Back to home
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleOpenBilling} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={handleOpenBilling} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Coins className="mr-2 h-4 w-4" />
                 Billing & credits
               </DropdownMenuItem>
