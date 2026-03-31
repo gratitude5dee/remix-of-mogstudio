@@ -68,7 +68,7 @@ const steps = [
         ))}
         <div className="flex items-center justify-between mt-2">
           <span className="text-[8px] text-white/20 font-mono">3 workflows active</span>
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
         </div>
       </div>
     ),
