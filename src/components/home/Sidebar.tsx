@@ -210,7 +210,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
         {/* Shine border on hover */}
         <div className="absolute inset-0 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500 pointer-events-none rounded-r-xl overflow-hidden">
           <ShineBorder
-            shineColor={["hsl(var(--accent-purple))", "hsl(var(--amber))"]}
+            shineColor={["#f97316", "#d4a574"]}
             borderWidth={1}
             duration={8}
           />
