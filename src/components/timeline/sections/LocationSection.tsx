@@ -182,7 +182,7 @@ export function LocationSection({
                   value={data.name}
                   onChange={(e) => handleDataChange({ name: e.target.value })}
                   placeholder="e.g., Cyberpunk Tokyo Street, Mountain Valley..."
-                  className="mt-1 text-sm h-9 bg-zinc-900/50 border-zinc-800/50"
+                   className="mt-1 text-sm h-9 bg-zinc-900/50 border-[#f97316]/15"
                 />
               </div>
 
