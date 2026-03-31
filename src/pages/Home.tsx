@@ -294,13 +294,13 @@ export default function Home() {
                     
                     <DropdownMenuItem 
                       onClick={() => navigate(appRoutes.settings.billing)} 
-                      className="hover:bg-surface-2 dark:hover:bg-zinc-800 cursor-pointer"
+                      className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
                     >
                       <Coins className="mr-2 h-4 w-4" />
                       Billing & Credits
                     </DropdownMenuItem>
                     
-                    <DropdownMenuSeparator className="bg-border-default dark:bg-zinc-800" />
+                    <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
                     
                     <DropdownMenuLabel className="text-text-secondary dark:text-zinc-400 text-xs">
                       Preferences
