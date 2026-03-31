@@ -158,8 +158,8 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
               className={cn(
                 'group relative flex flex-col overflow-hidden',
                 'aspect-[3/4] rounded-2xl',
-                'bg-[#141414]/92 border border-white/8',
-                'hover:border-white/16',
+              'bg-[#141414]/92 border border-[rgba(249,115,22,0.15)]',
+                'hover:border-[rgba(249,115,22,0.3)]',
                 'transition-colors duration-300'
               )}
               variants={{
