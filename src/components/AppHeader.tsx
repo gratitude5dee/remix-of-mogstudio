@@ -305,7 +305,7 @@ export const AppHeader = ({
                 <FilePlus className="mr-2 h-4 w-4" />
                 New project
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDuplicateProject} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={handleDuplicateProject} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Copy className="mr-2 h-4 w-4" />
                 Duplicate project
               </DropdownMenuItem>
