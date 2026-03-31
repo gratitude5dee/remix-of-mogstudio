@@ -4,6 +4,7 @@ import { Loader2, UserPlus, Plus, FolderKanban, Activity, Image, Sparkles, Setti
 import { motion } from 'framer-motion';
 import wzrdLogo from '@/assets/wzrd-logo.png';
 import { ProjectList } from '@/components/home/ProjectList';
+import { AuraProjectList } from '@/components/home/AuraProjectList';
 import { ProjectListView } from '@/components/home/ProjectListView';
 import { Sidebar } from '@/components/home/Sidebar';
 import { MobileBottomNav } from '@/components/home/MobileBottomNav';
@@ -199,12 +200,7 @@ export default function Home() {
     public: projects.filter(p => !p.is_private).length,
   };
 
-  const latestProjectForAura =
-    projects.length > 0
-      ? [...projects].sort(
-          (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        )[0]
-      : null;
+  // auraProjectId removed — Aura is now an inline view
 
   const tabs = [
     { id: 'all' as const, label: 'All', count: counts.all },
@@ -221,7 +217,6 @@ export default function Home() {
           <Sidebar
             activeView={activeView}
             onViewChange={setActiveView}
-            auraProjectId={latestProjectForAura?.id ?? null}
           />
         </div>
 
@@ -231,7 +226,6 @@ export default function Home() {
           onClose={() => setIsMobileSidebarOpen(false)}
           activeView={activeView}
           onViewChange={setActiveView}
-          auraProjectId={latestProjectForAura?.id ?? null}
         />
 
         {/* Main Content */}
@@ -480,7 +474,9 @@ export default function Home() {
 
           {/* Content Area */}
           <main data-tour="projects-section" className="p-4 md:p-6">
-            {isLoading ? (
+            {activeView === 'aura' ? (
+              <AuraProjectList projects={projects} />
+            ) : isLoading ? (
               <div className="flex flex-col items-center justify-center py-12 md:py-20">
                 <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/15 flex items-center justify-center mb-4">
                   <Loader2 className="w-7 h-7 md:w-8 md:h-8 animate-spin text-primary" />
