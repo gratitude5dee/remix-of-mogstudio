@@ -218,7 +218,7 @@ function NodeInspector({
           <div className="min-w-0">
             <div className="mb-2 text-[11px] uppercase tracking-[0.22em] text-zinc-500">Selected node</div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className="rounded-full border border-white/8 bg-white/5 px-2.5 py-1 text-[11px] text-zinc-300">
+              <Badge className="rounded-full border border-[rgba(249,115,22,0.10)] bg-white/5 px-2.5 py-1 text-[11px] text-zinc-300">
                 {node.kind}
               </Badge>
               <Badge className="rounded-full border border-[#f97316]/20 bg-[#1a1510] px-2.5 py-1 text-[11px] text-[#fdba74]">
