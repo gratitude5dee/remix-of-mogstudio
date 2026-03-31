@@ -200,12 +200,7 @@ export default function Home() {
     public: projects.filter(p => !p.is_private).length,
   };
 
-  const latestProjectForAura =
-    projects.length > 0
-      ? [...projects].sort(
-          (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        )[0]
-      : null;
+  // auraProjectId removed — Aura is now an inline view
 
   const tabs = [
     { id: 'all' as const, label: 'All', count: counts.all },
