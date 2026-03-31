@@ -324,7 +324,7 @@ function NodeInspector({
                   <select
                     value={aspectRatioValue}
                     onChange={(event) => updateParams({ aspectRatio: event.target.value })}
-                    className="h-12 w-full rounded-[18px] border border-white/10 bg-[#131313] px-3 text-sm text-white outline-none"
+                    className="h-12 w-full rounded-[18px] border border-[rgba(249,115,22,0.12)] bg-[#131313] px-3 text-sm text-white outline-none"
                   >
                     <option value="Auto">Auto</option>
                     <option value="16:9">16:9</option>
