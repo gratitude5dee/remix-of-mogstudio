@@ -53,7 +53,7 @@ const steps = [
     mockup: (
       <div className="p-3 space-y-2">
         {[
-          { w: '70%', color: 'bg-emerald-500/20 border-emerald-500/15' },
+          { w: '70%', color: 'bg-orange-500/20 border-orange-500/15' },
           { w: '50%', color: 'bg-blue-500/20 border-blue-500/15' },
           { w: '85%', color: 'bg-orange-500/20 border-orange-500/15' },
         ].map((bar, i) => (
