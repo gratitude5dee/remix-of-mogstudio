@@ -390,9 +390,9 @@ function NodeInspector({
         ) : null}
 
         {textPreview ? (
-          <section className="space-y-3 rounded-[24px] border border-white/10 bg-[#111111]/98 p-4">
+          <section className="space-y-3 rounded-[24px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
             <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">Preview</div>
-            <div className="max-h-56 overflow-y-auto rounded-[22px] border border-white/8 bg-[#131313] p-4 text-sm leading-6 text-zinc-200">
+            <div className="max-h-56 overflow-y-auto rounded-[22px] border border-[rgba(249,115,22,0.10)] bg-[#131313] p-4 text-sm leading-6 text-zinc-200">
               {textPreview}
             </div>
           </section>
