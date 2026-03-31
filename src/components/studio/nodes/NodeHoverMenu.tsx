@@ -65,7 +65,7 @@ function ActionButton({ item }: { item: NodeHoverActionItem }) {
         'inline-flex h-8 w-8 items-center justify-center rounded-[10px] border border-transparent bg-transparent text-zinc-300 transition-colors',
         item.disabled || !item.onClick
           ? 'cursor-not-allowed opacity-40'
-          : 'hover:border-white/8 hover:bg-[#1B1B1B] hover:text-white'
+          : 'hover:border-[rgba(249,115,22,0.15)] hover:bg-[#1B1B1B] hover:text-white'
       )}
     >
       <Icon className="h-4 w-4" />
@@ -150,7 +150,7 @@ export const NodeHoverMenu = ({
           exit={{ opacity: 0, y: -8, scale: 0.96 }}
           transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
-            'absolute left-1/2 top-0 z-30 flex -translate-x-1/2 -translate-y-[calc(100%+6px)] items-center gap-0.5 rounded-[12px] border border-[rgba(249,115,22,0.15)] bg-[#111111] px-1 py-0.5 shadow-[0_0_8px_rgba(249,115,22,0.06)] backdrop-blur-md',
+            'absolute left-1/2 top-0 z-30 flex -translate-x-1/2 -translate-y-[calc(100%+6px)] items-center gap-1 rounded-[16px] border border-[rgba(249,115,22,0.12)] bg-[#111111] px-1.5 py-1 shadow-[0_0_12px_rgba(249,115,22,0.08),0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md',
             className
           )}
           onMouseDown={(event) => event.stopPropagation()}
@@ -170,19 +170,19 @@ export const NodeHoverMenu = ({
           ) : null}
 
           {!hasModelSelector && hasLeadingChip ? (
-            <div className="inline-flex h-9 items-center rounded-[12px] border border-white/10 bg-[#101010] px-3 text-[11px] font-medium text-zinc-200">
+            <div className="inline-flex h-9 items-center rounded-[12px] border border-[rgba(249,115,22,0.12)] bg-[#101010] px-3 text-[11px] font-medium text-zinc-200">
               {leadingChipLabel || legacyChipLabel}
             </div>
           ) : null}
 
           {aspectRatioLabel ? (
-            <div className="inline-flex h-9 items-center rounded-[12px] border border-white/10 bg-[#101010] px-3 text-[11px] font-medium text-zinc-300">
+            <div className="inline-flex h-9 items-center rounded-[12px] border border-[rgba(249,115,22,0.12)] bg-[#101010] px-3 text-[11px] font-medium text-zinc-300">
               {aspectRatioLabel}
             </div>
           ) : null}
 
           {(hasModelSelector || hasLeadingChip || aspectRatioLabel) && (hasTools || hasActions) ? (
-            <div className="mx-1 h-5 w-px bg-white/8" />
+            <div className="mx-1 h-5 w-px bg-[rgba(249,115,22,0.1)]" />
           ) : null}
 
           {hasTools ? (
@@ -190,7 +190,7 @@ export const NodeHoverMenu = ({
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="inline-flex h-9 items-center gap-1.5 rounded-[12px] border border-white/10 bg-[#101010] px-3 text-[11px] font-medium text-zinc-200 transition-colors hover:bg-[#191919] hover:text-white"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-[12px] border border-[rgba(249,115,22,0.12)] bg-[#101010] px-3 text-[11px] font-medium text-zinc-200 transition-colors hover:bg-[#191919] hover:text-white"
                 >
                   <Wand2 className="h-3.5 w-3.5" />
                   <span>Tools</span>
@@ -204,7 +204,7 @@ export const NodeHoverMenu = ({
                 container={popoverContainer}
                 collisionBoundary={popoverBoundary ?? undefined}
                 collisionPadding={{ top: 12, left: 16, right: 16, bottom: 16 }}
-                className="w-[296px] rounded-[20px] border border-white/10 bg-[#171717]/98 p-2 text-white shadow-[0_22px_60px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
+                className="w-[296px] rounded-[20px] border border-[rgba(249,115,22,0.12)] bg-[#171717]/98 p-2 text-white shadow-[0_0_12px_rgba(249,115,22,0.06),0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
                 style={{ maxHeight: 'min(420px, calc(100vh - 168px))' }}
               >
                 <div className="max-h-full space-y-1 overflow-y-auto">
@@ -230,8 +230,8 @@ export const NodeHoverMenu = ({
                           className={cn(
                             'flex h-8 w-8 items-center justify-center rounded-xl border',
                             item.disabled || !item.onClick
-                              ? 'border-white/6 bg-[#151515] text-zinc-600'
-                              : 'border-white/8 bg-[#141414] text-zinc-300'
+                              ? 'border-[rgba(249,115,22,0.08)] bg-[#151515] text-zinc-600'
+                              : 'border-[rgba(249,115,22,0.1)] bg-[#141414] text-zinc-300'
                           )}
                         >
                           <Icon className="h-4 w-4" />
@@ -248,7 +248,7 @@ export const NodeHoverMenu = ({
             </Popover>
           ) : null}
 
-          {hasTools && hasActions ? <div className="mx-1 h-5 w-px bg-white/8" /> : null}
+          {hasTools && hasActions ? <div className="mx-1 h-5 w-px bg-[rgba(249,115,22,0.1)]" /> : null}
 
           {resolvedActionItems.map((item) => (
             <ActionButton key={item.key} item={item} />
