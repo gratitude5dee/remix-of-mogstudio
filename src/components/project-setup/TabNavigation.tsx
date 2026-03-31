@@ -1,6 +1,6 @@
 import { startTransition, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, Check, SlidersHorizontal } from 'lucide-react';
+import { Check, SlidersHorizontal } from 'lucide-react';
 import { useProjectContext } from './ProjectContext';
 import { ProjectSetupTab } from './types';
 import { cn } from '@/lib/utils';
