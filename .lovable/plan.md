@@ -1,29 +1,25 @@
 
 
-# Center NodeHoverMenu Properly Over Node
+# Fix NodeHoverMenu Centering — Use `left` offset instead of `translate-x`
 
 ## Problem
 
-The menu uses a hardcoded `-translate-x-[62%]` which is a fragile hack. Since the menu is absolutely positioned inside the node's `position: relative` container, `left-1/2 -translate-x-1/2` should produce true centering — the menu centers itself relative to the node's width.
+The `translate-x` percentage is relative to **the menu's own width**, not the node's width. So changing from `-translate-x-1/2` to `-translate-x-[58%]` only shifts a few pixels — barely noticeable. To actually move the menu leftward, we need to change the `left` anchor point.
 
-The previous off-center appearance was likely caused by the menu's internal content being asymmetric (model selector chip on the left), making a true 50% center *look* off. The fix is to keep true centering but ensure the menu's visual weight is balanced.
+## Change
 
-## Changes
+**File: `src/components/studio/nodes/NodeHoverMenu.tsx` (line 153)**
 
-### `src/components/studio/nodes/NodeHoverMenu.tsx`
+| Property | Current | Updated |
+|----------|---------|---------|
+| `left` | `left-1/2` (50%) | `left-[42%]` |
+| `translate-x` | `-translate-x-[58%]` | `-translate-x-1/2` |
 
-**Line 153 — restore true centering with proper gap:**
-
-| Property | Current | New |
-|----------|---------|-----|
-| Horizontal translate | `-translate-x-[62%]` | `-translate-x-1/2` |
-| Vertical gap | `calc(100%+14px)` | `calc(100%+10px)` |
-
-This uses the mathematically correct center. The menu will be centered over the node's full width (including handles/ports), which matches the reference image.
+By moving the anchor from `left: 50%` to `left: 42%`, the menu shifts 8% of the **node's width** to the left (~22px on a 280px node). Then `-translate-x-1/2` correctly centers the menu around that anchor point. This produces a visible, meaningful shift.
 
 ## Files changed
 
 | File | Change |
 |------|--------|
-| `src/components/studio/nodes/NodeHoverMenu.tsx` | Fix translate to true 50% center, adjust vertical gap |
+| `src/components/studio/nodes/NodeHoverMenu.tsx` | Change `left-1/2` → `left-[42%]` and `-translate-x-[58%]` → `-translate-x-1/2` |
 
