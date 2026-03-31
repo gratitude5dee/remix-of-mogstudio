@@ -2470,7 +2470,7 @@ export type Database = {
           id: string
           metadata: Json | null
           mode: string
-          models: string[]
+          models: string[] | null
           parameters: Json | null
           progress: number | null
           project_id: string | null
@@ -2480,10 +2480,10 @@ export type Database = {
           status: string
           target_id: string | null
           target_type: string | null
-          tests: string[]
+          tests: string[] | null
           total_generations: number | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           aggregates?: Json | null
@@ -2493,7 +2493,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           mode?: string
-          models: string[]
+          models?: string[] | null
           parameters?: Json | null
           progress?: number | null
           project_id?: string | null
@@ -2503,10 +2503,10 @@ export type Database = {
           status?: string
           target_id?: string | null
           target_type?: string | null
-          tests: string[]
+          tests?: string[] | null
           total_generations?: number | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           aggregates?: Json | null
@@ -2516,7 +2516,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           mode?: string
-          models?: string[]
+          models?: string[] | null
           parameters?: Json | null
           progress?: number | null
           project_id?: string | null
@@ -2526,10 +2526,10 @@ export type Database = {
           status?: string
           target_id?: string | null
           target_type?: string | null
-          tests?: string[]
+          tests?: string[] | null
           total_generations?: number | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
