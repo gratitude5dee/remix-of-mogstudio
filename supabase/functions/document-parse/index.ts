@@ -46,10 +46,10 @@ function detectFormat(mimeType: string, fileName: string): string | null {
  * Extract text from a PDF file using unpdf.
  */
 async function parsePdf(data: Uint8Array): Promise<{ text: string; pageCount: number }> {
-  const { extractText, getDocumentProxy } = await import('npm:unpdf');
-  const pdf = await getDocumentProxy(data);
-  const { text, totalPages } = await extractText(pdf, { mergePages: true });
-  return { text: typeof text === 'string' ? text : String(text), pageCount: totalPages };
+  // Use pdf-parse which is available via npm specifier in Deno
+  const pdfParse = (await import('https://esm.sh/pdf-parse@1.1.1')).default;
+  const result = await pdfParse(data);
+  return { text: result.text, pageCount: result.numpages };
 }
 
 /**

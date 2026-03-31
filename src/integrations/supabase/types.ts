@@ -353,6 +353,111 @@ export type Database = {
         }
         Relationships: []
       }
+      asset_lineage: {
+        Row: {
+          character_id: string | null
+          created_at: string
+          generation_job_id: string | null
+          id: string
+          metadata: Json
+          output_asset_id: string | null
+          project_id: string
+          prompt_version_id: string | null
+          relation_type: string
+          scene_id: string | null
+          shot_id: string | null
+          source_asset_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          character_id?: string | null
+          created_at?: string
+          generation_job_id?: string | null
+          id?: string
+          metadata?: Json
+          output_asset_id?: string | null
+          project_id: string
+          prompt_version_id?: string | null
+          relation_type?: string
+          scene_id?: string | null
+          shot_id?: string | null
+          source_asset_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          character_id?: string | null
+          created_at?: string
+          generation_job_id?: string | null
+          id?: string
+          metadata?: Json
+          output_asset_id?: string | null
+          project_id?: string
+          prompt_version_id?: string | null
+          relation_type?: string
+          scene_id?: string | null
+          shot_id?: string | null
+          source_asset_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_lineage_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_lineage_generation_job_id_fkey"
+            columns: ["generation_job_id"]
+            isOneToOne: false
+            referencedRelation: "generation_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_lineage_output_asset_id_fkey"
+            columns: ["output_asset_id"]
+            isOneToOne: false
+            referencedRelation: "project_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_lineage_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_lineage_prompt_version_id_fkey"
+            columns: ["prompt_version_id"]
+            isOneToOne: false
+            referencedRelation: "prompt_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_lineage_scene_id_fkey"
+            columns: ["scene_id"]
+            isOneToOne: false
+            referencedRelation: "scenes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_lineage_shot_id_fkey"
+            columns: ["shot_id"]
+            isOneToOne: false
+            referencedRelation: "shots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asset_lineage_source_asset_id_fkey"
+            columns: ["source_asset_id"]
+            isOneToOne: false
+            referencedRelation: "project_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audio_tracks: {
         Row: {
           created_at: string
@@ -2275,49 +2380,76 @@ export type Database = {
       }
       evaluation_results: {
         Row: {
+          confidence: number | null
           created_at: string | null
           criteria_breakdown: Json | null
+          detailed_reasoning: Json | null
           evidence: Json | null
           failure_tags: string[] | null
+          generation_error: string | null
+          generation_time_ms: number | null
           id: string
+          image_url: string | null
+          judge_confidence: string | null
           judge_model: string | null
           judge_model_version: string | null
+          judge_reasoning: string | null
+          judge_score: number | null
           judge_type: string | null
           likert_label: string | null
+          model_id: string
           reasons: Json | null
           run_id: string
           score: number | null
-          confidence: number | null
+          test_id: string
         }
         Insert: {
+          confidence?: number | null
           created_at?: string | null
           criteria_breakdown?: Json | null
+          detailed_reasoning?: Json | null
           evidence?: Json | null
           failure_tags?: string[] | null
+          generation_error?: string | null
+          generation_time_ms?: number | null
           id?: string
+          image_url?: string | null
+          judge_confidence?: string | null
           judge_model?: string | null
           judge_model_version?: string | null
+          judge_reasoning?: string | null
+          judge_score?: number | null
           judge_type?: string | null
           likert_label?: string | null
+          model_id: string
           reasons?: Json | null
           run_id: string
           score?: number | null
-          confidence?: number | null
+          test_id: string
         }
         Update: {
+          confidence?: number | null
           created_at?: string | null
           criteria_breakdown?: Json | null
+          detailed_reasoning?: Json | null
           evidence?: Json | null
           failure_tags?: string[] | null
+          generation_error?: string | null
+          generation_time_ms?: number | null
           id?: string
+          image_url?: string | null
+          judge_confidence?: string | null
           judge_model?: string | null
           judge_model_version?: string | null
+          judge_reasoning?: string | null
+          judge_score?: number | null
           judge_type?: string | null
           likert_label?: string | null
+          model_id?: string
           reasons?: Json | null
           run_id?: string
           score?: number | null
-          confidence?: number | null
+          test_id?: string
         }
         Relationships: [
           {
@@ -2336,15 +2468,22 @@ export type Database = {
           created_by: string | null
           disagreement: Json | null
           id: string
-          mode: string | null
+          metadata: Json | null
+          mode: string
+          models: string[]
+          parameters: Json | null
+          progress: number | null
           project_id: string | null
           reliability_snapshot: Json | null
           rubric_snapshot: Json | null
           rubric_version: string | null
-          status: string | null
+          status: string
           target_id: string | null
           target_type: string | null
+          tests: string[]
+          total_generations: number | null
           updated_at: string | null
+          user_id: string
         }
         Insert: {
           aggregates?: Json | null
@@ -2352,15 +2491,22 @@ export type Database = {
           created_by?: string | null
           disagreement?: Json | null
           id?: string
+          metadata?: Json | null
           mode?: string
+          models: string[]
+          parameters?: Json | null
+          progress?: number | null
           project_id?: string | null
           reliability_snapshot?: Json | null
           rubric_snapshot?: Json | null
           rubric_version?: string | null
-          status?: string | null
+          status?: string
           target_id?: string | null
           target_type?: string | null
+          tests: string[]
+          total_generations?: number | null
           updated_at?: string | null
+          user_id: string
         }
         Update: {
           aggregates?: Json | null
@@ -2368,15 +2514,22 @@ export type Database = {
           created_by?: string | null
           disagreement?: Json | null
           id?: string
+          metadata?: Json | null
           mode?: string
+          models?: string[]
+          parameters?: Json | null
+          progress?: number | null
           project_id?: string | null
           reliability_snapshot?: Json | null
           rubric_snapshot?: Json | null
           rubric_version?: string | null
-          status?: string | null
+          status?: string
           target_id?: string | null
           target_type?: string | null
+          tests?: string[]
+          total_generations?: number | null
           updated_at?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -5584,6 +5737,70 @@ export type Database = {
         }
         Relationships: []
       }
+      narrative_atoms: {
+        Row: {
+          beat_type: string
+          created_at: string
+          description: string
+          id: string
+          is_blocking: boolean
+          project_id: string
+          required_story_evidence: Json
+          required_visual_evidence: Json
+          scene_id: string | null
+          storyline_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          beat_type: string
+          created_at?: string
+          description: string
+          id?: string
+          is_blocking?: boolean
+          project_id: string
+          required_story_evidence?: Json
+          required_visual_evidence?: Json
+          scene_id?: string | null
+          storyline_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          beat_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_blocking?: boolean
+          project_id?: string
+          required_story_evidence?: Json
+          required_visual_evidence?: Json
+          scene_id?: string | null
+          storyline_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "narrative_atoms_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "narrative_atoms_scene_id_fkey"
+            columns: ["scene_id"]
+            isOneToOne: false
+            referencedRelation: "scenes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "narrative_atoms_storyline_id_fkey"
+            columns: ["storyline_id"]
+            isOneToOne: false
+            referencedRelation: "storylines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nodes: {
         Row: {
           created_at: string | null
@@ -5990,11 +6207,11 @@ export type Database = {
           base_image_model: string | null
           base_text_model: string | null
           base_video_model: string | null
-          canon_facts: Json | null
-          creative_constraints: Json | null
+          canon_facts: Json
           created_at: string | null
-          evaluation_mode: string | null
-          evaluation_thresholds: Json | null
+          creative_constraints: Json
+          evaluation_mode: string
+          evaluation_thresholds: Json
           id: string
           project_id: string | null
           storyline_text_model: string | null
@@ -6006,11 +6223,11 @@ export type Database = {
           base_image_model?: string | null
           base_text_model?: string | null
           base_video_model?: string | null
-          canon_facts?: Json | null
-          creative_constraints?: Json | null
+          canon_facts?: Json
           created_at?: string | null
-          evaluation_mode?: string | null
-          evaluation_thresholds?: Json | null
+          creative_constraints?: Json
+          evaluation_mode?: string
+          evaluation_thresholds?: Json
           id?: string
           project_id?: string | null
           storyline_text_model?: string | null
@@ -6022,11 +6239,11 @@ export type Database = {
           base_image_model?: string | null
           base_text_model?: string | null
           base_video_model?: string | null
-          canon_facts?: Json | null
-          creative_constraints?: Json | null
+          canon_facts?: Json
           created_at?: string | null
-          evaluation_mode?: string | null
-          evaluation_thresholds?: Json | null
+          creative_constraints?: Json
+          evaluation_mode?: string
+          evaluation_thresholds?: Json
           id?: string
           project_id?: string | null
           storyline_text_model?: string | null
@@ -6039,486 +6256,6 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: true
             referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      prompt_versions: {
-        Row: {
-          author_type: string
-          created_at: string
-          id: string
-          metadata: Json
-          parent_prompt_id: string | null
-          project_id: string
-          source_entity_id: string | null
-          source_entity_type: string | null
-          stage: string
-          text: string
-          updated_at: string
-        }
-        Insert: {
-          author_type: string
-          created_at?: string
-          id?: string
-          metadata?: Json
-          parent_prompt_id?: string | null
-          project_id: string
-          source_entity_id?: string | null
-          source_entity_type?: string | null
-          stage: string
-          text: string
-          updated_at?: string
-        }
-        Update: {
-          author_type?: string
-          created_at?: string
-          id?: string
-          metadata?: Json
-          parent_prompt_id?: string | null
-          project_id?: string
-          source_entity_id?: string | null
-          source_entity_type?: string | null
-          stage?: string
-          text?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prompt_versions_parent_prompt_id_fkey"
-            columns: ["parent_prompt_id"]
-            isOneToOne: false
-            referencedRelation: "prompt_versions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "prompt_versions_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      asset_lineage: {
-        Row: {
-          character_id: string | null
-          created_at: string
-          generation_job_id: string | null
-          id: string
-          metadata: Json
-          output_asset_id: string | null
-          project_id: string
-          prompt_version_id: string | null
-          relation_type: string
-          scene_id: string | null
-          shot_id: string | null
-          source_asset_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          character_id?: string | null
-          created_at?: string
-          generation_job_id?: string | null
-          id?: string
-          metadata?: Json
-          output_asset_id?: string | null
-          project_id: string
-          prompt_version_id?: string | null
-          relation_type?: string
-          scene_id?: string | null
-          shot_id?: string | null
-          source_asset_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          character_id?: string | null
-          created_at?: string
-          generation_job_id?: string | null
-          id?: string
-          metadata?: Json
-          output_asset_id?: string | null
-          project_id?: string
-          prompt_version_id?: string | null
-          relation_type?: string
-          scene_id?: string | null
-          shot_id?: string | null
-          source_asset_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "asset_lineage_character_id_fkey"
-            columns: ["character_id"]
-            isOneToOne: false
-            referencedRelation: "characters"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "asset_lineage_generation_job_id_fkey"
-            columns: ["generation_job_id"]
-            isOneToOne: false
-            referencedRelation: "generation_jobs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "asset_lineage_output_asset_id_fkey"
-            columns: ["output_asset_id"]
-            isOneToOne: false
-            referencedRelation: "project_assets"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "asset_lineage_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "asset_lineage_prompt_version_id_fkey"
-            columns: ["prompt_version_id"]
-            isOneToOne: false
-            referencedRelation: "prompt_versions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "asset_lineage_scene_id_fkey"
-            columns: ["scene_id"]
-            isOneToOne: false
-            referencedRelation: "scenes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "asset_lineage_shot_id_fkey"
-            columns: ["shot_id"]
-            isOneToOne: false
-            referencedRelation: "shots"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "asset_lineage_source_asset_id_fkey"
-            columns: ["source_asset_id"]
-            isOneToOne: false
-            referencedRelation: "project_assets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      review_tasks: {
-        Row: {
-          blocking: boolean
-          created_at: string
-          id: string
-          metadata: Json
-          mode: string
-          priority: number
-          project_id: string
-          resolved_at: string | null
-          source_run_id: string | null
-          status: string
-          summary: string | null
-          target_id: string
-          target_type: string
-          updated_at: string
-        }
-        Insert: {
-          blocking?: boolean
-          created_at?: string
-          id?: string
-          metadata?: Json
-          mode?: string
-          priority?: number
-          project_id: string
-          resolved_at?: string | null
-          source_run_id?: string | null
-          status?: string
-          summary?: string | null
-          target_id: string
-          target_type: string
-          updated_at?: string
-        }
-        Update: {
-          blocking?: boolean
-          created_at?: string
-          id?: string
-          metadata?: Json
-          mode?: string
-          priority?: number
-          project_id?: string
-          resolved_at?: string | null
-          source_run_id?: string | null
-          status?: string
-          summary?: string | null
-          target_id?: string
-          target_type?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "review_tasks_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "review_tasks_source_run_id_fkey"
-            columns: ["source_run_id"]
-            isOneToOne: false
-            referencedRelation: "evaluation_runs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      review_events: {
-        Row: {
-          chosen_asset_id: string | null
-          created_at: string
-          feedback_type: string
-          id: string
-          metadata: Json
-          note: string | null
-          project_id: string
-          rejection_reason_codes: string[]
-          review_task_id: string | null
-          target_id: string
-          target_type: string
-        }
-        Insert: {
-          chosen_asset_id?: string | null
-          created_at?: string
-          feedback_type: string
-          id?: string
-          metadata?: Json
-          note?: string | null
-          project_id: string
-          rejection_reason_codes?: string[]
-          review_task_id?: string | null
-          target_id: string
-          target_type: string
-        }
-        Update: {
-          chosen_asset_id?: string | null
-          created_at?: string
-          feedback_type?: string
-          id?: string
-          metadata?: Json
-          note?: string | null
-          project_id?: string
-          rejection_reason_codes?: string[]
-          review_task_id?: string | null
-          target_id?: string
-          target_type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "review_events_chosen_asset_id_fkey"
-            columns: ["chosen_asset_id"]
-            isOneToOne: false
-            referencedRelation: "project_assets"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "review_events_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "review_events_review_task_id_fkey"
-            columns: ["review_task_id"]
-            isOneToOne: false
-            referencedRelation: "review_tasks"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      revision_plans: {
-        Row: {
-          actions: Json
-          created_at: string
-          id: string
-          project_id: string
-          source_run_id: string | null
-          status: string
-          target_id: string
-          target_type: string
-          trigger: Json
-          updated_at: string
-        }
-        Insert: {
-          actions?: Json
-          created_at?: string
-          id?: string
-          project_id: string
-          source_run_id?: string | null
-          status?: string
-          target_id: string
-          target_type: string
-          trigger?: Json
-          updated_at?: string
-        }
-        Update: {
-          actions?: Json
-          created_at?: string
-          id?: string
-          project_id?: string
-          source_run_id?: string | null
-          status?: string
-          target_id?: string
-          target_type?: string
-          trigger?: Json
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "revision_plans_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "revision_plans_source_run_id_fkey"
-            columns: ["source_run_id"]
-            isOneToOne: false
-            referencedRelation: "evaluation_runs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      narrative_atoms: {
-        Row: {
-          beat_type: string
-          created_at: string
-          description: string
-          id: string
-          is_blocking: boolean
-          project_id: string
-          required_story_evidence: Json
-          required_visual_evidence: Json
-          scene_id: string | null
-          storyline_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          beat_type: string
-          created_at?: string
-          description: string
-          id?: string
-          is_blocking?: boolean
-          project_id: string
-          required_story_evidence?: Json
-          required_visual_evidence?: Json
-          scene_id?: string | null
-          storyline_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          beat_type?: string
-          created_at?: string
-          description?: string
-          id?: string
-          is_blocking?: boolean
-          project_id?: string
-          required_story_evidence?: Json
-          required_visual_evidence?: Json
-          scene_id?: string | null
-          storyline_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "narrative_atoms_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "narrative_atoms_scene_id_fkey"
-            columns: ["scene_id"]
-            isOneToOne: false
-            referencedRelation: "scenes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "narrative_atoms_storyline_id_fkey"
-            columns: ["storyline_id"]
-            isOneToOne: false
-            referencedRelation: "storylines"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      story_events: {
-        Row: {
-          causes: string[]
-          consequences: string[]
-          created_at: string
-          description: string
-          emotional_state: Json
-          evidence_asset_ids: string[]
-          id: string
-          participants: string[]
-          project_id: string
-          scene_id: string | null
-          storyline_id: string | null
-          timestamp_range: Json | null
-          updated_at: string
-        }
-        Insert: {
-          causes?: string[]
-          consequences?: string[]
-          created_at?: string
-          description: string
-          emotional_state?: Json
-          evidence_asset_ids?: string[]
-          id?: string
-          participants?: string[]
-          project_id: string
-          scene_id?: string | null
-          storyline_id?: string | null
-          timestamp_range?: Json | null
-          updated_at?: string
-        }
-        Update: {
-          causes?: string[]
-          consequences?: string[]
-          created_at?: string
-          description?: string
-          emotional_state?: Json
-          evidence_asset_ids?: string[]
-          id?: string
-          participants?: string[]
-          project_id?: string
-          scene_id?: string | null
-          storyline_id?: string | null
-          timestamp_range?: Json | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "story_events_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "story_events_scene_id_fkey"
-            columns: ["scene_id"]
-            isOneToOne: false
-            referencedRelation: "scenes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "story_events_storyline_id_fkey"
-            columns: ["storyline_id"]
-            isOneToOne: false
-            referencedRelation: "storylines"
             referencedColumns: ["id"]
           },
         ]
@@ -6725,6 +6462,63 @@ export type Database = {
           },
         ]
       }
+      prompt_versions: {
+        Row: {
+          author_type: string
+          created_at: string
+          id: string
+          metadata: Json
+          parent_prompt_id: string | null
+          project_id: string
+          source_entity_id: string | null
+          source_entity_type: string | null
+          stage: string
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          author_type: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          parent_prompt_id?: string | null
+          project_id: string
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          stage: string
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          author_type?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          parent_prompt_id?: string | null
+          project_id?: string
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          stage?: string
+          text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_versions_parent_prompt_id_fkey"
+            columns: ["parent_prompt_id"]
+            isOneToOne: false
+            referencedRelation: "prompt_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompt_versions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referral_tracking: {
         Row: {
           conversion_date: string | null
@@ -6911,6 +6705,190 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      review_events: {
+        Row: {
+          chosen_asset_id: string | null
+          created_at: string
+          feedback_type: string
+          id: string
+          metadata: Json
+          note: string | null
+          project_id: string
+          rejection_reason_codes: string[]
+          review_task_id: string | null
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          chosen_asset_id?: string | null
+          created_at?: string
+          feedback_type: string
+          id?: string
+          metadata?: Json
+          note?: string | null
+          project_id: string
+          rejection_reason_codes?: string[]
+          review_task_id?: string | null
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          chosen_asset_id?: string | null
+          created_at?: string
+          feedback_type?: string
+          id?: string
+          metadata?: Json
+          note?: string | null
+          project_id?: string
+          rejection_reason_codes?: string[]
+          review_task_id?: string | null
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_events_chosen_asset_id_fkey"
+            columns: ["chosen_asset_id"]
+            isOneToOne: false
+            referencedRelation: "project_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_events_review_task_id_fkey"
+            columns: ["review_task_id"]
+            isOneToOne: false
+            referencedRelation: "review_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_tasks: {
+        Row: {
+          blocking: boolean
+          created_at: string
+          id: string
+          metadata: Json
+          mode: string
+          priority: number
+          project_id: string
+          resolved_at: string | null
+          source_run_id: string | null
+          status: string
+          summary: string | null
+          target_id: string
+          target_type: string
+          updated_at: string
+        }
+        Insert: {
+          blocking?: boolean
+          created_at?: string
+          id?: string
+          metadata?: Json
+          mode?: string
+          priority?: number
+          project_id: string
+          resolved_at?: string | null
+          source_run_id?: string | null
+          status?: string
+          summary?: string | null
+          target_id: string
+          target_type: string
+          updated_at?: string
+        }
+        Update: {
+          blocking?: boolean
+          created_at?: string
+          id?: string
+          metadata?: Json
+          mode?: string
+          priority?: number
+          project_id?: string
+          resolved_at?: string | null
+          source_run_id?: string | null
+          status?: string
+          summary?: string | null
+          target_id?: string
+          target_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_tasks_source_run_id_fkey"
+            columns: ["source_run_id"]
+            isOneToOne: false
+            referencedRelation: "evaluation_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      revision_plans: {
+        Row: {
+          actions: Json
+          created_at: string
+          id: string
+          project_id: string
+          source_run_id: string | null
+          status: string
+          target_id: string
+          target_type: string
+          trigger: Json
+          updated_at: string
+        }
+        Insert: {
+          actions?: Json
+          created_at?: string
+          id?: string
+          project_id: string
+          source_run_id?: string | null
+          status?: string
+          target_id: string
+          target_type: string
+          trigger?: Json
+          updated_at?: string
+        }
+        Update: {
+          actions?: Json
+          created_at?: string
+          id?: string
+          project_id?: string
+          source_run_id?: string | null
+          status?: string
+          target_id?: string
+          target_type?: string
+          trigger?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "revision_plans_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "revision_plans_source_run_id_fkey"
+            columns: ["source_run_id"]
+            isOneToOne: false
+            referencedRelation: "evaluation_runs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_flows: {
         Row: {
@@ -7289,8 +7267,8 @@ export type Database = {
           prompt_idea: string | null
           review_status: string | null
           scene_id: string
-          shot_packet: Json | null
           shot_number: number
+          shot_packet: Json | null
           shot_type: string | null
           sound_effects: string | null
           updated_at: string | null
@@ -7316,8 +7294,8 @@ export type Database = {
           prompt_idea?: string | null
           review_status?: string | null
           scene_id: string
-          shot_packet?: Json | null
           shot_number: number
+          shot_packet?: Json | null
           shot_type?: string | null
           sound_effects?: string | null
           updated_at?: string | null
@@ -7343,8 +7321,8 @@ export type Database = {
           prompt_idea?: string | null
           review_status?: string | null
           scene_id?: string
-          shot_packet?: Json | null
           shot_number?: number
+          shot_packet?: Json | null
           shot_type?: string | null
           sound_effects?: string | null
           updated_at?: string | null
@@ -7473,6 +7451,76 @@ export type Database = {
           value?: number
         }
         Relationships: []
+      }
+      story_events: {
+        Row: {
+          causes: string[]
+          consequences: string[]
+          created_at: string
+          description: string
+          emotional_state: Json
+          evidence_asset_ids: string[]
+          id: string
+          participants: string[]
+          project_id: string
+          scene_id: string | null
+          storyline_id: string | null
+          timestamp_range: Json | null
+          updated_at: string
+        }
+        Insert: {
+          causes?: string[]
+          consequences?: string[]
+          created_at?: string
+          description: string
+          emotional_state?: Json
+          evidence_asset_ids?: string[]
+          id?: string
+          participants?: string[]
+          project_id: string
+          scene_id?: string | null
+          storyline_id?: string | null
+          timestamp_range?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          causes?: string[]
+          consequences?: string[]
+          created_at?: string
+          description?: string
+          emotional_state?: Json
+          evidence_asset_ids?: string[]
+          id?: string
+          participants?: string[]
+          project_id?: string
+          scene_id?: string | null
+          storyline_id?: string | null
+          timestamp_range?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "story_events_scene_id_fkey"
+            columns: ["scene_id"]
+            isOneToOne: false
+            referencedRelation: "scenes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "story_events_storyline_id_fkey"
+            columns: ["storyline_id"]
+            isOneToOne: false
+            referencedRelation: "storylines"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       storylines: {
         Row: {
@@ -9225,6 +9273,10 @@ export type Database = {
           ticket_revenue: number
           total_potential: number
         }[]
+      }
+      can_access_project: {
+        Args: { target_project_id: string }
+        Returns: boolean
       }
       check_rate_limit: {
         Args: { func_name: string; max_calls?: number; window_minutes?: number }

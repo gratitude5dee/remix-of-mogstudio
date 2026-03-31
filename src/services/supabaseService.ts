@@ -852,7 +852,7 @@ export const sceneService = {
         .order('scene_number', { ascending: true });
         
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Scene[]) || [];
     } catch (error) {
       handleError(error, 'listing scenes');
       return [];
@@ -863,7 +863,7 @@ export const sceneService = {
     try {
       const { data, error } = await supabase
         .from('scenes')
-        .insert(scene)
+        .insert(scene as any)
         .select('id')
         .single();
         
@@ -879,7 +879,7 @@ export const sceneService = {
     try {
       const { error } = await supabase
         .from('scenes')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id);
         
       if (error) throw error;
@@ -913,7 +913,7 @@ export const characterService = {
         .order('created_at', { ascending: true });
         
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Character[]) || [];
     } catch (error) {
       handleError(error, 'listing characters');
       return [];
@@ -924,7 +924,7 @@ export const characterService = {
     try {
       const { data, error } = await supabase
         .from('characters')
-        .insert(character)
+        .insert(character as any)
         .select('id')
         .single();
         
@@ -940,7 +940,7 @@ export const characterService = {
     try {
       const { error } = await supabase
         .from('characters')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id);
         
       if (error) throw error;
@@ -974,7 +974,7 @@ export const storylineService = {
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Storyline[]) || [];
     } catch (error) {
       handleError(error, 'listing storylines');
       return [];
@@ -991,7 +991,7 @@ export const storylineService = {
         .single();
         
       if (error) throw error;
-      return data;
+      return data as unknown as Storyline;
     } catch (error) {
       console.log('No selected storyline found or error:', error);
       return null;
@@ -1064,7 +1064,7 @@ export const shotService = {
         .order('shot_number', { ascending: true });
         
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Shot[]) || [];
     } catch (error) {
       handleError(error, 'listing shots');
       return [];
@@ -1075,7 +1075,7 @@ export const shotService = {
     try {
       const { data, error } = await supabase
         .from('shots')
-        .insert(shot)
+        .insert(shot as any)
         .select('id')
         .single();
         
@@ -1091,7 +1091,7 @@ export const shotService = {
     try {
       const { error } = await supabase
         .from('shots')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id);
         
       if (error) throw error;

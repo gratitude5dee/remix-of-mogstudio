@@ -408,7 +408,7 @@ const ProjectObservabilityPage = () => {
                           size="sm"
                           disabled={isSubmitting === task.id}
                           onClick={() =>
-                            void submitReview(task.id, 'approve', task.target_type, task.target_id)
+                            void submitReview(task.id, 'approve', task.target_type as 'character' | 'scene' | 'shot' | 'storyline', task.target_id)
                           }
                         >
                           <CheckCircle2 className="mr-2 h-4 w-4" />
@@ -419,7 +419,7 @@ const ProjectObservabilityPage = () => {
                           variant="destructive"
                           disabled={isSubmitting === task.id}
                           onClick={() =>
-                            void submitReview(task.id, 'reject', task.target_type, task.target_id)
+                            void submitReview(task.id, 'reject', task.target_type as 'character' | 'scene' | 'shot' | 'storyline', task.target_id)
                           }
                         >
                           <AlertTriangle className="mr-2 h-4 w-4" />
@@ -430,7 +430,7 @@ const ProjectObservabilityPage = () => {
                           variant="outline"
                           disabled={isSubmitting === task.id}
                           onClick={() =>
-                            void submitReview(task.id, 'annotate', task.target_type, task.target_id)
+                            void submitReview(task.id, 'annotate', task.target_type as 'character' | 'scene' | 'shot' | 'storyline', task.target_id)
                           }
                         >
                           {isSubmitting === task.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
