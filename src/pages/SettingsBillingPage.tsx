@@ -92,7 +92,7 @@ const SettingsBillingPage = () => {
     openPortal,
     fetchCatalog,
   } = useBilling();
-  const { isLoading: creditsLoading, wallet, plan } = useCredits();
+  const { isLoading: creditsLoading, wallet, plan, availableCredits } = useCredits();
 
   const visiblePlans = plans.length > 0 ? plans : FALLBACK_PLANS;
   const visiblePacks = creditPacks.length > 0 ? creditPacks : FALLBACK_PACKS;
@@ -100,11 +100,13 @@ const SettingsBillingPage = () => {
   const availableFromQuery = Number(searchParams.get('available') || 0);
 
   const walletSummary = useMemo(() => {
-    const monthlyQuota = wallet?.monthly_quota || 0;
-    const available = wallet?.available_total || 0;
-    const percentage = monthlyQuota > 0 ? Math.min(100, Math.max(0, (available / monthlyQuota) * 100)) : 0;
+    const monthlyQuota = wallet?.monthly_quota ?? plan?.monthly_quota ?? 100;
+    const available = wallet?.available_total ?? availableCredits ?? 0;
+    const percentage = monthlyQuota > 0
+      ? Math.min(100, Math.max(0, (available / monthlyQuota) * 100))
+      : (available > 0 ? 100 : 0);
     return { monthlyQuota, available, percentage };
-  }, [wallet]);
+  }, [wallet, availableCredits, plan]);
 
   const subscriptionPlanCode = subscription?.plan_code || plan?.plan_code || wallet?.plan_code || 'pro';
   const renewDate = subscription?.current_period_end || wallet?.reset_at || null;
