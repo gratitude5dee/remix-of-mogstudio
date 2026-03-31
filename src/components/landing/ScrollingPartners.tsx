@@ -4,7 +4,7 @@ import thirdwebLogo from '@/assets/logos/thirdweb.webp';
 import humantechLogo from '@/assets/logos/humantech.svg';
 import elevenlabsLogo from '@/assets/logos/elevenlabs.png';
 import anthropicLogo from '@/assets/logos/anthropic.svg';
-
+import fiveDeeLogo from '@/assets/logos/5dee.svg';
 
 interface Logo {
   id: string;
