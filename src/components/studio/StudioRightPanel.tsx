@@ -349,7 +349,7 @@ function NodeInspector({
             ) : null}
 
             {node.kind === 'Text' ? (
-              <div className="flex items-center justify-between rounded-[22px] border border-white/10 bg-[#131313] px-4 py-3">
+              <div className="flex items-center justify-between rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#131313] px-4 py-3">
                 <div>
                   <div className="text-sm text-white">Web Search</div>
                   <div className="text-xs text-zinc-500">Use web context when prompting.</div>
