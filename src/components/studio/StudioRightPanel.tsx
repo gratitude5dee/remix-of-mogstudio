@@ -563,7 +563,7 @@ export function StudioRightPanel({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 18 }}
             className={cn(
-              'relative flex h-full flex-col overflow-hidden rounded-[30px] border border-white/10 bg-[#090909]/98 shadow-[-24px_0_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl',
+              'relative flex h-full flex-col overflow-hidden rounded-[30px] border border-[rgba(249,115,22,0.12)] bg-[#090909]/98 shadow-[-24px_0_80px_rgba(0,0,0,0.42)] backdrop-blur-2xl',
               activeTab === 'nodes' && selectedNode?.kind === 'ImageEdit' ? 'w-[960px]' : 'w-[372px]'
             )}
           >
