@@ -1,71 +1,61 @@
 
 
-# Fix NodeHoverMenu Centering — Separate Positioning from Animation
+# NodeHoverMenu Gap + Model Marketplace UI Polish + Remove Idle Badge
 
-## Root Cause
+## 1. Reduce NodeHoverMenu gap by 5px
 
-The `motion.div` owns both the CSS `transform` (via Tailwind's `-translate-x-1/2`, `-translate-y-[calc(100%+10px)]`) **and** the Framer Motion animation (`scale`, `y`). Framer Motion compiles all transform properties into a single `transform` string at render time, overriding Tailwind's translate values. This causes the menu's left edge to sit at the anchor point instead of centering.
+**File: `src/components/studio/nodes/NodeHoverMenu.tsx` (line 148)**
 
-The `left-[42%]` hack was an attempt to compensate but doesn't solve the fundamental conflict.
+Change `-translate-y-[calc(100%+10px)]` → `-translate-y-[calc(100%+5px)]` on the outer static wrapper.
 
-## Fix
+## 2. Remove the "Idle" status badge
 
-Split into two elements: a **static outer wrapper** for positioning and an **animated inner div** for visual effects.
+**File: `src/components/studio/status/NodeStatusBadge.tsx`**
 
-### `src/components/studio/nodes/NodeHoverMenu.tsx` (~line 144–157)
+Return `null` early when `status === 'idle'` (line ~22, before `getStatusConfig`). The default case currently renders a visible "Idle" pill — users should see nothing when a node is idle.
 
-**Current:**
-```tsx
-<AnimatePresence>
-  {isVisible ? (
-    <motion.div
-      initial={{ opacity: 0, y: -10, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.96 }}
-      transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-      className={cn(
-        'absolute left-[42%] top-0 z-30 flex -translate-x-1/2 -translate-y-[calc(100%+10px)] items-center gap-1 rounded-[16px] border border-[rgba(249,115,22,0.12)] bg-[#111111] px-1.5 py-1 shadow-[0_0_12px_rgba(249,115,22,0.08),0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md',
-        className
-      )}
-      onMouseDown={(event) => event.stopPropagation()}
-      onClick={(event) => event.stopPropagation()}
-    >
-```
+## 3. Redesign FloraModelMarketplace dropdown
 
-**New:**
-```tsx
-<AnimatePresence>
-  {isVisible ? (
-    <div
-      className="absolute left-1/2 top-0 z-30 -translate-x-1/2 -translate-y-[calc(100%+10px)]"
-      onMouseDown={(event) => event.stopPropagation()}
-      onClick={(event) => event.stopPropagation()}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: -10, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -8, scale: 0.96 }}
-        transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-        className={cn(
-          'flex items-center gap-1 rounded-[16px] border border-[rgba(249,115,22,0.12)] bg-[#111111] px-1.5 py-1 shadow-[0_0_12px_rgba(249,115,22,0.08),0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md',
-          className
-        )}
-      >
-```
+**File: `src/components/studio/model-selector/FloraModelMarketplace.tsx`**
 
-And close both elements at the end (add `</div>` after `</motion.div>`).
+Major UI improvements to match a world-class design standard:
 
-Key points:
-- `left-1/2` restored (no more `42%` hack) — true mathematical center
-- Positioning classes on static `div` so Framer Motion can't override them
-- Animation `y` / `scale` on inner `motion.div` only affects visual appearance, not positioning
-- Event guards moved to outer wrapper so clicks anywhere on the menu are caught
-- `className` prop still applied to inner visual surface
-- No prop/API changes
+**Pin/unpin models:**
+- Add local state `pinnedIds` (Set) for user-pinned models
+- Replace the static `Pin` icon in `renderModelRow` with an interactive pin button that toggles pin state on click (with `e.stopPropagation()` to avoid selecting the model)
+- Pinned icon: filled `Pin` in orange; unpinned: outline `Pin` in zinc-500, visible on hover only
+- Pinned models appear in the "Pinned models" section dynamically
+
+**Model row improvements:**
+- Tighter, cleaner layout — reduce vertical padding slightly for compact rows
+- Add subtle hover animation (scale 1.005 or bg transition)
+- Selected state: stronger orange left-border accent (3px solid `#f97316` on left side) instead of full border color change
+- Capability badges: use dot-separated inline text instead of individual badges to reduce visual noise (e.g., `⊕13 · 8s · I · R`)
+- "New" badge: smaller, more refined pill
+
+**Provider list improvements:**
+- Active provider: add a left accent bar (2px orange) instead of just border change
+- Provider icon: use first 2 letters instead of 1 for better recognition
+- Subtle chevron rotation on active provider
+
+**Right pane (provider detail) header:**
+- Add model count badge with refined styling
+- Add a subtle separator line below header
+
+**Search bar:**
+- Add a keyboard shortcut hint (`⌘K` or just `/`) as trailing element
+- Slightly larger search icon
+
+**Settings panel (auto select / multi-model toggles):**
+- Add subtle descriptions under each toggle label in zinc-500 text
+- e.g., "Auto select model" → sub-text: "Let WZRD pick the best model"
+- e.g., "Use multiple models" → sub-text: "Generate with multiple models at once"
 
 ## Files changed
 
 | File | Change |
 |------|--------|
-| `src/components/studio/nodes/NodeHoverMenu.tsx` | Wrap `motion.div` in static positioning `div`; move anchor classes to wrapper |
+| `src/components/studio/nodes/NodeHoverMenu.tsx` | Reduce vertical gap from 10px to 5px |
+| `src/components/studio/status/NodeStatusBadge.tsx` | Return null for idle status |
+| `src/components/studio/model-selector/FloraModelMarketplace.tsx` | Pin/unpin interactivity, refined model rows, provider accent bars, search hint, toggle descriptions |
 
