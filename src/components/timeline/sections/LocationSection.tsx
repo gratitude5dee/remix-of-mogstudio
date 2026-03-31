@@ -280,7 +280,7 @@ export function LocationSection({
                   value={data.cameraEnvironment}
                   onChange={(e) => handleDataChange({ cameraEnvironment: e.target.value })}
                   placeholder="e.g., street level with reflections, aerial view..."
-                  className="mt-1 text-sm h-9 bg-zinc-900/50 border-zinc-800/50"
+                  className="mt-1 text-sm h-9 bg-zinc-900/50 border-[#f97316]/15"
                 />
               </div>
 

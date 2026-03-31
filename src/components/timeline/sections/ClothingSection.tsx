@@ -305,7 +305,7 @@ export function ClothingSection({
                           {/* Add reference image */}
                           <Button
                             variant="outline"
-                            className="aspect-square border-2 border-dashed border-white/10 bg-zinc-900/30 hover:border-[#f97316]/30"
+                            className="aspect-square border-2 border-dashed border-[#f97316]/15 bg-zinc-900/30 hover:border-[#f97316]/30"
                             onClick={() => {
                               const input = document.createElement('input');
                               input.type = 'file';
