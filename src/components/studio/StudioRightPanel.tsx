@@ -418,7 +418,7 @@ function NodeCreationSection({
   }
 
   return (
-    <section className="space-y-4 rounded-[24px] border border-white/10 bg-[#111111]/98 p-4">
+    <section className="space-y-4 rounded-[24px] border border-[rgba(249,115,22,0.12)] bg-[#111111]/98 p-4">
       <div className="space-y-2">
         <div className="text-[11px] uppercase tracking-[0.24em] text-zinc-500">{title}</div>
         {description ? <p className="text-sm leading-6 text-zinc-400">{description}</p> : null}
