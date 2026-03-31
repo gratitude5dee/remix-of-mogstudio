@@ -279,7 +279,7 @@ export function SoundSection({
   }, [saveAsset]);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={onToggle} className="space-y-2 pt-3 border-t border-white/5">
+    <Collapsible open={isOpen} onOpenChange={onToggle} className="space-y-2 pt-3 border-t border-[#f97316]/10">
       <CollapsibleTrigger asChild>
         <motion.div
           className={cn(
