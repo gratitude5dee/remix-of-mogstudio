@@ -342,12 +342,12 @@ export const AppHeader = ({
                 Project settings
               </DropdownMenuItem>
               
-              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
               
               <DropdownMenuItem 
                 onClick={onZoomToFit}
                 disabled={!onZoomToFit}
-                className="hover:bg-zinc-800 cursor-pointer"
+                className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
               >
                 <Maximize className="mr-2 h-4 w-4" />
                 Zoom to fit
