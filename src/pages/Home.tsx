@@ -240,8 +240,8 @@ export default function Home() {
 
           {/* Desktop Header - hidden on mobile */}
           <header data-tour="dashboard-title" className={cn(
-            "border-b border-border-default",
-            "bg-gradient-to-r from-surface-2 via-transparent to-surface-2 backdrop-blur-sm",
+            "border-b border-[rgba(249,115,22,0.1)]",
+            "bg-[#0a0a0f]/90 backdrop-blur-xl",
             "hidden md:block"
           )}>
             {/* Row 1: Title + Project Count + Actions */}
