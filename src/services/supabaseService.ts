@@ -913,7 +913,7 @@ export const characterService = {
         .order('created_at', { ascending: true });
         
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Character[]) || [];
     } catch (error) {
       handleError(error, 'listing characters');
       return [];
