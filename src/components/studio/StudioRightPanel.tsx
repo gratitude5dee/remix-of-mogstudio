@@ -526,7 +526,7 @@ export function StudioRightPanel({
             aria-label={`Expand ${activeTabConfig.label}`}
           >
             <div className="flex flex-col items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-[#111111] text-zinc-200">
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[rgba(249,115,22,0.12)] bg-[#111111] text-zinc-200">
                 <ActiveTabIcon className="h-4 w-4" />
               </div>
               <span className="[writing-mode:vertical-rl] rotate-180 text-[10px] font-medium uppercase tracking-[0.22em] text-zinc-400">
