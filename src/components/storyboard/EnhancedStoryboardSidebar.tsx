@@ -66,8 +66,8 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
     <div className={cn(
       "w-full h-full relative overflow-hidden",
       "bg-[#0f0f0f]/95",
-      "backdrop-blur-xl border-r border-white/[0.06]",
-      "shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
+      "backdrop-blur-xl border-r border-[#f97316]/10",
+      "shadow-[inset_0_1px_0_rgba(249,115,22,0.03)]"
     )}>
       <ScrollArea className="h-full text-white">
         <div className="p-5 space-y-5">
