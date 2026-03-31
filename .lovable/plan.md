@@ -1,51 +1,48 @@
 
 
-# Fix Model Marketplace Overflow — Make Left Pane Scrollable
+# Replace White Borders with Orange Glow in StudioRightPanel
 
-## Problem
+All `border-white/10`, `border-white/8`, and `border-white/15` instances in the right panel need to be replaced with the brand-aligned orange glow border used throughout the rest of the app.
 
-The left pane (settings + pinned + featured + providers) has no scroll container wrapping it as a whole. When there are enough pinned/featured models, the content overflows beyond the popover's max height and gets clipped — the user can't scroll to see all items.
+## Border token mapping
 
-## Fix
+| Current | Replacement |
+|---------|------------|
+| `border-white/10` | `border-[rgba(249,115,22,0.12)]` |
+| `border-white/8` | `border-[rgba(249,115,22,0.10)]` |
+| `border-white/15` | `border-[rgba(249,115,22,0.18)]` |
+| `hover:border-white/15` | `hover:border-[rgba(249,115,22,0.20)]` |
+| `hover:border-white/10` | `hover:border-[rgba(249,115,22,0.15)]` |
 
-**File: `src/components/studio/model-selector/FloraModelMarketplace.tsx`**
+## Affected locations in `src/components/studio/StudioRightPanel.tsx`
 
-1. **Wrap the entire left pane in a `ScrollArea`** — The `<div className="min-h-0 space-y-2.5">` (line 338) needs to become a scroll container so all its children (settings, pinned, featured, providers) scroll together when content exceeds the available height.
-
-2. **Remove the inner provider-only `ScrollArea`** (line 404) — It's redundant once the whole left pane scrolls. Keeping it creates nested scroll regions which is bad UX.
-
-3. **Ensure the grid row uses `min-h-0 overflow-hidden`** on both columns so flex/grid children respect the max-height constraint and allow scrolling.
-
-### Specific changes (line 338):
-
-| Current | Updated |
-|---------|---------|
-| `<div className="min-h-0 space-y-2.5">` | `<ScrollArea className="min-h-0" style={{ maxHeight: rightPaneMaxHeight }}>` + inner `<div className="space-y-2.5 pr-2">` |
-
-### Remove nested ScrollArea (line 404):
-
-Replace:
-```tsx
-<ScrollArea className={cn('pr-2', ...)} style={{ maxHeight: providerListMaxHeight }}>
-  <div className="space-y-1.5">
-    {providers.map(...)}
-  </div>
-</ScrollArea>
-```
-
-With just:
-```tsx
-<div className="space-y-1.5">
-  {providers.map(...)}
-</div>
-```
-
-4. **Reduce NodeHoverMenu gap** — Change `-translate-y-[calc(100%+10px)]` to `-translate-y-[calc(100%+5px)]` in `NodeHoverMenu.tsx` (line 148) to bring it 5px closer to the node.
+1. **ActionIconButton** (line 131) — button border + hover border
+2. **NodeInspector header** (line 216) — `border-b border-white/8`
+3. **Kind badge** (line 221) — `border border-white/8`
+4. **Close button** (line 242) — border + hover border
+5. **Preview section** (line 264) — outer card border
+6. **Preview image container** (line 266) — inner border
+7. **Metadata section** (line 276) — section border
+8. **Actions section** (line 295) — section border
+9. **Generate section** (line 307) — section border
+10. **Web Search toggle row** (line 352) — border
+11. **Aspect Ratio select** (line 327) — border
+12. **Resolution select** (line 341) — border
+13. **Seed input** (line 369) — `border-white/10`
+14. **Prompt textarea** (line 385) — `border-white/10`
+15. **Text preview section** (line 393) — section + inner border
+16. **NodeCreationSection** (line 421) — section border
+17. **Collapsed panel** (line 524) — outer border
+18. **Collapsed icon container** (line 529) — border
+19. **Expanded panel** (line 566) — outer border
+20. **Tab bar** (line 570) — `border-b border-white/8`
+21. **Collapse button** (line 598) — border + hover border
+22. **ImageEdit header** (line 636) — border-b + badge border
+23. **No-selection section** (line 677) — section border
 
 ## Files changed
 
 | File | Change |
 |------|--------|
-| `src/components/studio/model-selector/FloraModelMarketplace.tsx` | Wrap left pane in ScrollArea, remove nested provider ScrollArea |
-| `src/components/studio/nodes/NodeHoverMenu.tsx` | Reduce vertical gap from 10px to 5px |
+| `src/components/studio/StudioRightPanel.tsx` | Replace all ~23 white border instances with orange glow equivalents |
 
