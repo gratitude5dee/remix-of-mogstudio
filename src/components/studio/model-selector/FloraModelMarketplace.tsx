@@ -335,7 +335,8 @@ export function FloraModelMarketplace({
             }}
           >
             {/* Left pane */}
-            <div className="min-h-0 space-y-2.5">
+            <ScrollArea className="min-h-0" style={{ maxHeight: rightPaneMaxHeight }}>
+              <div className="space-y-2.5 pr-2">
               {/* Settings panel */}
               <div className={cn('grid gap-2.5 rounded-[20px] border border-[rgba(249,115,22,0.08)] bg-[#141414]', isToolbarVariant ? 'p-3' : 'p-3.5')}>
                 <div className="flex items-center justify-between">
