@@ -132,7 +132,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
             <span className="flex items-center gap-2">
               {item.label}
               {item.showBadge && (
-                <Badge variant="secondary" className="text-[9px] bg-accent-purple/15 text-accent-purple border-accent-purple/20 px-1.5 py-0.5">
+                <Badge variant="secondary" className="text-[9px] bg-[rgba(249,115,22,0.15)] text-[#f97316] border-[rgba(249,115,22,0.2)] px-1.5 py-0.5">
                   New
                 </Badge>
               )}
