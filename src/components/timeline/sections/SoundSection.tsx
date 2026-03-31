@@ -279,13 +279,13 @@ export function SoundSection({
   }, [saveAsset]);
 
   return (
-    <Collapsible open={isOpen} onOpenChange={onToggle} className="space-y-2 pt-3 border-t border-white/5">
+    <Collapsible open={isOpen} onOpenChange={onToggle} className="space-y-2 pt-3 border-t border-[#f97316]/10">
       <CollapsibleTrigger asChild>
         <motion.div
           className={cn(
             "flex items-center justify-between cursor-pointer py-2 px-3 rounded-lg",
             "hover:bg-zinc-800/30 transition-all duration-200",
-            "border border-transparent hover:border-zinc-700/50"
+            "border border-transparent hover:border-[#f97316]/20"
           )}
           whileHover={{ x: 2 }}
           whileTap={{ scale: 0.98 }}

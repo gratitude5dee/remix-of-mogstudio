@@ -152,7 +152,7 @@ export function ClothingSection({
           className={cn(
             "flex items-center justify-between cursor-pointer py-2 px-3 rounded-lg",
             "hover:bg-zinc-800/30 transition-all duration-200",
-            "border border-transparent hover:border-zinc-700/50"
+            "border border-transparent hover:border-[#f97316]/20"
           )}
           whileHover={{ x: 2 }}
           whileTap={{ scale: 0.98 }}

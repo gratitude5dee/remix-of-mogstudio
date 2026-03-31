@@ -212,7 +212,7 @@ export function ObjectSubjectSection({
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-white/8 bg-[#111111]/80">
+    <div className="overflow-hidden rounded-lg border border-[#f97316]/15 bg-[#111111]/80 shadow-[0_0_8px_rgba(249,115,22,0.05)]">
       {/* Toggle Header */}
       <div className="flex items-center justify-between bg-[#141414] p-3">
         <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ export function ObjectSubjectSection({
           </Label>
         </div>
         {enabled && (
-          <Button size="sm" variant="ghost" onClick={addNewObject} className="h-7 border border-white/8 bg-[#181818] hover:bg-[#1d1d1d]">
+          <Button size="sm" variant="ghost" onClick={addNewObject} className="h-7 border border-[#f97316]/15 bg-[#181818] hover:bg-[#1d1d1d]">
             <Plus className="w-3.5 h-3.5 mr-1" /> Add Object
           </Button>
         )}
@@ -255,7 +255,7 @@ export function ObjectSubjectSection({
                   {objects.map((obj) => {
                     const isExpanded = expandedObjectId === obj.id;
                     return (
-                      <Card key={obj.id} className="border-white/8 bg-zinc-900/30">
+                      <Card key={obj.id} className="border-[#f97316]/15 bg-zinc-900/30">
                         <CardHeader className="p-2 cursor-pointer" onClick={() => setExpandedObjectId(isExpanded ? null : obj.id)}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">

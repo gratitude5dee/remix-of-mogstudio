@@ -55,7 +55,7 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
   const inputBaseClass = cn(
     "rounded-lg text-xs h-8 px-3",
     "bg-[#131313] backdrop-blur-sm",
-    "border border-white/8",
+    "border border-[#f97316]/15",
     "focus:border-[#f97316]/40 focus:ring-2 focus:ring-[#f97316]/10",
     "shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]",
     "transition-all duration-200",
@@ -66,8 +66,8 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
     <div className={cn(
       "w-full h-full relative overflow-hidden",
       "bg-[#0f0f0f]/95",
-      "backdrop-blur-xl border-r border-white/[0.06]",
-      "shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
+      "backdrop-blur-xl border-r border-[#f97316]/10",
+      "shadow-[inset_0_1px_0_rgba(249,115,22,0.03)]"
     )}>
       <ScrollArea className="h-full text-white">
         <div className="p-5 space-y-5">
@@ -141,7 +141,7 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
                 className={cn(
                   "flex items-center justify-between cursor-pointer py-2 px-3 rounded-lg",
                   "hover:bg-zinc-800/30 transition-all duration-200",
-                  "border border-transparent hover:border-zinc-700/50"
+                  "border border-transparent hover:border-[#f97316]/20"
                 )}
                 whileHover={{ x: 2 }}
                 whileTap={{ scale: 0.98 }}
