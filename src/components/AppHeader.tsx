@@ -268,7 +268,7 @@ export const AppHeader = ({
         {/* Right: Credits + Settings Dropdown + Share */}
         <div className="flex items-center gap-2">
           {/* Credits Display */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/60 border border-zinc-800/50 rounded-lg">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/60 border border-[rgba(249,115,22,0.12)] rounded-lg">
             <Coins className="w-3.5 h-3.5 text-accent-teal" />
             <CreditsDisplay showTooltip={false} />
           </div>
