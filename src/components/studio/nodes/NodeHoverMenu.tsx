@@ -150,7 +150,7 @@ export const NodeHoverMenu = ({
           exit={{ opacity: 0, y: -8, scale: 0.96 }}
           transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
-            'absolute left-1/2 top-0 z-30 flex -translate-x-1/2 -translate-y-[calc(100%+12px)] items-center gap-1 rounded-[16px] border border-white/10 bg-[#141414]/98 px-1.5 py-1 shadow-[0_18px_36px_rgba(0,0,0,0.44)] backdrop-blur-2xl',
+            'absolute left-1/2 top-0 z-30 flex -translate-x-1/2 -translate-y-[calc(100%+6px)] items-center gap-0.5 rounded-[12px] border border-[rgba(249,115,22,0.15)] bg-[#111111] px-1 py-0.5 shadow-[0_0_8px_rgba(249,115,22,0.06)] backdrop-blur-md',
             className
           )}
           onMouseDown={(event) => event.stopPropagation()}
