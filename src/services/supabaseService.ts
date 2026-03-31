@@ -991,7 +991,7 @@ export const storylineService = {
         .single();
         
       if (error) throw error;
-      return data;
+      return data as unknown as Storyline;
     } catch (error) {
       console.log('No selected storyline found or error:', error);
       return null;
