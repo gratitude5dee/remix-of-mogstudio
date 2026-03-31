@@ -9,7 +9,7 @@ interface StudioInspectorPanelProps {
 
 const StudioInspectorPanel = ({ activeJobs = 0, onGenerate }: StudioInspectorPanelProps) => {
   return (
-    <aside className="w-80 bg-[#0f0f0f] border-l border-zinc-800 flex flex-col p-4 gap-4">
+    <aside className="w-80 bg-[#0f0f0f] border-l border-[rgba(249,115,22,0.15)] flex flex-col p-4 gap-4 shadow-[0_0_8px_rgba(249,115,22,0.06)]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-orange-400" />
