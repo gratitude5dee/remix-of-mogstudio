@@ -163,7 +163,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ projectId, onClose
 
   if (isLoading) {
     return (
-      <div className="w-80 bg-zinc-900/95 backdrop-blur-xl border border-zinc-800/50 rounded-xl p-8 flex items-center justify-center">
+      <div className="w-80 bg-zinc-900/95 backdrop-blur-xl border border-[rgba(249,115,22,0.15)] rounded-xl p-8 flex items-center justify-center shadow-[0_0_12px_rgba(249,115,22,0.06)]">
         <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
       </div>
     );
