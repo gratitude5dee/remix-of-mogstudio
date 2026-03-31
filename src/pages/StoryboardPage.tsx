@@ -404,6 +404,7 @@ const StoryboardPage = () => {
               data={sidebarData}
               sceneId={selectedScene?.id || ''}
               onUpdate={(updates) => handleSceneUpdate(selectedScene?.id, updates)}
+              onProjectUpdate={handleProjectUpdate}
             />
           ) : (
             <div className="p-6 text-zinc-500">Loading sidebar...</div>
