@@ -924,7 +924,7 @@ export const characterService = {
     try {
       const { data, error } = await supabase
         .from('characters')
-        .insert(character)
+        .insert(character as any)
         .select('id')
         .single();
         
