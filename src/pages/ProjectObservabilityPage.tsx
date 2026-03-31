@@ -419,7 +419,7 @@ const ProjectObservabilityPage = () => {
                           variant="destructive"
                           disabled={isSubmitting === task.id}
                           onClick={() =>
-                            void submitReview(task.id, 'reject', task.target_type, task.target_id)
+                            void submitReview(task.id, 'reject', task.target_type as 'character' | 'scene' | 'shot' | 'storyline', task.target_id)
                           }
                         >
                           <AlertTriangle className="mr-2 h-4 w-4" />
