@@ -438,10 +438,10 @@ export function FloraModelMarketplace({
                         </button>
                       );
                     })}
-                  </div>
-                </ScrollArea>
+                </div>
               </section>
-            </div>
+              </div>
+            </ScrollArea>
 
             {/* Right pane */}
             <div className="min-h-0 overflow-hidden rounded-[20px] border border-[rgba(249,115,22,0.08)] bg-[#131313]">
