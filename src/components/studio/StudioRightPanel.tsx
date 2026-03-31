@@ -338,7 +338,7 @@ function NodeInspector({
                   <select
                     value={resolutionValue}
                     onChange={(event) => updateParams({ resolution: event.target.value })}
-                    className="h-12 w-full rounded-[18px] border border-white/10 bg-[#131313] px-3 text-sm text-white outline-none"
+                    className="h-12 w-full rounded-[18px] border border-[rgba(249,115,22,0.12)] bg-[#131313] px-3 text-sm text-white outline-none"
                   >
                     <option value="1K">1K</option>
                     <option value="2K">2K</option>
