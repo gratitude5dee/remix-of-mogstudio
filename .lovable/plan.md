@@ -1,48 +1,52 @@
 
 
-# Fix Evaluation Job Failures + Improve Observability UI
+# Aura View — Project Observability List on Home Page
 
-## Root Cause
-
-The `evaluate-storyboard-packet` edge function inserts into `evaluation_results` without providing `test_id` or `model_id`, both of which are `NOT NULL` in the remote DB. The shadow evaluator doesn't use these legacy columns (they're from an older text-to-image evaluation schema).
+## Current Behavior
+Clicking "Aura" in the sidebar navigates away to `/projects/:id/observability` for the most recent project. The user wants it to show an inline list of all projects with expandable evaluation summaries, right on the `/home` page.
 
 ## Plan
 
-### 1. Migration: Make `test_id` and `model_id` nullable
+### 1. New component: `AuraProjectList.tsx`
+**File: `src/components/home/AuraProjectList.tsx`**
 
-```sql
-ALTER TABLE public.evaluation_results ALTER COLUMN test_id DROP NOT NULL;
-ALTER TABLE public.evaluation_results ALTER COLUMN model_id DROP NOT NULL;
+- Receives `projects: Project[]` as prop
+- For each project, renders a card with:
+  - Project title, format, last updated
+  - Expandable accordion showing a quick observability summary (fetched lazily on expand):
+    - Completed evaluations count, open review tasks, failed judge families
+    - Mini status dots (green/red/amber)
+  - "View Details →" button that navigates to `appRoutes.projects.observability(project.id)`
+- Uses `observabilityService.fetchAll(projectId)` to load summary data when a card is expanded
+- Loading skeleton while fetching; error state if fetch fails
+- Styled consistently with existing dark theme cards (glass effect, border-l status indicator)
 
--- Clean up stuck evaluation runs
-UPDATE public.evaluation_runs
-SET status = 'failed', completed_at = now(),
-    error_message = 'Orphaned by schema constraint failure'
-WHERE status = 'running'
-  AND started_at < now() - interval '5 minutes';
+### 2. Update `Sidebar.tsx` — make Aura a view, not a route
+**File: `src/components/home/Sidebar.tsx`** (line 45)
 
-NOTIFY pgrst, 'reload schema';
-```
+Change Aura from `isRoute: true` to `isRoute: false` (or remove the flag). This makes clicking "Aura" call `onViewChange('aura')` instead of navigating away.
 
-### 2. Redeploy `evaluate-storyboard-packet`
+Remove the special-case `if (item.id === 'aura')` block (lines 78-85).
 
-No code changes needed — the function is correct, it's just the DB constraints that were blocking it.
+### 3. Update `MobileSidebarDrawer.tsx` — same change
+**File: `src/components/home/MobileSidebarDrawer.tsx`** (line 35, 46-51)
 
-### 3. Improve Observability Page UI
+Same treatment: remove `isRoute: true` from Aura nav item and remove the special navigation logic.
 
-Redesign `src/pages/ProjectObservabilityPage.tsx` with:
+### 4. Update `Home.tsx` — render `AuraProjectList` when `activeView === 'aura'`
+**File: `src/pages/Home.tsx`**
 
-- **Refined header**: Gradient accent bar, better hierarchy with a subtle system status indicator (green dot when healthy, amber when jobs failing)
-- **Overview tab**: Replace plain `MetricCard` with animated stat cards showing sparkline-style indicators; use color-coded status dots; add a mini timeline strip showing last 24h activity
-- **Runs tab**: Add status icon (check/x/spinner) per row, color-code the left border of each card by status (green=completed, red=failed, amber=running), add relative timestamps ("2 min ago"), add filter chips for status
-- **Judges tab**: Render score as a visual bar (not just text), show confidence as a subtle opacity gauge, better layout for criterion breakdowns
-- **Review tab**: Cleaner action buttons with better spacing, inline status transitions
-- **Overall**: Use consistent `border-l-2` status indicators, softer card backgrounds with glass effect, better typography hierarchy
+- Import `AuraProjectList`
+- In the content area (around line 482), add a condition: when `activeView === 'aura'`, render `<AuraProjectList projects={projects} />` instead of the project grid/list
+- Remove `auraProjectId` prop from `Sidebar` and `MobileSidebarDrawer` (no longer needed)
+- Remove `latestProjectForAura` computation (lines 202-207)
 
 ## Files changed
 
 | File | Change |
 |------|--------|
-| New migration SQL | Drop NOT NULL on `test_id`, `model_id`; fail stuck runs |
-| `src/pages/ProjectObservabilityPage.tsx` | UI redesign with status indicators, visual scores, better layout |
+| `src/components/home/AuraProjectList.tsx` | **New** — expandable project list with lazy-loaded observability summaries |
+| `src/components/home/Sidebar.tsx` | Make Aura a view toggle, not a route navigation |
+| `src/components/home/MobileSidebarDrawer.tsx` | Same sidebar change for mobile |
+| `src/pages/Home.tsx` | Render AuraProjectList when activeView is 'aura'; remove auraProjectId prop |
 
