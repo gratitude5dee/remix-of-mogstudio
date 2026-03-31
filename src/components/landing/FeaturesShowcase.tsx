@@ -31,7 +31,7 @@ export function FeaturesShowcase() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-teal-950/50 via-teal-900/30 to-black border border-teal-500/20 p-8 hover:border-teal-500/40 transition-all duration-300"
+            className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-orange-950/50 via-orange-900/30 to-black border border-orange-500/20 p-8 hover:border-orange-500/40 transition-all duration-300"
           >
             <div className="relative z-10 mb-8">
               <h3 className="text-3xl font-bold text-white mb-4">

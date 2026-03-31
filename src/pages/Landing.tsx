@@ -178,7 +178,7 @@ const Landing = () => {
             <div className="h-px bg-gradient-to-r from-transparent via-orange-500/20 to-transparent" />
           </div>
 
-          <MogPromoSection />
+          
         </div>
       </div>
 

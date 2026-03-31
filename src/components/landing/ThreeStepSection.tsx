@@ -98,7 +98,7 @@ export function ThreeStepSection() {
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-xs font-mono text-white/20">{step.number}</span>
-                  <span className="text-xs font-mono uppercase tracking-widest text-emerald-400/60">{step.title}</span>
+                  <span className="text-xs font-mono uppercase tracking-widest text-orange-400/60">{step.title}</span>
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">{step.headline}</h3>
                 <p className="text-sm text-white/40 leading-relaxed">{step.description}</p>

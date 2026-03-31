@@ -23,7 +23,7 @@ export function Logo({ className, showVersion = true, size = "md" }: LogoProps) 
     <div className={cn("flex items-center gap-2", className)}>
       <img 
         src="/lovable-uploads/wzrdtechlogo.png" 
-        alt="MOG STUDIO Logo" 
+        alt="WZRD STUDIO Logo" 
         className={cn("object-contain cursor-pointer", sizeClasses[size])}
         onClick={() => navigate(appRoutes.home)}
       />

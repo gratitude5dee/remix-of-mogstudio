@@ -36,7 +36,7 @@ export const TestimonialCard = ({ quote, author, handle, featured = false, delay
     'from-orange-500 to-amber-500',
     'from-orange-500 to-red-500',
     'from-violet-500 to-purple-500',
-    'from-teal-500 to-cyan-500',
+    'from-orange-400 to-amber-500',
   ];
   
   const colorIndex = author.charCodeAt(0) % avatarColors.length;

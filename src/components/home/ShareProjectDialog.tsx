@@ -95,7 +95,7 @@ export const ShareProjectDialog = ({ open, onOpenChange, project }: ShareProject
   const handleSocialShare = (platform: string) => {
     if (!shareLink) return;
 
-    const text = `Check out my project "${project.title}" on MOG Studio`;
+    const text = `Check out my project "${project.title}" on WZRD Studio`;
     const urls: Record<string, string> = {
       twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareLink)}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`,

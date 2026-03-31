@@ -37,7 +37,7 @@ const caseStudies = [
     description:
       'From raw footage to platform-ready delivery. Automated transcoding, localization, and distribution across global territories.',
     stats: '48hr turnaround',
-    gradient: 'from-emerald-500/20 to-teal-500/5',
+    gradient: 'from-orange-500/20 to-amber-500/5',
   },
 ];
 
