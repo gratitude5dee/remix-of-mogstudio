@@ -163,8 +163,7 @@ export const ProjectCard = ({ project, onOpen, onDelete, onRename }: ProjectCard
                 <div
                   className={cn(
                     'w-16 h-16 rounded-2xl flex items-center justify-center',
-                    'bg-gradient-to-br from-accent-purple/20 to-accent-purple/5',
-                    'dark:from-orange-500/20 dark:to-orange-500/5'
+                    'bg-gradient-to-br from-[rgba(249,115,22,0.2)] to-[rgba(249,115,22,0.05)]'
                   )}
                 >
                   <Play className="w-8 h-8 text-accent-purple dark:text-orange-400" />
