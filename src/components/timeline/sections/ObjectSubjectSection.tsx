@@ -255,7 +255,7 @@ export function ObjectSubjectSection({
                   {objects.map((obj) => {
                     const isExpanded = expandedObjectId === obj.id;
                     return (
-                      <Card key={obj.id} className="border-white/8 bg-zinc-900/30">
+                      <Card key={obj.id} className="border-[#f97316]/15 bg-zinc-900/30">
                         <CardHeader className="p-2 cursor-pointer" onClick={() => setExpandedObjectId(isExpanded ? null : obj.id)}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
