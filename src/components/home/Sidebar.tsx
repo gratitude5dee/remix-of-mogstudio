@@ -41,7 +41,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
 
   const mainNavItems = [
     { id: 'all', label: 'All Projects', icon: FolderKanban },
-    { id: 'aura', label: 'Aura', icon: Sparkles },
+    { id: 'aura', label: 'Aura (Observability)', icon: Sparkles },
     { id: 'kanvas', label: 'Kanvas', icon: Layers, isRoute: true, showBadge: true },
   ];
 
