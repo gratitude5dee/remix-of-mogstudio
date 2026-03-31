@@ -125,12 +125,11 @@ export const useShotStream = (
       const measureName = `${markRef.current}:${suffix}`;
       measureNamesRef.current.push(measureName);
       try {
+        const marks = performance.getEntriesByName(markRef.current, 'mark');
+        if (marks.length === 0) return;
         performance.measure(measureName, markRef.current);
-      } catch (error) {
-        if (import.meta.env.DEV) {
-          // eslint-disable-next-line no-console
-          console.warn('Failed to record performance measure', measureName, error);
-        }
+      } catch {
+        // Silently ignore — mark may have been cleared
       }
     },
     []
