@@ -1,55 +1,80 @@
 
 
-# Fix Console Errors
+# Fix Duplicate Shot Prompts with AI-Generated Unique Ideas
 
-## Analysis
+## Problem
+All auto-generated shots get the same generic prompt: `"Shot N: Cinematic moment in [Scene] at [Location]"`. Need to replace with AI-generated distinct descriptions, and ensure "Shot #" prefix is NOT included in the prompt text.
 
-### Errors NOT from your app (ignore these)
-- `chrome-extension://` SyntaxError — browser extension, not your code
-- `SES Removing unpermitted intrinsics` — MetaMask/lockdown, not your code
-- `px.ads.linkedin.com`, `connect.facebook.net/fbevents.js` `ERR_BLOCKED_BY_CLIENT` — ad blocker blocking tracking pixels on the Lovable editor page itself
-- `RS SDK - TikTok Ads / Google Ads` event name warnings — Lovable's own analytics SDK, not your app
-- `Unrecognized feature: 'vr'`, `'ambient-light-sensor'`, `'battery'` — Lovable editor iframe sandbox permissions, not your app
-- `preloaded using link preload but not used` — Lovable editor asset preloading, not your app
+## Change
 
-### Errors FROM your app (fixable)
+### `supabase/functions/gen-shots/index.ts` (lines 175-179)
 
-**1. Supabase 404/400 on observability tables and columns**
-All tables and columns exist in the database. The issue was **PostgREST's schema cache** not being reloaded after the migration. I've already executed `NOTIFY pgrst, 'reload schema'` which tells PostgREST to pick up the new tables/columns. This should resolve all 404s and 400s on the next page load.
+Replace the static `placeholderIdeas` block with an AI call to generate distinct shot descriptions:
 
-**2. Performance mark warning in `useShotStream.ts`** (lines 127-134)
-The `performance.mark()` is created with a timestamp-based name at stream start (line 156-158). When cleanup runs via `clearPerformance()` (called by `cancel()` at line 153), it clears the mark. But `recordMeasure('done')` at line 243 still tries to use that mark name — if the stream completes after a re-start or if `clearPerformance` ran, the mark no longer exists.
-
-The current catch block (line 129) already swallows the error but logs a warning when `import.meta.env.DEV` is true. The warning is harmless. To suppress it entirely:
-
-**File: `src/hooks/useShotStream.ts`**
-- In `recordMeasure` (line 124), add a check: verify the mark actually exists before calling `performance.measure()`:
 ```ts
-const recordMeasure = useCallback(
-  (suffix: string) => {
-    if (typeof performance === 'undefined' || !markRef.current) return;
-    const measureName = `${markRef.current}:${suffix}`;
-    measureNamesRef.current.push(measureName);
-    try {
-      // Verify mark exists before measuring
-      const marks = performance.getEntriesByName(markRef.current, 'mark');
-      if (marks.length === 0) return;
-      performance.measure(measureName, markRef.current);
-    } catch {
-      // Silently ignore — mark may have been cleared
-    }
-  },
-  []
-);
+const sceneContext = [
+  scene?.description && `Scene: ${scene.description}`,
+  scene?.location && `Location: ${scene.location}`,
+  scene?.lighting && `Lighting: ${scene.lighting}`,
+  scene?.weather && `Weather: ${scene.weather}`,
+].filter(Boolean).join('\n');
+
+let placeholderIdeas: string[];
+try {
+  const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${Deno.env.get('LOVABLE_API_KEY')}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-3-flash-preview',
+      messages: [
+        {
+          role: 'system',
+          content: 'You generate distinct cinematic shot descriptions for storyboards. Each shot must describe a DIFFERENT moment, angle, or subject. Do NOT include shot numbers or "Shot #:" prefixes. Return ONLY a JSON object with a "shots" array of strings.',
+        },
+        {
+          role: 'user',
+          content: `Generate exactly ${desiredShotCount} distinct shot descriptions for this scene:\n${sceneContext}\n\nVary shot types (wide establishing, medium, close-up detail, reaction, POV, etc). Each description should be 1-2 sentences capturing a specific visual moment. No numbering.`,
+        },
+      ],
+    }),
+  });
+  const aiData = await aiResp.json();
+  const content = aiData.choices?.[0]?.message?.content;
+  const parsed = JSON.parse(content);
+  const ideas = Array.isArray(parsed) ? parsed : parsed.shots || parsed.ideas || parsed.descriptions || [];
+  if (ideas.length >= desiredShotCount) {
+    placeholderIdeas = ideas.slice(0, desiredShotCount);
+  } else {
+    throw new Error('Insufficient ideas');
+  }
+} catch {
+  // Fallback with varied angles, no "Shot #" prefix
+  const sceneLabel = scene?.title || scene?.description || `Scene ${scene?.scene_number ?? ''}`;
+  const location = scene?.location ? ` at ${scene.location}` : '';
+  const angles = [
+    'Establishing wide shot of', 'Character-focused moment in',
+    'Close-up detail from', 'Action beat in',
+    'Atmospheric insert from', 'Reaction shot in',
+  ];
+  placeholderIdeas = Array.from({ length: desiredShotCount }).map((_, i) =>
+    `${angles[i % angles.length]} ${sceneLabel}${location}`
+  );
+}
 ```
 
-## Summary
+Key points:
+- AI prompt explicitly says "Do NOT include shot numbers or 'Shot #:' prefixes"
+- Fallback also omits "Shot N:" prefix
+- Shot numbering is handled separately by `shotNumber` variable (line 205), not embedded in the prompt text
 
-| Issue | Fix |
-|-------|-----|
-| 404/400 on observability tables | Already fixed — sent `NOTIFY pgrst, 'reload schema'` to refresh PostgREST cache |
-| Performance mark warning | Guard `recordMeasure` with `getEntriesByName` check, remove DEV-only warn |
-| External browser/extension errors | No action — not from your app |
+### Redeploy
+Deploy `gen-shots` edge function after editing.
 
-One file changed: `src/hooks/useShotStream.ts`
+## Files changed
+| File | Change |
+|------|--------|
+| `supabase/functions/gen-shots/index.ts` | Replace static placeholder with AI-generated distinct shot ideas, no "Shot #" prefix |
 
