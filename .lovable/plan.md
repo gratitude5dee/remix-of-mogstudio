@@ -1,52 +1,36 @@
 
 
-# Switch gen-shots to Groq API + Confirm Performance Measure Fix
+# Add 100 Credits to All Accounts
 
-## 1. Switch gen-shots AI call from Lovable Gateway to Groq
+## Current State
+- 14 existing users in `user_credits` table
+- New account trigger (`grant_free_credits`) already grants 100 credits on profile creation — no change needed there
 
-**File: `supabase/functions/gen-shots/index.ts` (lines 184-202)**
+## Plan
 
-Replace:
-```ts
-const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${Deno.env.get('LOVABLE_API_KEY')}`,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    model: 'google/gemini-3-flash-preview',
-    messages: [...],
-  }),
-});
+### 1. Database migration: Add 100 credits to all existing accounts
+
+Run a single SQL migration that:
+- Adds 100 to `total_credits` for every row in `user_credits`
+- Records a `credit_transactions` entry for each user (type `free`, resource `credit`, metadata noting "Bonus credits grant")
+
+```sql
+-- Add 100 credits to all existing users
+UPDATE public.user_credits
+SET total_credits = total_credits + 100,
+    updated_at = now();
+
+-- Record transactions for audit trail
+INSERT INTO public.credit_transactions (user_id, amount, transaction_type, resource_type, metadata)
+SELECT user_id, 100, 'free', 'credit', '{"description": "Bonus 100 credits grant"}'::jsonb
+FROM public.user_credits;
 ```
 
-With:
-```ts
-const aiResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${Deno.env.get('GROQ_API_KEY')}`,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    model: 'llama-3.3-70b-versatile',
-    messages: [...],
-  }),
-});
-```
-
-Same messages/system prompt, just different endpoint, key, and model. The existing `GROQ_API_KEY` is already configured (used by `groq-stream` function).
-
-Redeploy `gen-shots` after editing.
-
-## 2. Performance measure error — already fixed
-
-The guard in `useShotStream.ts` (lines 128-129) already checks `performance.getEntriesByName()` before calling `measure()`, and the catch block silently ignores errors. The errors the user sees are from a **cached previous build** — the old code had a `console.warn` in the catch block. A fresh page reload after the next build will resolve this. No code changes needed.
+### 2. New accounts — already handled
+The existing `grant_free_credits` trigger on `profiles` already inserts 100 credits for every new user. No changes needed.
 
 ## Files changed
-
 | File | Change |
 |------|--------|
-| `supabase/functions/gen-shots/index.ts` | Switch from Lovable AI Gateway to Groq API (`GROQ_API_KEY` + `llama-3.3-70b-versatile`) |
+| New migration SQL | Add 100 credits to all 14 existing accounts + transaction records |
 
