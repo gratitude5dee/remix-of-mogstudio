@@ -328,7 +328,7 @@ export default function Home() {
                           });
                         }
                       }} 
-                      className="hover:bg-surface-2 dark:hover:bg-zinc-800 cursor-pointer text-red-500 dark:text-red-400"
+                      className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer text-red-500 dark:text-red-400"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
