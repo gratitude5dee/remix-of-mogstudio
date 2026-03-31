@@ -366,7 +366,7 @@ function NodeInspector({
                   value={seedValue}
                   onChange={(event) => updateParams({ seed: event.target.value })}
                   placeholder="Random"
-                  className="h-12 rounded-[18px] border-white/10 bg-[#131313] font-mono text-white"
+                  className="h-12 rounded-[18px] border-[rgba(249,115,22,0.12)] bg-[#131313] font-mono text-white"
                 />
               </label>
             )}
