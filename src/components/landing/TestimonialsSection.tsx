@@ -9,7 +9,7 @@ const testimonials = [
     featured: true,
   },
   {
-    quote: "MOG Studio's storyboard view is a game-changer. Planning narratives shot-by-shot has never been easier.",
+    quote: "WZRD Studio's storyboard view is a game-changer. Planning narratives shot-by-shot has never been easier.",
     author: "Chloe Winters",
     handle: "@chloewinters",
     featured: true,
