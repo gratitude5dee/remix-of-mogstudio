@@ -402,9 +402,8 @@ export function FloraModelMarketplace({
                 <div className="px-1 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-600">
                   Providers
                 </div>
-                <ScrollArea className={cn('pr-2', !isToolbarVariant && 'pr-3')} style={{ maxHeight: providerListMaxHeight }}>
-                  <div className="space-y-1.5">
-                    {providers.map((provider) => {
+                <div className="space-y-1.5">
+                  {providers.map((provider) => {
                       const isActive = provider.key === activeProvider?.key;
                       return (
                         <button
