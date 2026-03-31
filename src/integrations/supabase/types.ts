@@ -4265,6 +4265,13 @@ export type Database = {
             referencedRelation: "mrkt_tenants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mrkt_analytics_events_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mrkt_audit_events: {
@@ -4326,6 +4333,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "mrkt_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrkt_audit_events_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -4445,6 +4459,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "mrkt_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrkt_briefs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -4666,6 +4687,13 @@ export type Database = {
             referencedRelation: "mrkt_tenants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mrkt_creatives_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mrkt_decision_logs: {
@@ -4717,6 +4745,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "mrkt_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrkt_decision_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -4793,6 +4828,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "mrkt_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrkt_media_buys_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -4914,6 +4956,13 @@ export type Database = {
             referencedRelation: "mrkt_tenants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mrkt_policies_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mrkt_principals: {
@@ -4962,6 +5011,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "mrkt_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrkt_principals_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -5079,6 +5135,13 @@ export type Database = {
             referencedRelation: "mrkt_tenants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mrkt_sellers_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mrkt_signal_discoveries: {
@@ -5128,6 +5191,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "mrkt_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrkt_signal_discoveries_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -5184,6 +5254,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "mrkt_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrkt_signals_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -5283,6 +5360,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "mrkt_tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mrkt_workflow_tasks_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "mrkt_tenants_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -9316,6 +9400,36 @@ export type Database = {
           post_count?: number | null
           updated_at?: string | null
           wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      mrkt_tenants_safe: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          id: string | null
+          name: string | null
+          status: Database["public"]["Enums"]["tenant_status"] | null
+          subdomain: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+          status?: Database["public"]["Enums"]["tenant_status"] | null
+          subdomain?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+          status?: Database["public"]["Enums"]["tenant_status"] | null
+          subdomain?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
