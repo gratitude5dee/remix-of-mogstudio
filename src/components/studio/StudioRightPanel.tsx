@@ -128,7 +128,7 @@ function ActionIconButton({
       type="button"
       title={label}
       onClick={onClick}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-[#131313] text-zinc-300 transition-colors hover:border-white/15 hover:bg-[#191919] hover:text-white"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[rgba(249,115,22,0.12)] bg-[#131313] text-zinc-300 transition-colors hover:border-[rgba(249,115,22,0.20)] hover:bg-[#191919] hover:text-white"
     >
       <Icon className="h-4 w-4" />
     </button>
