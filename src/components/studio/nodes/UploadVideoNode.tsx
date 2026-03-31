@@ -107,7 +107,7 @@ export const UploadVideoNode = memo(({ id, data, selected }: NodeProps) => {
         selected && "ring-2 ring-purple-500/50"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 bg-[#0f0f0f] border-b border-zinc-800">
+        <div className="flex items-center justify-between px-3 py-2 bg-[#0f0f0f] border-b border-[rgba(249,115,22,0.12)]">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-md bg-purple-500/10">
               <Video className="w-3.5 h-3.5 text-purple-400" />
