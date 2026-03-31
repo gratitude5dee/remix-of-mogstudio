@@ -256,7 +256,8 @@ export const NodeHoverMenu = ({
           {resolvedActionItems.map((item) => (
             <ActionButton key={item.key} item={item} />
           ))}
-        </motion.div>
+          </motion.div>
+        </div>
       ) : null}
     </AnimatePresence>
   );
