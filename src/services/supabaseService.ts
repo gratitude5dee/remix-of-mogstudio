@@ -863,7 +863,7 @@ export const sceneService = {
     try {
       const { data, error } = await supabase
         .from('scenes')
-        .insert(scene)
+        .insert(scene as any)
         .select('id')
         .single();
         
