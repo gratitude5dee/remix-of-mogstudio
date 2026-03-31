@@ -213,7 +213,7 @@ function NodeInspector({
 
   return (
     <div className="flex h-full flex-col bg-transparent">
-      <div className="border-b border-white/8 px-5 py-4">
+      <div className="border-b border-[rgba(249,115,22,0.10)] px-5 py-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="mb-2 text-[11px] uppercase tracking-[0.22em] text-zinc-500">Selected node</div>
