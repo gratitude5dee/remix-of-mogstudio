@@ -223,7 +223,7 @@ export function LocationSection({
                         "h-8 text-xs",
                         data.weather === option.value
                           ? "bg-[#221a10] border-[#f97316]/25 text-[#FDE8D0] hover:bg-[#28200f]"
-                          : "bg-zinc-900/50 border-zinc-800/50"
+                          : "bg-zinc-900/50 border-[#f97316]/15"
                       )}
                     >
                       {option.icon}
