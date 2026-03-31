@@ -166,7 +166,7 @@ export const ProjectCard = ({ project, onOpen, onDelete, onRename }: ProjectCard
                     'bg-gradient-to-br from-[rgba(249,115,22,0.2)] to-[rgba(249,115,22,0.05)]'
                   )}
                 >
-                  <Play className="w-8 h-8 text-accent-purple dark:text-orange-400" />
+                  <Play className="w-8 h-8 text-[#f97316]" />
                 </div>
               </div>
             )}
