@@ -216,7 +216,7 @@ export function ClothingSection({
                             updateCharacterData(char.id, { clothingPrompt: e.target.value })
                           }
                           placeholder="Describe the character's outfit... e.g., 'Worn leather jacket, faded blue jeans, combat boots'"
-                          className="mt-1 text-sm min-h-[60px] bg-zinc-900/50 border-zinc-800/50"
+                          className="mt-1 text-sm min-h-[60px] bg-zinc-900/50 border-[#f97316]/15"
                           rows={2}
                         />
                       </div>
@@ -227,7 +227,7 @@ export function ClothingSection({
                         <div className="flex gap-1 mt-1">
                           <Input
                             placeholder="e.g., watch, necklace, hat..."
-                            className="text-sm h-8 bg-zinc-900/50 border-zinc-800/50"
+                            className="text-sm h-8 bg-zinc-900/50 border-[#f97316]/15"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && e.currentTarget.value.trim()) {
                                 addAccessory(char.id, e.currentTarget.value.trim());
@@ -260,7 +260,7 @@ export function ClothingSection({
                               updateCharacterData(char.id, { hairStyle: e.target.value })
                             }
                             placeholder="e.g., Slicked back..."
-                            className="mt-1 text-sm h-8 bg-zinc-900/50 border-zinc-800/50"
+                             className="mt-1 text-sm h-8 bg-zinc-900/50 border-[#f97316]/15"
                           />
                         </div>
                         <div>
@@ -271,7 +271,7 @@ export function ClothingSection({
                               updateCharacterData(char.id, { makeupDescription: e.target.value })
                             }
                             placeholder="e.g., Natural, smokey..."
-                            className="mt-1 text-sm h-8 bg-zinc-900/50 border-zinc-800/50"
+                            className="mt-1 text-sm h-8 bg-zinc-900/50 border-[#f97316]/15"
                           />
                         </div>
                       </div>
@@ -305,7 +305,7 @@ export function ClothingSection({
                           {/* Add reference image */}
                           <Button
                             variant="outline"
-                            className="aspect-square border-2 border-dashed border-white/10 bg-zinc-900/30 hover:border-[#f97316]/30"
+                            className="aspect-square border-2 border-dashed border-[#f97316]/15 bg-zinc-900/30 hover:border-[#f97316]/30"
                             onClick={() => {
                               const input = document.createElement('input');
                               input.type = 'file';

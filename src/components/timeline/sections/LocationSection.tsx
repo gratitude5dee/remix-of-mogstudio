@@ -182,7 +182,7 @@ export function LocationSection({
                   value={data.name}
                   onChange={(e) => handleDataChange({ name: e.target.value })}
                   placeholder="e.g., Cyberpunk Tokyo Street, Mountain Valley..."
-                  className="mt-1 text-sm h-9 bg-zinc-900/50 border-zinc-800/50"
+                   className="mt-1 text-sm h-9 bg-zinc-900/50 border-[#f97316]/15"
                 />
               </div>
 
@@ -193,7 +193,7 @@ export function LocationSection({
                   value={data.timeOfDay}
                   onValueChange={(value: any) => handleDataChange({ timeOfDay: value })}
                 >
-                  <SelectTrigger className="mt-1 h-9 bg-zinc-900/50 border-zinc-800/50">
+                  <SelectTrigger className="mt-1 h-9 bg-zinc-900/50 border-[#f97316]/15">
                     <SelectValue placeholder="Select time..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -223,7 +223,7 @@ export function LocationSection({
                         "h-8 text-xs",
                         data.weather === option.value
                           ? "bg-[#221a10] border-[#f97316]/25 text-[#FDE8D0] hover:bg-[#28200f]"
-                          : "bg-zinc-900/50 border-zinc-800/50"
+                          : "bg-zinc-900/50 border-[#f97316]/15"
                       )}
                     >
                       {option.icon}
@@ -239,7 +239,7 @@ export function LocationSection({
                   value={data.atmosphere}
                   onChange={(e) => handleDataChange({ atmosphere: e.target.value })}
                   placeholder="e.g., neon-lit, crowded, tense and quiet..."
-                  className="mt-1 text-sm min-h-[60px] bg-zinc-900/50 border-zinc-800/50"
+                  className="mt-1 text-sm min-h-[60px] bg-zinc-900/50 border-[#f97316]/15"
                   rows={2}
                 />
               </div>
@@ -253,7 +253,7 @@ export function LocationSection({
                     onChange={(e) => setElementInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && addElement()}
                     placeholder="e.g., holographic billboards, flying cars..."
-                    className="text-sm h-8 bg-zinc-900/50 border-zinc-800/50"
+                    className="text-sm h-8 bg-zinc-900/50 border-[#f97316]/15"
                   />
                   <Button size="sm" onClick={addElement} className="h-8 border border-[#f97316]/20 bg-[#1a1510] px-3 text-[#FDE8D0] hover:bg-[#221a10]">
                     Add
@@ -280,7 +280,7 @@ export function LocationSection({
                   value={data.cameraEnvironment}
                   onChange={(e) => handleDataChange({ cameraEnvironment: e.target.value })}
                   placeholder="e.g., street level with reflections, aerial view..."
-                  className="mt-1 text-sm h-9 bg-zinc-900/50 border-zinc-800/50"
+                  className="mt-1 text-sm h-9 bg-zinc-900/50 border-[#f97316]/15"
                 />
               </div>
 
