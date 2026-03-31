@@ -227,7 +227,7 @@ export function ObjectSubjectSection({
           </Label>
         </div>
         {enabled && (
-          <Button size="sm" variant="ghost" onClick={addNewObject} className="h-7 border border-white/8 bg-[#181818] hover:bg-[#1d1d1d]">
+          <Button size="sm" variant="ghost" onClick={addNewObject} className="h-7 border border-[#f97316]/15 bg-[#181818] hover:bg-[#1d1d1d]">
             <Plus className="w-3.5 h-3.5 mr-1" /> Add Object
           </Button>
         )}
