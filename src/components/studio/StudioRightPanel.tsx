@@ -439,7 +439,7 @@ export function StudioRightPanel({
 }: StudioRightPanelProps) {
   const { nodeDefinitions, edgeDefinitions } = useComputeFlowStore();
   const [activeTab, setActiveTab] = useState<RightPanelTab>('gallery');
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const selectedNode = useMemo(
     () => nodeDefinitions.find((node) => node.id === selectedNodeId) ?? null,
