@@ -24,7 +24,7 @@ const StudioInspectorPanel = ({ activeJobs = 0, onGenerate }: StudioInspectorPan
       <div className="space-y-2">
         <label className="text-sm text-zinc-400">Model</label>
         <Select defaultValue="gpt-5">
-          <SelectTrigger className="bg-[#0a0a0a] border-zinc-800 text-white">
+          <SelectTrigger className="bg-[#0a0a0a] border-[rgba(249,115,22,0.15)] text-white">
             <SelectValue placeholder="Select model" />
           </SelectTrigger>
           <SelectContent>
