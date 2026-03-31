@@ -43,16 +43,7 @@ export const MobileSidebarDrawer = ({ isOpen, onClose, activeView, onViewChange,
 
   const handleNavClick = (item: typeof mainNavItems[0]) => {
     if (item.isRoute) {
-      if (item.id === 'aura') {
-        if (auraProjectId) {
-          navigate(appRoutes.projects.observability(auraProjectId));
-        } else {
-          toast.info('Create a project first to open Aura observability.');
-          navigate(appRoutes.projectSetup);
-        }
-      } else {
-        navigate(appRoutes.kanvas);
-      }
+      navigate(appRoutes.kanvas);
     } else {
       onViewChange(item.id);
     }
