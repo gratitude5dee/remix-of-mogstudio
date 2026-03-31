@@ -2397,11 +2397,11 @@ export type Database = {
           judge_score: number | null
           judge_type: string | null
           likert_label: string | null
-          model_id: string
+          model_id: string | null
           reasons: Json | null
           run_id: string
           score: number | null
-          test_id: string
+          test_id: string | null
         }
         Insert: {
           confidence?: number | null
@@ -2421,11 +2421,11 @@ export type Database = {
           judge_score?: number | null
           judge_type?: string | null
           likert_label?: string | null
-          model_id: string
+          model_id?: string | null
           reasons?: Json | null
           run_id: string
           score?: number | null
-          test_id: string
+          test_id?: string | null
         }
         Update: {
           confidence?: number | null
@@ -2445,11 +2445,11 @@ export type Database = {
           judge_score?: number | null
           judge_type?: string | null
           likert_label?: string | null
-          model_id?: string
+          model_id?: string | null
           reasons?: Json | null
           run_id?: string
           score?: number | null
-          test_id?: string
+          test_id?: string | null
         }
         Relationships: [
           {
