@@ -83,8 +83,8 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
           "relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
           isCollapsed && "justify-center px-2",
           isActive
-            ? "bg-[hsl(var(--interactive-selected))] text-accent-purple border border-accent-purple/20 shadow-sm"
-            : "text-text-secondary hover:text-text-primary hover:bg-[hsl(var(--interactive-hover))] dark:text-muted-foreground dark:hover:text-foreground dark:hover:bg-white/[0.04]"
+            ? "bg-[rgba(249,115,22,0.12)] text-[#f97316] border border-[rgba(249,115,22,0.2)] shadow-sm"
+            : "text-text-secondary hover:text-text-primary hover:bg-[rgba(249,115,22,0.06)] dark:text-muted-foreground dark:hover:text-foreground dark:hover:bg-white/[0.04]"
         )}
       >
         {isActive && (
