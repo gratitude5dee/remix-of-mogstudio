@@ -174,7 +174,7 @@ export const ReactFlowTextNode = memo(({ data, id, selected }: NodeProps) => {
               </div>
             ) : null}
 
-            <div className="rounded-[18px] border border-white/6 bg-[#111111]">
+            <div className="rounded-[18px] border border-[rgba(249,115,22,0.15)] bg-[#111111] shadow-[0_0_8px_rgba(249,115,22,0.06)]">
               <textarea
                 value={promptValue}
                 onChange={(event) => nodeData?.onUpdateParams?.({ prompt: event.target.value, content: event.target.value })}
@@ -183,7 +183,7 @@ export const ReactFlowTextNode = memo(({ data, id, selected }: NodeProps) => {
                 className="min-h-[118px] w-full resize-none bg-transparent px-4 py-4 text-sm leading-6 text-zinc-100 outline-none placeholder:text-zinc-500"
                 placeholder='Try "Describe this image in a few sentences"'
               />
-              <div className="flex items-center justify-between border-t border-white/6 px-3 py-2.5">
+              <div className="flex items-center justify-between border-t border-[rgba(249,115,22,0.12)] px-3 py-2.5">
                 <div className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">
                   {status === 'running' ? `~${Math.max(2, Math.round((100 - progress) / 6))}s` : 'Text'}
                 </div>
@@ -195,7 +195,7 @@ export const ReactFlowTextNode = memo(({ data, id, selected }: NodeProps) => {
                     nodeData?.onSelectNode?.(id);
                   }}
                   disabled={!promptValue.trim()}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-black transition-colors hover:bg-[#E8E8E8] disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-zinc-500"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f97316] text-black transition-colors hover:bg-[#fb923c] disabled:cursor-not-allowed disabled:bg-[#f97316]/20 disabled:text-zinc-500"
                 >
                   <SendHorizontal className="h-4 w-4" />
                 </button>
