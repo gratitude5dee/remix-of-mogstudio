@@ -81,8 +81,8 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
             <div className={cn(
               "rounded-xl p-4 mb-6",
               "bg-[#121212]",
-              "backdrop-blur-sm border border-white/8",
-              "shadow-[0_8px_24px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(255,255,255,0.03)]"
+              "backdrop-blur-sm border border-[#f97316]/20",
+              "shadow-[0_0_12px_rgba(249,115,22,0.08),0_8px_24px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(249,115,22,0.05)]"
             )}>
               <div className="absolute top-0 right-0 h-20 w-20 rounded-full bg-[#f97316]/10 blur-2xl" />
 
