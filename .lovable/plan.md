@@ -1,60 +1,64 @@
 
 
-# BG Video in Second Section + Generated Card Images + iPhone Lobster + GIF in Editor
+# Fix Supabase Schema Drift + TypeScript Build Errors
 
-## Summary of 4 changes
+## Problem Summary
 
-### 1. Use bgvid.mp4 as background for MogPromoSection
-**File: `src/components/landing/MogPromoSection.tsx`**
-- Import and embed `VideoBackground` component (or inline a `<video>` tag with the same `bgvid.mp4`)
-- Wrap section in `relative overflow-hidden`, place the video absolutely behind content
-- Add dark overlay for text legibility (same gradient approach as the hero's VideoBackground)
+1. **Migration exists but hasn't been applied** — `20260330170000_shadow_evaluation_observability.sql` is well-written and idempotent, but the remote Supabase DB doesn't have these changes yet. The migration needs to be deployed.
 
-### 2. Use uploaded GIF as the preview "video" in the mock editor
-**File: Copy `user-uploads://wzrdstudiointro1-ezgif.com-optimize.gif` → `src/assets/wzrd-intro.gif`**
-**File: `src/components/landing/HeroSection.tsx`**
-- Import the GIF asset
-- Replace the placeholder preview window content (the play button + "1920×1080" text at lines 159–168) with an `<img>` tag showing the GIF, `object-cover`, filling the preview area
-- Keep the gradient overlay on top for depth
+2. **TypeScript type mismatches** — The app's `Scene`, `Character`, etc. interfaces use rich types like `EvaluationSummary` and `ReviewStatus`, but Supabase's generated types use `Json`. When passing these to `.update()` or receiving from `.select()`, TS complains about incompatibility.
 
-### 3. Generate AI images for card backgrounds with gradient noise overlay
-Use the Lovable AI image gateway to generate 6 images for `GeneratedShowcaseSection` cards + 8 images for `ModelLibrarySection` cards. Each image will be generated with a prompt matching the card's topic, then stored in Supabase storage or as base64 embedded assets.
+3. **`unpdf` Deno import error** — The `document-parse` edge function imports `npm:unpdf` which isn't in `deno.json`. This is a pre-existing issue unrelated to the evaluation work.
 
-**Approach**: Create a Supabase edge function or use `code--exec` to call the image generation API for each card, save results to `src/assets/cards/`, then update the components to use them as `<img>` backgrounds with a gradient noise overlay on top.
+4. **`ProjectObservabilityPage.tsx`** passes `task.target_type` (typed as `string`) to `submitReview` which expects a union type.
 
-**Cards to generate images for:**
-- GeneratedShowcaseSection (6): Cybersecurity Dashboard, SaaS Product Launch, Film Key Art, Brand Identity, Motion Graphics, 3D Product Viz
-- ModelLibrarySection (8): One abstract image per provider (Google, OpenAI, Runway, Black Forest Labs, Luma AI, Stability AI, Hailuo AI, WAN)
+## Plan
 
-**File: `src/components/landing/GeneratedShowcaseSection.tsx`**
-- Add `<img>` behind each card with `object-cover`, keep existing gradient overlay
-- Add CSS noise texture overlay (SVG filter)
+### Step 1: Deploy the existing migration
 
-**File: `src/components/landing/ModelLibrarySection.tsx`**
-- Add subtle background images to each provider card
-- Maintain the existing gradient hover effect on top
+Use the Supabase migration tool to apply `20260330170000_shadow_evaluation_observability.sql` to the remote database. The SQL is already idempotent — no changes needed to the migration file itself.
 
-### 4. Add iPhone mockup with lobster claw in a bottom section
-**New file: `src/components/landing/IPhoneMockup.tsx`**
-- Create an iPhone frame (CSS/SVG — rounded rect with notch, bezel)
-- Inside the phone screen, render the `LobsterSilhouette` component (already exists at `src/components/landing/LobsterSilhouette.tsx`)
-- Add a dark gradient background behind the lobster with subtle particle effects
+### Step 2: Fix TypeScript errors in `src/services/supabaseService.ts`
 
-**File: `src/pages/Landing.tsx`**
-- Insert `<IPhoneMockup />` in one of the bottom sections — between UseCasesSection and TestimonialsSection, or within the FinalCTASection area
-- Style it as a centered floating phone with a caption like "Experience WZRD on mobile"
+The `Scene` interface has `evaluation_summary?: EvaluationSummary | null` but Supabase returns `Json`. Fix by:
 
-## Files summary
-| File | Action |
+- In `sceneService.listByProject`: cast the return `data as Scene[]` (already effectively doing this, but need explicit cast)
+- In `sceneService.create` and `sceneService.update`: cast the updates payload `as any` before passing to Supabase `.insert()` / `.update()` to avoid the `EvaluationSummary` vs `Json` incompatibility
+
+**Lines ~855, ~866**: Add `as any` cast on the data passed to `.insert()` and `.update()`.
+
+### Step 3: Fix TypeScript errors in `src/pages/Storyboard.tsx` and `src/pages/StoryboardPage.tsx`
+
+Both pages call `supabase.from('scenes').update(updates)` where `updates` contains `evaluation_summary: EvaluationSummary`. Fix by casting `updates as any` in the `.update()` call at:
+- `Storyboard.tsx` line ~254
+- `StoryboardPage.tsx` line ~251
+
+### Step 4: Fix `ProjectObservabilityPage.tsx` type errors
+
+Lines 411, 422, 433: `task.target_type` is `string` but `submitReview` expects a union. Fix by casting:
+```ts
+task.target_type as 'character' | 'scene' | 'shot' | 'storyline'
+```
+
+### Step 5: Fix `unpdf` Deno import
+
+Add `unpdf` to the import map in `supabase/functions/deno.json` (or the function-local `deno.json`), or switch to a dynamic `npm:` specifier that Deno can resolve. Check if there's a `deno.json` at the functions level.
+
+### Step 6: Regenerate Supabase types
+
+After the migration is applied, the types in `src/integrations/supabase/types.ts` should already reflect the new columns (the current file already has them — `canon_facts`, `evaluation_summary`, etc.). Verify no regeneration is needed.
+
+## Files to modify
+
+| File | Change |
 |------|--------|
-| `src/assets/wzrd-intro.gif` | Copy uploaded GIF |
-| `src/components/landing/HeroSection.tsx` | Replace preview placeholder with GIF |
-| `src/components/landing/MogPromoSection.tsx` | Add bgvid.mp4 video background |
-| `src/components/landing/GeneratedShowcaseSection.tsx` | Add generated images + noise overlay |
-| `src/components/landing/ModelLibrarySection.tsx` | Add generated images + noise overlay |
-| `src/components/landing/IPhoneMockup.tsx` | **New** — iPhone frame with lobster |
-| `src/pages/Landing.tsx` | Insert IPhoneMockup in bottom section |
+| `src/services/supabaseService.ts` | Cast scene/character data to `any` for Supabase insert/update |
+| `src/pages/Storyboard.tsx` | Cast `updates as any` in `.update()` call |
+| `src/pages/StoryboardPage.tsx` | Cast `updates as any` in `.update()` call |
+| `src/pages/ProjectObservabilityPage.tsx` | Cast `task.target_type` to union type |
+| `supabase/functions/document-parse/index.ts` or `deno.json` | Fix `unpdf` import resolution |
 
-## Technical note on image generation
-Will use `code--exec` to call the Lovable AI gateway (`ai.gateway.lovable.dev`) with the Nano banana 2 model to generate card background images. Each image will be saved as a PNG in `src/assets/cards/`. This requires the `LOVABLE_API_KEY` env var. Will generate all 14 images (6 showcase + 8 provider) in batches.
+## Migration deployment
+
+Apply the existing `20260330170000_shadow_evaluation_observability.sql` via the Supabase migration tool. No SQL changes needed — the file is already correct and idempotent.
 
