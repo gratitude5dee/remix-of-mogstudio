@@ -47,7 +47,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
     },
     {
       id: 'flora',
-      title: 'FLORA Example',
+      title: 'WZRD Example',
       description: 'Seed the collaborative image edit graph',
       icon: Workflow,
       gradient: 'from-[#6d8060] to-[#2d4635]',
