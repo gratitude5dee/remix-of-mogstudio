@@ -55,7 +55,7 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
   const inputBaseClass = cn(
     "rounded-lg text-xs h-8 px-3",
     "bg-[#131313] backdrop-blur-sm",
-    "border border-white/8",
+    "border border-[#f97316]/15",
     "focus:border-[#f97316]/40 focus:ring-2 focus:ring-[#f97316]/10",
     "shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]",
     "transition-all duration-200",
