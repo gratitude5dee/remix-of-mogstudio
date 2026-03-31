@@ -227,7 +227,7 @@ export function ClothingSection({
                         <div className="flex gap-1 mt-1">
                           <Input
                             placeholder="e.g., watch, necklace, hat..."
-                            className="text-sm h-8 bg-zinc-900/50 border-zinc-800/50"
+                            className="text-sm h-8 bg-zinc-900/50 border-[#f97316]/15"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && e.currentTarget.value.trim()) {
                                 addAccessory(char.id, e.currentTarget.value.trim());
