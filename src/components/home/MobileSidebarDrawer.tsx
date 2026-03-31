@@ -13,10 +13,9 @@ interface MobileSidebarDrawerProps {
   onClose: () => void;
   activeView: string;
   onViewChange: (view: string) => void;
-  auraProjectId?: string | null;
 }
 
-export const MobileSidebarDrawer = ({ isOpen, onClose, activeView, onViewChange, auraProjectId }: MobileSidebarDrawerProps) => {
+export const MobileSidebarDrawer = ({ isOpen, onClose, activeView, onViewChange }: MobileSidebarDrawerProps) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {

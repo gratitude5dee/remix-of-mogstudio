@@ -474,7 +474,9 @@ export default function Home() {
 
           {/* Content Area */}
           <main data-tour="projects-section" className="p-4 md:p-6">
-            {isLoading ? (
+            {activeView === 'aura' ? (
+              <AuraProjectList projects={projects} />
+            ) : isLoading ? (
               <div className="flex flex-col items-center justify-center py-12 md:py-20">
                 <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/15 flex items-center justify-center mb-4">
                   <Loader2 className="w-7 h-7 md:w-8 md:h-8 animate-spin text-primary" />

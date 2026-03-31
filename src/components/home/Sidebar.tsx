@@ -22,10 +22,9 @@ import {
 interface SidebarProps {
   activeView: string;
   onViewChange: (view: string) => void;
-  auraProjectId?: string | null;
 }
 
-export const Sidebar = ({ activeView, onViewChange, auraProjectId }: SidebarProps) => {
+export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
   const [favoritesOpen, setFavoritesOpen] = useState(true);
   const { isCollapsed, setIsCollapsed } = useSidebar();
   const navigate = useNavigate();
