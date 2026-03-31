@@ -378,7 +378,7 @@ export default function Home() {
                     className={cn(
                       "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                       activeTab === tab.id
-                        ? "text-text-primary bg-surface-1 shadow-sm"
+                        ? "text-[#f97316] bg-[rgba(249,115,22,0.08)] border border-[rgba(249,115,22,0.25)] shadow-sm"
                         : "text-text-tertiary hover:text-text-primary"
                     )}
                   >
