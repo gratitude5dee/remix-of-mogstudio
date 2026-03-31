@@ -335,7 +335,8 @@ export function FloraModelMarketplace({
             }}
           >
             {/* Left pane */}
-            <div className="min-h-0 space-y-2.5">
+            <ScrollArea className="min-h-0" style={{ maxHeight: rightPaneMaxHeight }}>
+              <div className="space-y-2.5 pr-2">
               {/* Settings panel */}
               <div className={cn('grid gap-2.5 rounded-[20px] border border-[rgba(249,115,22,0.08)] bg-[#141414]', isToolbarVariant ? 'p-3' : 'p-3.5')}>
                 <div className="flex items-center justify-between">
@@ -401,9 +402,8 @@ export function FloraModelMarketplace({
                 <div className="px-1 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-600">
                   Providers
                 </div>
-                <ScrollArea className={cn('pr-2', !isToolbarVariant && 'pr-3')} style={{ maxHeight: providerListMaxHeight }}>
-                  <div className="space-y-1.5">
-                    {providers.map((provider) => {
+                <div className="space-y-1.5">
+                  {providers.map((provider) => {
                       const isActive = provider.key === activeProvider?.key;
                       return (
                         <button
@@ -438,10 +438,10 @@ export function FloraModelMarketplace({
                         </button>
                       );
                     })}
-                  </div>
-                </ScrollArea>
+                </div>
               </section>
-            </div>
+              </div>
+            </ScrollArea>
 
             {/* Right pane */}
             <div className="min-h-0 overflow-hidden rounded-[20px] border border-[rgba(249,115,22,0.08)] bg-[#131313]">
