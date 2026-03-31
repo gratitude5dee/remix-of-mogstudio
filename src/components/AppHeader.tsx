@@ -287,7 +287,7 @@ export const AppHeader = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="w-56 bg-zinc-900 border-zinc-800 text-white"
+              className="w-56 bg-[#0f0f13] border-[rgba(249,115,22,0.15)] text-white"
               sideOffset={8}
             >
               <DropdownMenuItem onClick={handleBackToHome} className="hover:bg-zinc-800 cursor-pointer">
