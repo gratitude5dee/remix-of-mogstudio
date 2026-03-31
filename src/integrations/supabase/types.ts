@@ -8681,6 +8681,7 @@ export type Database = {
           name: string
           state: string | null
           updated_at: string | null
+          user_id: string | null
           venue_type: string | null
         }
         Insert: {
@@ -8697,6 +8698,7 @@ export type Database = {
           name: string
           state?: string | null
           updated_at?: string | null
+          user_id?: string | null
           venue_type?: string | null
         }
         Update: {
@@ -8713,6 +8715,7 @@ export type Database = {
           name?: string
           state?: string | null
           updated_at?: string | null
+          user_id?: string | null
           venue_type?: string | null
         }
         Relationships: []
