@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { SidebarData } from '@/types/storyboardTypes';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -20,6 +21,7 @@ interface EnhancedStoryboardSidebarProps {
     lighting?: string | null;
     weather?: string | null;
   }) => void;
+  onProjectUpdate?: (updates: { title?: string; description?: string }) => void;
 }
 
 const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
