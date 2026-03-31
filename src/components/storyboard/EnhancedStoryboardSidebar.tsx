@@ -45,6 +45,11 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
     setSceneDesc(data.sceneDescription || '');
   }, [data.sceneDescription]);
 
+  useEffect(() => {
+    setProjectTitle(data.projectTitle || '');
+    setProjectDesc(data.projectDescription || '');
+  }, [data.projectTitle, data.projectDescription]);
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
