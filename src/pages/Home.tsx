@@ -285,7 +285,7 @@ export default function Home() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="end" 
-                    className="w-56 bg-surface-1 border-border-default dark:bg-zinc-900 dark:border-zinc-800"
+                    className="w-56 bg-[#0f0f13] border-[rgba(249,115,22,0.15)] text-white"
                     sideOffset={8}
                   >
                     <DropdownMenuLabel className="text-text-secondary dark:text-zinc-400 text-xs">
