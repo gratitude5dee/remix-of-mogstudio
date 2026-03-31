@@ -1,64 +1,55 @@
 
 
-# Fix Supabase Schema Drift + TypeScript Build Errors
+# Fix Console Errors
 
-## Problem Summary
+## Analysis
 
-1. **Migration exists but hasn't been applied** — `20260330170000_shadow_evaluation_observability.sql` is well-written and idempotent, but the remote Supabase DB doesn't have these changes yet. The migration needs to be deployed.
+### Errors NOT from your app (ignore these)
+- `chrome-extension://` SyntaxError — browser extension, not your code
+- `SES Removing unpermitted intrinsics` — MetaMask/lockdown, not your code
+- `px.ads.linkedin.com`, `connect.facebook.net/fbevents.js` `ERR_BLOCKED_BY_CLIENT` — ad blocker blocking tracking pixels on the Lovable editor page itself
+- `RS SDK - TikTok Ads / Google Ads` event name warnings — Lovable's own analytics SDK, not your app
+- `Unrecognized feature: 'vr'`, `'ambient-light-sensor'`, `'battery'` — Lovable editor iframe sandbox permissions, not your app
+- `preloaded using link preload but not used` — Lovable editor asset preloading, not your app
 
-2. **TypeScript type mismatches** — The app's `Scene`, `Character`, etc. interfaces use rich types like `EvaluationSummary` and `ReviewStatus`, but Supabase's generated types use `Json`. When passing these to `.update()` or receiving from `.select()`, TS complains about incompatibility.
+### Errors FROM your app (fixable)
 
-3. **`unpdf` Deno import error** — The `document-parse` edge function imports `npm:unpdf` which isn't in `deno.json`. This is a pre-existing issue unrelated to the evaluation work.
+**1. Supabase 404/400 on observability tables and columns**
+All tables and columns exist in the database. The issue was **PostgREST's schema cache** not being reloaded after the migration. I've already executed `NOTIFY pgrst, 'reload schema'` which tells PostgREST to pick up the new tables/columns. This should resolve all 404s and 400s on the next page load.
 
-4. **`ProjectObservabilityPage.tsx`** passes `task.target_type` (typed as `string`) to `submitReview` which expects a union type.
+**2. Performance mark warning in `useShotStream.ts`** (lines 127-134)
+The `performance.mark()` is created with a timestamp-based name at stream start (line 156-158). When cleanup runs via `clearPerformance()` (called by `cancel()` at line 153), it clears the mark. But `recordMeasure('done')` at line 243 still tries to use that mark name — if the stream completes after a re-start or if `clearPerformance` ran, the mark no longer exists.
 
-## Plan
+The current catch block (line 129) already swallows the error but logs a warning when `import.meta.env.DEV` is true. The warning is harmless. To suppress it entirely:
 
-### Step 1: Deploy the existing migration
-
-Use the Supabase migration tool to apply `20260330170000_shadow_evaluation_observability.sql` to the remote database. The SQL is already idempotent — no changes needed to the migration file itself.
-
-### Step 2: Fix TypeScript errors in `src/services/supabaseService.ts`
-
-The `Scene` interface has `evaluation_summary?: EvaluationSummary | null` but Supabase returns `Json`. Fix by:
-
-- In `sceneService.listByProject`: cast the return `data as Scene[]` (already effectively doing this, but need explicit cast)
-- In `sceneService.create` and `sceneService.update`: cast the updates payload `as any` before passing to Supabase `.insert()` / `.update()` to avoid the `EvaluationSummary` vs `Json` incompatibility
-
-**Lines ~855, ~866**: Add `as any` cast on the data passed to `.insert()` and `.update()`.
-
-### Step 3: Fix TypeScript errors in `src/pages/Storyboard.tsx` and `src/pages/StoryboardPage.tsx`
-
-Both pages call `supabase.from('scenes').update(updates)` where `updates` contains `evaluation_summary: EvaluationSummary`. Fix by casting `updates as any` in the `.update()` call at:
-- `Storyboard.tsx` line ~254
-- `StoryboardPage.tsx` line ~251
-
-### Step 4: Fix `ProjectObservabilityPage.tsx` type errors
-
-Lines 411, 422, 433: `task.target_type` is `string` but `submitReview` expects a union. Fix by casting:
+**File: `src/hooks/useShotStream.ts`**
+- In `recordMeasure` (line 124), add a check: verify the mark actually exists before calling `performance.measure()`:
 ```ts
-task.target_type as 'character' | 'scene' | 'shot' | 'storyline'
+const recordMeasure = useCallback(
+  (suffix: string) => {
+    if (typeof performance === 'undefined' || !markRef.current) return;
+    const measureName = `${markRef.current}:${suffix}`;
+    measureNamesRef.current.push(measureName);
+    try {
+      // Verify mark exists before measuring
+      const marks = performance.getEntriesByName(markRef.current, 'mark');
+      if (marks.length === 0) return;
+      performance.measure(measureName, markRef.current);
+    } catch {
+      // Silently ignore — mark may have been cleared
+    }
+  },
+  []
+);
 ```
 
-### Step 5: Fix `unpdf` Deno import
+## Summary
 
-Add `unpdf` to the import map in `supabase/functions/deno.json` (or the function-local `deno.json`), or switch to a dynamic `npm:` specifier that Deno can resolve. Check if there's a `deno.json` at the functions level.
+| Issue | Fix |
+|-------|-----|
+| 404/400 on observability tables | Already fixed — sent `NOTIFY pgrst, 'reload schema'` to refresh PostgREST cache |
+| Performance mark warning | Guard `recordMeasure` with `getEntriesByName` check, remove DEV-only warn |
+| External browser/extension errors | No action — not from your app |
 
-### Step 6: Regenerate Supabase types
-
-After the migration is applied, the types in `src/integrations/supabase/types.ts` should already reflect the new columns (the current file already has them — `canon_facts`, `evaluation_summary`, etc.). Verify no regeneration is needed.
-
-## Files to modify
-
-| File | Change |
-|------|--------|
-| `src/services/supabaseService.ts` | Cast scene/character data to `any` for Supabase insert/update |
-| `src/pages/Storyboard.tsx` | Cast `updates as any` in `.update()` call |
-| `src/pages/StoryboardPage.tsx` | Cast `updates as any` in `.update()` call |
-| `src/pages/ProjectObservabilityPage.tsx` | Cast `task.target_type` to union type |
-| `supabase/functions/document-parse/index.ts` or `deno.json` | Fix `unpdf` import resolution |
-
-## Migration deployment
-
-Apply the existing `20260330170000_shadow_evaluation_observability.sql` via the Supabase migration tool. No SQL changes needed — the file is already correct and idempotent.
+One file changed: `src/hooks/useShotStream.ts`
 
