@@ -633,9 +633,9 @@ export function StudioRightPanel({
                     >
                       {selectedNode?.kind === 'ImageEdit' ? (
                         <div className="flex h-full min-h-0 flex-col">
-                          <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
+                          <div className="flex items-center justify-between border-b border-[rgba(249,115,22,0.10)] px-5 py-4">
                             <div className="flex items-center gap-2">
-                              <Badge className="rounded-full border border-white/8 bg-white/5 px-2.5 py-1 text-[11px] text-zinc-300">
+                              <Badge className="rounded-full border border-[rgba(249,115,22,0.10)] bg-white/5 px-2.5 py-1 text-[11px] text-zinc-300">
                                 {selectedNode.kind}
                               </Badge>
                               <span className="text-sm text-zinc-400">Selected node</span>
