@@ -253,7 +253,7 @@ export function LocationSection({
                     onChange={(e) => setElementInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && addElement()}
                     placeholder="e.g., holographic billboards, flying cars..."
-                    className="text-sm h-8 bg-zinc-900/50 border-zinc-800/50"
+                    className="text-sm h-8 bg-zinc-900/50 border-[#f97316]/15"
                   />
                   <Button size="sm" onClick={addElement} className="h-8 border border-[#f97316]/20 bg-[#1a1510] px-3 text-[#FDE8D0] hover:bg-[#221a10]">
                     Add
