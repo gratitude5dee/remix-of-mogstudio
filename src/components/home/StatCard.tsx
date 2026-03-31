@@ -33,32 +33,32 @@ export const StatCard = ({
       transition={{ duration: 0.4, delay: index * 0.1 }}
       className={cn(
         "relative group p-5 rounded-2xl overflow-hidden transition-all duration-300",
-        "glass-stat border border-white/[0.08]",
-        "hover:border-[rgba(139,92,246,0.35)] hover:shadow-[0_0_35px_rgba(139,92,246,0.15)]",
+        "glass-stat border border-[rgba(249,115,22,0.1)]",
+        "hover:border-[rgba(249,115,22,0.3)] hover:shadow-[0_0_35px_rgba(249,115,22,0.12)]",
         "hover:-translate-y-0.5",
         className
       )}
     >
       {/* Shine Border on hover */}
       <ShineBorder
-        shineColor={["#8B5CF6", "#06B6D4"]}
+        shineColor={["#f97316", "#d4a574"]}
         borderWidth={1}
         duration={12}
         className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       />
       
       {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[rgba(139,92,246,0.03)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[rgba(249,115,22,0.03)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       
       {/* Top shine line */}
-      <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+      <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[rgba(249,115,22,0.1)] to-transparent" />
       
-      {/* Icon positioned top-right with purple glass effect */}
+      {/* Icon positioned top-right with orange glass effect */}
       <motion.div 
         whileHover={{ scale: 1.1 }}
-        className="absolute top-4 right-4 w-12 h-12 rounded-xl bg-gradient-to-br from-[rgba(139,92,246,0.2)] to-[rgba(124,58,237,0.1)] border border-[rgba(139,92,246,0.25)] flex items-center justify-center group-hover:shadow-[0_0_24px_rgba(139,92,246,0.35)] transition-all duration-300"
+        className="absolute top-4 right-4 w-12 h-12 rounded-xl bg-gradient-to-br from-[rgba(249,115,22,0.15)] to-[rgba(234,88,12,0.08)] border border-[rgba(249,115,22,0.2)] flex items-center justify-center group-hover:shadow-[0_0_24px_rgba(249,115,22,0.25)] transition-all duration-300"
       >
-        <div className="text-[#A78BFA]">
+        <div className="text-[#f97316]">
           {icon}
         </div>
       </motion.div>

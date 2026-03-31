@@ -264,7 +264,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
             </AnimatePresence>
             {isCollapsed && (
               <div className="flex justify-center mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-accent-purple" />
+                <Sparkles className="w-3.5 h-3.5 text-[#f97316]" />
               </div>
             )}
             <div className="space-y-1">

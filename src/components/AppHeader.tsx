@@ -365,7 +365,7 @@ export const AppHeader = ({
               <DropdownMenuItem 
                 onClick={onZoomOut}
                 disabled={!onZoomOut}
-                className="hover:bg-zinc-800 cursor-pointer"
+                className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
               >
                 <ZoomOut className="mr-2 h-4 w-4" />
                 Zoom out

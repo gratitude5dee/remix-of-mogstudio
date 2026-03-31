@@ -94,7 +94,7 @@ const NavigationFooter = () => {
 
   return (
     <motion.div 
-      className="border-t border-zinc-800 p-4 flex justify-between items-center bg-[#0F1219]"
+      className="border-t border-[rgba(249,115,22,0.12)] p-4 flex justify-between items-center bg-[#0a0a0f]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.2, duration: 0.3 }}
@@ -102,7 +102,7 @@ const NavigationFooter = () => {
       <Button
         onClick={handleBack}
         variant="outline"
-        className={`text-white border-zinc-700 hover:bg-zinc-800 hover:text-white flex items-center gap-2 transition-opacity duration-300 ${
+        className={`text-white border-[rgba(249,115,22,0.15)] hover:bg-[rgba(249,115,22,0.06)] hover:border-[rgba(249,115,22,0.25)] hover:text-white flex items-center gap-2 transition-opacity duration-300 ${
           isFirstTab || isProcessing ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
         disabled={isProcessing || isFirstTab}
@@ -118,9 +118,9 @@ const NavigationFooter = () => {
               key={tab}
               className={`w-2 h-2 rounded-full transition-colors duration-300 ${
                 i === currentTabIndex 
-                  ? 'bg-blue-500 scale-125' 
+                  ? 'bg-[#f97316] scale-125' 
                   : i < currentTabIndex
-                    ? 'bg-blue-800'
+                    ? 'bg-[rgba(249,115,22,0.4)]'
                     : 'bg-zinc-700'
               }`}
               initial={false}
@@ -138,8 +138,8 @@ const NavigationFooter = () => {
         disabled={isProcessing}
         className={`px-8 flex items-center gap-2 transition-all duration-300 ${
           isLastTab 
-            ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-            : 'bg-blue-600 hover:bg-blue-700 text-white'
+            ? 'bg-[#ea580c] hover:bg-[#dc2626] text-white shadow-[0_0_20px_rgba(249,115,22,0.2)]' 
+            : 'bg-[#f97316] hover:bg-[#ea580c] text-white shadow-[0_0_20px_rgba(249,115,22,0.15)]'
         } disabled:opacity-50`}
       >
         {getNextButtonText()}

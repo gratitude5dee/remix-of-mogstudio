@@ -299,11 +299,11 @@ export const ProjectCard = ({ project, onOpen, onDelete, onRename }: ProjectCard
                 setIsEditing(true);
               }}
             >
-              <span className="group-hover:text-accent-purple dark:group-hover:text-purple-400 transition-colors">
+              <span className="group-hover:text-[#f97316] transition-colors">
                 {project.title}
               </span>
               <motion.span
-                className="absolute bottom-0 left-0 h-0.5 bg-accent-purple"
+                className="absolute bottom-0 left-0 h-0.5 bg-[#f97316]"
                 initial={{ width: 0 }}
                 animate={isHovered ? { width: "100%" } : { width: 0 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}

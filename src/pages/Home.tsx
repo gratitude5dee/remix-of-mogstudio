@@ -428,7 +428,7 @@ export default function Home() {
           </header>
 
           {/* Stats Row - Responsive grid */}
-          <div data-tour="stats-section" className="px-4 md:px-6 py-4 md:py-6 border-b border-border-default bg-gradient-to-b from-surface-2 to-transparent">
+          <div data-tour="stats-section" className="px-4 md:px-6 py-4 md:py-6 border-b border-[rgba(249,115,22,0.1)] bg-gradient-to-b from-[rgba(249,115,22,0.02)] to-transparent">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <StatCard 
                 icon={<FolderKanban className="w-5 h-5" />}
