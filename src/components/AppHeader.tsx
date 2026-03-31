@@ -290,7 +290,7 @@ export const AppHeader = ({
               className="w-56 bg-[#0f0f13] border-[rgba(249,115,22,0.15)] text-white"
               sideOffset={8}
             >
-              <DropdownMenuItem onClick={handleBackToHome} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={handleBackToHome} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Home className="mr-2 h-4 w-4" />
                 Back to home
               </DropdownMenuItem>
