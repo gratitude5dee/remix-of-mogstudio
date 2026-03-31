@@ -309,7 +309,7 @@ export const AppHeader = ({
                 <Copy className="mr-2 h-4 w-4" />
                 Duplicate project
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={startEditing} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={startEditing} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Pencil className="mr-2 h-4 w-4" />
                 Rename project
               </DropdownMenuItem>
