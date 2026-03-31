@@ -368,9 +368,9 @@ export default function Home() {
             </div>
             
             {/* Row 2: Tabs + Search + Actions */}
-            <div className="h-14 flex items-center justify-between px-6 border-t border-border-subtle">
+            <div className="h-14 flex items-center justify-between px-6 border-t border-[rgba(249,115,22,0.08)]">
               {/* Tabs */}
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-2">
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.03]">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
