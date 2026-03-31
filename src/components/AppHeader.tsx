@@ -119,7 +119,7 @@ export const AppHeader = ({
     return cn(
       'text-xs px-2.5 py-1 rounded-md transition-colors duration-200',
       currentView === viewMode
-        ? 'bg-white/10 text-white' 
+        ? 'bg-[rgba(249,115,22,0.12)] text-[#f97316]' 
         : 'text-zinc-500 hover:text-white hover:bg-white/5'
     );
   };
