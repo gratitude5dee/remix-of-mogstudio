@@ -1,39 +1,67 @@
 
 
-# Replace White Borders with Orange Glow in WorkflowGeneratorTab
+# Move "Generation Models" to TabNavigation as a Dropdown
 
-The Generate tab renders `WorkflowGeneratorTab`, which still uses `border-white/8`, `border-white/10`, `border-white/12`, and `border-white/15` throughout. These need to match the orange glow colorway used in the rest of the app.
+## Overview
 
-## Border token mapping
+Remove the "Generation Models" section from the bottom of `ConceptTab` and relocate it into the `TabNavigation` bar as a polished settings dropdown — a gear/sliders icon button positioned to the right of the step pills. Clicking it reveals a popover with the three model selectors and the JSON override field, styled consistently with the app's dark theme and orange accent colorway.
 
-| Current | Replacement |
-|---------|------------|
-| `border-white/8` | `border-[rgba(249,115,22,0.10)]` |
-| `border-white/10` | `border-[rgba(249,115,22,0.12)]` |
-| `border-white/12` | `border-[rgba(249,115,22,0.15)]` |
-| `border-white/15` | `border-[rgba(249,115,22,0.18)]` |
-| `hover:border-white/12` | `hover:border-[rgba(249,115,22,0.18)]` |
-| `hover:border-white/15` | `hover:border-[rgba(249,115,22,0.20)]` |
+## Changes
 
-## Affected locations in `WorkflowGeneratorTab.tsx`
+### 1. `src/components/project-setup/TabNavigation.tsx` — Add models dropdown
 
-1. **Outer container** (line 97) — `border-white/10`
-2. **Header border-b** (line 103) — `border-white/8`
-3. **Close button** (line 127) — `border-white/10` + `hover:border-white/15`
-4. **"New workflow" badge** (line 136) — `border-white/10`
-5. **Examples section card** (line 151) — `border-white/8`
-6. **Example buttons** (line 168) — `border-white/8` + `hover:border-white/12`
-7. **Example icon containers** (line 171) — `border-white/8`
-8. **Prompt section card** (line 185) — `border-white/8`
-9. **Prompt textarea** (line 206) — `border-white/10`
-10. **"Workflow only" badge** (line 221) — `border-white/8`
-11. **Error/status border-t** (line 243) — `border-white/8`
-12. **Footer border-t (panel)** (line 254) — `border-white/8`
-13. **Footer border-t (popup)** (line 258) — `border-white/8`
+- Import `Popover`, `PopoverTrigger`, `PopoverContent` from `@/components/ui/popover`
+- Import `SlidersHorizontal` icon from lucide-react
+- Import model data: `getModelsByTypeAndGroup`, `STORYLINE_MODEL_OPTIONS`, `formatModelLabel`, `formatStorylineModelLabel`
+- Access `projectData` and `updateProjectData` from `useProjectContext()`
+- Add a settings button after the tab pills (right side of the flex container), styled as a subtle pill with the `SlidersHorizontal` icon
+- Button style: `bg-white/[0.03] border-[rgba(249,115,22,0.15)] hover:border-[rgba(249,115,22,0.3)]` — consistent with app's orange glow system
+- Popover content: dark card (`bg-[#0f0f13] border-[rgba(249,115,22,0.15)]`) containing:
+  - Header: "Generation Models" with subtle description text
+  - 3 custom `<Select>` dropdowns (Storyline model, Default image model, Default video model) using the app's `Select` component with orange-tinted borders
+  - Storyline JSON override `<Textarea>` with validation (move the state + blur handler logic here)
+- Include local state for `storylineSettingsText` and `storylineSettingsError` inside TabNavigation
+- Popover width: `w-[420px]`, max-height with scroll if needed
+
+### 2. `src/components/project-setup/ConceptTab.tsx` — Remove models section
+
+- Delete lines 191–265 (the entire `<motion.section>` containing "Generation Models")
+- Remove unused imports: `getModelsByTypeAndGroup`, `formatModelLabel`, `STORYLINE_MODEL_OPTIONS`, `formatStorylineModelLabel`, `Textarea`
+- Remove unused state: `storylineSettingsText`, `storylineSettingsError`, `imageGenerationModels`, `videoGenerationModels`, `storylineModelOptions`
+- Remove `handleStorylineSettingsBlur` and the related `useEffect`
+
+### 3. `src/components/project-setup/ProjectContext.tsx` — No changes needed
+
+`projectData` and `updateProjectData` are already available via context, so TabNavigation can access them directly.
+
+## Visual design
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│  (1) Concept ──── (2) Storyline ──── (3) Settings ──── (4)  │  ⚙ ←── new button
+└─────────────────────────────────────────────────────────────┘
+                                                         │
+                                                    ┌────▼────────────┐
+                                                    │ Generation Models│
+                                                    │                  │
+                                                    │ Storyline model  │
+                                                    │ [▼ llama-3.3.. ] │
+                                                    │                  │
+                                                    │ Image model      │
+                                                    │ [▼ flux-dev..  ] │
+                                                    │                  │
+                                                    │ Video model      │
+                                                    │ [▼ kling-o3.. ] │
+                                                    │                  │
+                                                    │ JSON override    │
+                                                    │ [textarea      ] │
+                                                    └──────────────────┘
+```
 
 ## Files changed
 
 | File | Change |
 |------|--------|
-| `src/components/studio/WorkflowGeneratorTab.tsx` | Replace all ~13 white border instances with orange glow equivalents |
+| `src/components/project-setup/TabNavigation.tsx` | Add SlidersHorizontal icon button + Popover with model selectors |
+| `src/components/project-setup/ConceptTab.tsx` | Remove "Generation Models" section and related imports/state |
 
