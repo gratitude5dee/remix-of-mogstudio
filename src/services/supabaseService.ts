@@ -852,7 +852,7 @@ export const sceneService = {
         .order('scene_number', { ascending: true });
         
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Scene[]) || [];
     } catch (error) {
       handleError(error, 'listing scenes');
       return [];
