@@ -260,7 +260,7 @@ export default function Home() {
                     📊
                   </motion.span>
                 </div>
-                <div className="h-5 w-px bg-border-default" />
+                <div className="h-5 w-px bg-[rgba(249,115,22,0.1)]" />
                 <span className="text-sm text-text-secondary dark:text-muted-foreground font-medium">
                   {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
                 </span>
