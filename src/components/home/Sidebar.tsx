@@ -255,7 +255,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
                   exit="hidden"
                   className="flex items-center gap-2 px-3 mb-3"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-accent-purple" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#f97316]" />
                   <TextAnimate animation="fadeIn" by="character" delay={0.1} className="text-[10px] font-semibold text-text-tertiary uppercase tracking-[0.15em]">
                     Main Menu
                   </TextAnimate>
