@@ -382,7 +382,7 @@ function NodeInspector({
                       : { prompt: event.target.value }
                   )
                 }
-                className="min-h-[180px] rounded-[22px] border-white/10 bg-[#131313] text-white"
+                className="min-h-[180px] rounded-[22px] border-[rgba(249,115,22,0.12)] bg-[#131313] text-white"
                 placeholder="Describe what this node should create..."
               />
             </label>
