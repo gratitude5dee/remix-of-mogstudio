@@ -261,9 +261,9 @@ function NodeInspector({
           </section>
         ) : null}
 
-        <section className="space-y-3 rounded-[22px] border border-white/10 bg-[#101010]/98 px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.32)]">
+        <section className="space-y-3 rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#101010]/98 px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.32)]">
           {previewUrl ? (
-            <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[#141414] shadow-[0_12px_32px_rgba(0,0,0,0.24)]">
+            <div className="overflow-hidden rounded-[22px] border border-[rgba(249,115,22,0.12)] bg-[#141414] shadow-[0_12px_32px_rgba(0,0,0,0.24)]">
               {node.kind === 'Video' ? (
                 <video src={previewUrl} className="aspect-[16/9] w-full object-cover" controls muted />
               ) : (
