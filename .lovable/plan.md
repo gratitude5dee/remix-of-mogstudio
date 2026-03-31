@@ -1,23 +1,29 @@
 
 
-# Fix NodeHoverMenu Centering — Stronger Adjustment
+# Center NodeHoverMenu Properly Over Node
 
-The previous changes (`-translate-x-[56%]`, `10px` gap) are in the code but the visual difference is too subtle. The menu needs a more aggressive leftward shift and the gap needs to be larger.
+## Problem
 
-## Change
+The menu uses a hardcoded `-translate-x-[62%]` which is a fragile hack. Since the menu is absolutely positioned inside the node's `position: relative` container, `left-1/2 -translate-x-1/2` should produce true centering — the menu centers itself relative to the node's width.
 
-**File: `src/components/studio/nodes/NodeHoverMenu.tsx` (line 153)**
+The previous off-center appearance was likely caused by the menu's internal content being asymmetric (model selector chip on the left), making a true 50% center *look* off. The fix is to keep true centering but ensure the menu's visual weight is balanced.
 
-| Property | Current | Updated |
-|----------|---------|---------|
-| Horizontal translate | `-translate-x-[56%]` | `-translate-x-[62%]` |
-| Vertical gap | `calc(100%+10px)` | `calc(100%+14px)` |
+## Changes
 
-The `62%` shift pushes the menu further left to visually center it over the node content area. The `14px` gap provides clearer separation between the toolbar and the node.
+### `src/components/studio/nodes/NodeHoverMenu.tsx`
+
+**Line 153 — restore true centering with proper gap:**
+
+| Property | Current | New |
+|----------|---------|-----|
+| Horizontal translate | `-translate-x-[62%]` | `-translate-x-1/2` |
+| Vertical gap | `calc(100%+14px)` | `calc(100%+10px)` |
+
+This uses the mathematically correct center. The menu will be centered over the node's full width (including handles/ports), which matches the reference image.
 
 ## Files changed
 
 | File | Change |
 |------|--------|
-| `src/components/studio/nodes/NodeHoverMenu.tsx` | Update translate-x to 62% and gap to 14px on line 153 |
+| `src/components/studio/nodes/NodeHoverMenu.tsx` | Fix translate to true 50% center, adjust vertical gap |
 
