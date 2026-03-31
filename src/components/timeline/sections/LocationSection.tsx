@@ -286,7 +286,7 @@ export function LocationSection({
 
               {/* Generated Prompt Preview */}
               {generatedPrompt && (
-                <div className="mt-3 rounded-lg border border-[#f97316]/12 bg-[#141210] p-3">
+                <div className="mt-3 rounded-lg border border-[rgba(249,115,22,0.12)] bg-[#141210] p-3">
                   <div className="flex items-center gap-2 mb-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#fdba74]" />
                     <Label className="text-xs text-[#fdba74]">Generated Prompt Context</Label>
