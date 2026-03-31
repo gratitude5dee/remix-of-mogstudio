@@ -42,7 +42,7 @@ const StudioInspectorPanel = ({ activeJobs = 0, onGenerate }: StudioInspectorPan
         Generate
       </Button>
 
-      <div className="mt-auto pt-4 border-t border-zinc-800">
+      <div className="mt-auto pt-4 border-t border-[rgba(249,115,22,0.15)]">
         <div className="text-sm text-zinc-400">Queue</div>
         <div className="text-white text-lg leading-tight">{activeJobs} active</div>
       </div>

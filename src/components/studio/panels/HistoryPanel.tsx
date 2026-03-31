@@ -196,7 +196,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({ onClose: _onClose })
         )}
       </div>
 
-      <div className="px-4 py-2 border-t border-zinc-800/50 bg-zinc-900/50">
+      <div className="px-4 py-2 border-t border-[rgba(249,115,22,0.12)] bg-zinc-900/50">
         <div className="flex items-center justify-center gap-4 text-[10px] text-zinc-500">
           <span>
             <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded">⌘Z</kbd> Undo

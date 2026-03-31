@@ -36,8 +36,8 @@ export function FloraPromptBar({
         className={cn(
           'flex items-end gap-3 rounded-[22px] border px-4 py-3 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-colors',
           disabled
-            ? 'border-white/5 bg-[#111111]/90 opacity-70'
-            : 'border-white/10 bg-[#171717]/94 focus-within:border-[#f97316]/40 focus-within:shadow-[0_20px_44px_rgba(0,0,0,0.52)]'
+            ? 'border-[rgba(249,115,22,0.08)] bg-[#111111]/90 opacity-70'
+            : 'border-[rgba(249,115,22,0.15)] bg-[#171717]/94 shadow-[0_0_8px_rgba(249,115,22,0.06)] focus-within:border-[#f97316]/40 focus-within:shadow-[0_20px_44px_rgba(0,0,0,0.52)]'
         )}
       >
         <button

@@ -254,7 +254,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
         >
           {/* Drag & Drop Hint */}
           <motion.div 
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-[#171717]/80 px-4 py-2 backdrop-blur-sm"
+            className="flex items-center gap-2 rounded-full border border-[rgba(249,115,22,0.15)] bg-[#171717]/80 px-4 py-2 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}

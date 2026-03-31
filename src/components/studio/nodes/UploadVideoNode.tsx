@@ -146,7 +146,7 @@ export const UploadVideoNode = memo(({ id, data, selected }: NodeProps) => {
             <div
               onClick={handleClick}
               className={cn(
-                "h-32 rounded-lg border-2 border-dashed border-zinc-700 bg-zinc-900/60",
+                "h-32 rounded-lg border-2 border-dashed border-[rgba(249,115,22,0.2)] bg-zinc-900/60",
                 "flex flex-col items-center justify-center gap-2 cursor-pointer",
                 "hover:border-purple-500/50 hover:bg-zinc-800/50 transition-colors",
                 isUploading && "opacity-50 pointer-events-none"

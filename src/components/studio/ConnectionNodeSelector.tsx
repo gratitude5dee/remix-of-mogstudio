@@ -134,7 +134,7 @@ export const ConnectionNodeSelector: React.FC<ConnectionNodeSelectorProps> = ({
           ))}
         </div>
 
-        <div className="border-t border-zinc-800/60 bg-gradient-to-t from-zinc-800/30 to-transparent px-4 py-3">
+        <div className="border-t border-[rgba(249,115,22,0.12)] bg-gradient-to-t from-zinc-800/30 to-transparent px-4 py-3">
           <div className="flex items-center justify-between text-[10px] tracking-[0.16em] text-zinc-500">
             <span>Tab: Navigate</span>
             <span>↵ Select</span>

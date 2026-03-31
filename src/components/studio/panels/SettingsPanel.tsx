@@ -280,7 +280,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ projectId, onClose
         )}
       </div>
 
-      <div className="px-4 py-3 border-t border-zinc-800/50 bg-zinc-900/50">
+      <div className="px-4 py-3 border-t border-[rgba(249,115,22,0.12)] bg-zinc-900/50">
         <p className="text-[10px] text-zinc-500 text-center">
           Models apply to new nodes created in this project
         </p>

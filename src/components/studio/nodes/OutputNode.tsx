@@ -227,7 +227,7 @@ export const OutputNode = memo(({ id, data, selected }: NodeProps) => {
         </div>
 
         {/* Actions */}
-        <div className="px-3 py-2 border-t border-zinc-800 flex items-center gap-2">
+        <div className="px-3 py-2 border-t border-[rgba(249,115,22,0.12)] flex items-center gap-2">
           <Button
             size="sm"
             variant="outline"

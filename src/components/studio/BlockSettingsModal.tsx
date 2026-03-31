@@ -70,7 +70,7 @@ const BlockSettingsModal: React.FC<BlockSettingsModalProps> = ({
   return (
     <div 
       ref={dropdownRef}
-      className="fixed top-[66px] right-4 w-80 bg-[#1a1a1a] border border-zinc-800 text-white shadow-2xl rounded-lg z-[100]"
+      className="fixed top-[66px] right-4 w-80 bg-[#1a1a1a] border border-[rgba(249,115,22,0.15)] text-white shadow-[0_0_12px_rgba(249,115,22,0.06)] rounded-lg z-[100]"
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
