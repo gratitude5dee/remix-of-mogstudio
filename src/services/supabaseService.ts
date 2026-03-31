@@ -1064,7 +1064,7 @@ export const shotService = {
         .order('shot_number', { ascending: true });
         
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Shot[]) || [];
     } catch (error) {
       handleError(error, 'listing shots');
       return [];
