@@ -271,7 +271,7 @@ export function ClothingSection({
                               updateCharacterData(char.id, { makeupDescription: e.target.value })
                             }
                             placeholder="e.g., Natural, smokey..."
-                            className="mt-1 text-sm h-8 bg-zinc-900/50 border-zinc-800/50"
+                            className="mt-1 text-sm h-8 bg-zinc-900/50 border-[#f97316]/15"
                           />
                         </div>
                       </div>
