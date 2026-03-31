@@ -239,7 +239,7 @@ function NodeInspector({
           <Button
             type="button"
             variant="ghost"
-            className="h-9 w-9 rounded-full border border-white/10 bg-[#131313] p-0 text-zinc-400 hover:border-white/15 hover:bg-[#191919] hover:text-white"
+            className="h-9 w-9 rounded-full border border-[rgba(249,115,22,0.12)] bg-[#131313] p-0 text-zinc-400 hover:border-[rgba(249,115,22,0.20)] hover:bg-[#191919] hover:text-white"
             onClick={onClearSelection}
           >
             <X className="h-4 w-4" />
