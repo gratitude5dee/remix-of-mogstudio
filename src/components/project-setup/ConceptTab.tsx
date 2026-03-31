@@ -1,13 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, FileText } from 'lucide-react';
 import { FormatSelector } from './FormatSelector';
 import { DynamicConceptForm } from './DynamicConceptForm';
 import { type ProjectData, ProjectFormat } from './types';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
-import { getModelsByTypeAndGroup } from '@/lib/studio-model-constants';
-import { formatModelLabel, STORYLINE_MODEL_OPTIONS, formatStorylineModelLabel } from '@/lib/constants/credits';
 
 interface ConceptTabProps {
   projectData: ProjectData;
@@ -15,51 +10,12 @@ interface ConceptTabProps {
 }
 
 const ConceptTab = ({ projectData, updateProjectData }: ConceptTabProps) => {
-  const imageGenerationModels = useMemo(
-    () => getModelsByTypeAndGroup('image', 'generation'),
-    []
-  );
-  const videoGenerationModels = useMemo(
-    () => getModelsByTypeAndGroup('video', 'generation'),
-    []
-  );
-  const storylineModelOptions = STORYLINE_MODEL_OPTIONS;
-  const [storylineSettingsText, setStorylineSettingsText] = useState(
-    JSON.stringify(projectData.storylineTextSettings || {}, null, 2)
-  );
-  const [storylineSettingsError, setStorylineSettingsError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setStorylineSettingsText(JSON.stringify(projectData.storylineTextSettings || {}, null, 2));
-  }, [projectData.storylineTextSettings]);
-
   const handleFormatChange = (format: ProjectFormat) => {
     updateProjectData({ format });
   };
 
   const handleConceptOptionChange = (option: 'ai' | 'manual') => {
     updateProjectData({ conceptOption: option });
-  };
-
-  const handleStorylineSettingsBlur = () => {
-    const trimmed = storylineSettingsText.trim();
-    if (!trimmed) {
-      setStorylineSettingsError(null);
-      updateProjectData({ storylineTextSettings: {} });
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(trimmed);
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-        setStorylineSettingsError('JSON override must be an object.');
-        return;
-      }
-      setStorylineSettingsError(null);
-      updateProjectData({ storylineTextSettings: parsed });
-    } catch {
-      setStorylineSettingsError('Invalid JSON syntax.');
-    }
   };
 
   return (
@@ -187,82 +143,6 @@ const ConceptTab = ({ projectData, updateProjectData }: ConceptTabProps) => {
           />
         </motion.section>
       </AnimatePresence>
-
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mt-8 rounded-xl border border-zinc-800 bg-zinc-900/40 p-5"
-      >
-        <h3 className="text-lg font-semibold text-white">Generation Models</h3>
-        <p className="mt-1 text-sm text-zinc-400">
-          Configure project defaults for storyline text generation and setup media generation.
-        </p>
-
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label className="space-y-2">
-            <span className="text-xs uppercase tracking-wide text-zinc-400">Storyline model (Groq)</span>
-            <select
-              className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
-              value={projectData.storylineTextModel || 'llama-3.3-70b-versatile'}
-              onChange={(event) => updateProjectData({ storylineTextModel: event.target.value })}
-            >
-              {storylineModelOptions.map((model) => (
-                <option key={model.id} value={model.id}>
-                  {formatStorylineModelLabel(model)}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="space-y-2">
-            <span className="text-xs uppercase tracking-wide text-zinc-400">Default image model</span>
-            <select
-              className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
-              value={projectData.baseImageModel || imageGenerationModels[0]?.id || 'fal-ai/nano-banana-2'}
-              onChange={(event) => updateProjectData({ baseImageModel: event.target.value })}
-            >
-              {imageGenerationModels.map((model) => (
-                <option key={model.id} value={model.id}>
-                  {formatModelLabel(model)}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="space-y-2 md:col-span-2">
-            <span className="text-xs uppercase tracking-wide text-zinc-400">Default video model</span>
-            <select
-              className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
-              value={projectData.baseVideoModel || videoGenerationModels[0]?.id || 'fal-ai/kling-video/o3/standard/text-to-video'}
-              onChange={(event) => updateProjectData({ baseVideoModel: event.target.value })}
-            >
-              {videoGenerationModels.map((model) => (
-                <option key={model.id} value={model.id}>
-                  {formatModelLabel(model)}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        <div className="mt-4 space-y-2">
-          <span className="text-xs uppercase tracking-wide text-zinc-400">Storyline JSON override</span>
-          <Textarea
-            value={storylineSettingsText}
-            onChange={(event) => setStorylineSettingsText(event.target.value)}
-            onBlur={handleStorylineSettingsBlur}
-            placeholder='{"temperature":0.7,"maxTokens":2048}'
-            className={cn(
-              'min-h-[88px] border-zinc-700 bg-zinc-900 text-xs text-zinc-200 font-mono',
-              storylineSettingsError ? 'border-red-500/70' : ''
-            )}
-          />
-          {storylineSettingsError && (
-            <p className="text-xs text-red-400">{storylineSettingsError}</p>
-          )}
-        </div>
-      </motion.section>
     </div>
   );
 };
