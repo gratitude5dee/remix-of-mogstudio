@@ -110,7 +110,7 @@ const EmptyCanvasState = ({ onAddBlock, onExploreFlows, onDismiss, onStartFloraE
               shimmerDuration="2.5s"
               borderRadius="12px"
               background="#171717"
-              className="gap-2 border border-white/10 text-sm font-medium px-5 py-2.5 text-white"
+              className="gap-2 border border-[rgba(249,115,22,0.2)] text-sm font-medium px-5 py-2.5 text-white"
               onClick={() => onAddBlock('text')}
             >
               <Plus className="w-4 h-4" />
