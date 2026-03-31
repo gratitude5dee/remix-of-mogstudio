@@ -269,6 +269,26 @@ const StoryboardPage = () => {
     }
   };
 
+  const handleProjectUpdate = async (updates: { title?: string; description?: string }) => {
+    if (!projectId) return;
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .update(updates)
+        .eq('id', projectId);
+      if (error) throw error;
+      setProjectDetails(prev => prev ? { ...prev, ...updates } : null);
+      setSidebarData(prev => prev ? {
+        ...prev,
+        projectTitle: updates.title ?? prev.projectTitle,
+        projectDescription: updates.description ?? prev.projectDescription,
+      } : null);
+    } catch (error: any) {
+      console.error("Error updating project:", error);
+      toast.error(`Failed to update project: ${error.message}`);
+    }
+  };
+
   // Add scene function
   const addScene = async () => {
     if (!projectId) return;
