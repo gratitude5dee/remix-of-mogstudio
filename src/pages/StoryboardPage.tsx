@@ -444,9 +444,9 @@ const StoryboardPage = () => {
                         onClick={() => setShowDirectorsCutConfirm(true)}
                         className={cn(
                           'relative overflow-hidden backdrop-blur-sm px-5 py-2',
-                          'bg-[#151515] border border-purple-500/15 text-zinc-100',
+                          'bg-[#151515] border border-[rgba(249,115,22,0.15)] text-zinc-100',
                           'shadow-[0_12px_28px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.06)]',
-                          'hover:border-purple-500/25 hover:bg-[#1a1a1a]',
+                          'hover:border-[rgba(249,115,22,0.25)] hover:bg-[#1a1a1a]',
                           'transition-all duration-300'
                         )}
                       >
@@ -467,10 +467,10 @@ const StoryboardPage = () => {
                             className={cn(
                               'relative overflow-hidden backdrop-blur-sm px-6 py-2',
                               projectNextPhase === 'images'
-                                ? 'bg-[#1a1015] border border-purple-500/25 text-purple-100'
-                                : 'bg-[#181516] border border-purple-400/20 text-purple-50',
+                                ? 'bg-[#151210] border border-[rgba(249,115,22,0.2)] text-orange-50'
+                                : 'bg-[#151210] border border-[rgba(249,115,22,0.15)] text-orange-50',
                               'shadow-[0_12px_28px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)]',
-                              'hover:border-purple-500/30 hover:bg-[#1b1b1b]',
+                              'hover:border-[rgba(249,115,22,0.3)] hover:bg-[#1b1b1b]',
                               'transition-all duration-300'
                             )}
                           >

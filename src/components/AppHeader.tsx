@@ -119,7 +119,7 @@ export const AppHeader = ({
     return cn(
       'text-xs px-2.5 py-1 rounded-md transition-colors duration-200',
       currentView === viewMode
-        ? 'bg-white/10 text-white' 
+        ? 'bg-[rgba(249,115,22,0.12)] text-[#f97316]' 
         : 'text-zinc-500 hover:text-white hover:bg-white/5'
     );
   };
@@ -204,7 +204,7 @@ export const AppHeader = ({
   return (
     <TooltipProvider delayDuration={300}>
       <header className={cn(
-        'w-full h-14 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/50 px-4 flex items-center justify-between relative z-50',
+        'w-full h-14 bg-zinc-950/80 backdrop-blur-xl border-b border-[rgba(249,115,22,0.08)] px-4 flex items-center justify-between relative z-50',
         className
       )}>
         {/* Left: Logo + Project Name */}
@@ -268,7 +268,7 @@ export const AppHeader = ({
         {/* Right: Credits + Settings Dropdown + Share */}
         <div className="flex items-center gap-2">
           {/* Credits Display */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/60 border border-zinc-800/50 rounded-lg">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/60 border border-[rgba(249,115,22,0.12)] rounded-lg">
             <Coins className="w-3.5 h-3.5 text-accent-teal" />
             <CreditsDisplay showTooltip={false} />
           </div>
@@ -287,14 +287,14 @@ export const AppHeader = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="w-56 bg-zinc-900 border-zinc-800 text-white"
+              className="w-56 bg-[#0f0f13] border-[rgba(249,115,22,0.15)] text-white"
               sideOffset={8}
             >
-              <DropdownMenuItem onClick={handleBackToHome} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={handleBackToHome} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Home className="mr-2 h-4 w-4" />
                 Back to home
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleOpenBilling} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={handleOpenBilling} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Coins className="mr-2 h-4 w-4" />
                 Billing & credits
               </DropdownMenuItem>
@@ -305,21 +305,21 @@ export const AppHeader = ({
                 <FilePlus className="mr-2 h-4 w-4" />
                 New project
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDuplicateProject} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={handleDuplicateProject} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Copy className="mr-2 h-4 w-4" />
                 Duplicate project
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={startEditing} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={startEditing} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Pencil className="mr-2 h-4 w-4" />
                 Rename project
               </DropdownMenuItem>
               
-              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
               
               <DropdownMenuItem 
                 onClick={onUndo} 
                 disabled={!onUndo}
-                className="hover:bg-zinc-800 cursor-pointer"
+                className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
               >
                 <Undo className="mr-2 h-4 w-4" />
                 Undo
@@ -328,26 +328,26 @@ export const AppHeader = ({
               <DropdownMenuItem 
                 onClick={onRedo}
                 disabled={!onRedo}
-                className="hover:bg-zinc-800 cursor-pointer"
+                className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
               >
                 <Redo className="mr-2 h-4 w-4" />
                 Redo
                 <DropdownMenuShortcut>⌘⇧Z</DropdownMenuShortcut>
               </DropdownMenuItem>
               
-              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
               
-              <DropdownMenuItem onClick={onOpenSettings} className="hover:bg-zinc-800 cursor-pointer">
+              <DropdownMenuItem onClick={onOpenSettings} className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer">
                 <Settings className="mr-2 h-4 w-4" />
                 Project settings
               </DropdownMenuItem>
               
-              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
               
               <DropdownMenuItem 
                 onClick={onZoomToFit}
                 disabled={!onZoomToFit}
-                className="hover:bg-zinc-800 cursor-pointer"
+                className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
               >
                 <Maximize className="mr-2 h-4 w-4" />
                 Zoom to fit
@@ -356,7 +356,7 @@ export const AppHeader = ({
               <DropdownMenuItem 
                 onClick={onZoomIn}
                 disabled={!onZoomIn}
-                className="hover:bg-zinc-800 cursor-pointer"
+                className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
               >
                 <ZoomIn className="mr-2 h-4 w-4" />
                 Zoom in
@@ -365,7 +365,7 @@ export const AppHeader = ({
               <DropdownMenuItem 
                 onClick={onZoomOut}
                 disabled={!onZoomOut}
-                className="hover:bg-zinc-800 cursor-pointer"
+                className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
               >
                 <ZoomOut className="mr-2 h-4 w-4" />
                 Zoom out

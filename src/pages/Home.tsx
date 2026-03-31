@@ -240,8 +240,8 @@ export default function Home() {
 
           {/* Desktop Header - hidden on mobile */}
           <header data-tour="dashboard-title" className={cn(
-            "border-b border-border-default",
-            "bg-gradient-to-r from-surface-2 via-transparent to-surface-2 backdrop-blur-sm",
+            "border-b border-[rgba(249,115,22,0.1)]",
+            "bg-[#0a0a0f]/90 backdrop-blur-xl",
             "hidden md:block"
           )}>
             {/* Row 1: Title + Project Count + Actions */}
@@ -260,7 +260,7 @@ export default function Home() {
                     📊
                   </motion.span>
                 </div>
-                <div className="h-5 w-px bg-border-default" />
+                <div className="h-5 w-px bg-[rgba(249,115,22,0.1)]" />
                 <span className="text-sm text-text-secondary dark:text-muted-foreground font-medium">
                   {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
                 </span>
@@ -285,7 +285,7 @@ export default function Home() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="end" 
-                    className="w-56 bg-surface-1 border-border-default dark:bg-zinc-900 dark:border-zinc-800"
+                    className="w-56 bg-[#0f0f13] border-[rgba(249,115,22,0.15)] text-white"
                     sideOffset={8}
                   >
                     <DropdownMenuLabel className="text-text-secondary dark:text-zinc-400 text-xs">
@@ -294,26 +294,26 @@ export default function Home() {
                     
                     <DropdownMenuItem 
                       onClick={() => navigate(appRoutes.settings.billing)} 
-                      className="hover:bg-surface-2 dark:hover:bg-zinc-800 cursor-pointer"
+                      className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
                     >
                       <Coins className="mr-2 h-4 w-4" />
                       Billing & Credits
                     </DropdownMenuItem>
                     
-                    <DropdownMenuSeparator className="bg-border-default dark:bg-zinc-800" />
+                    <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
                     
                     <DropdownMenuLabel className="text-text-secondary dark:text-zinc-400 text-xs">
                       Preferences
                     </DropdownMenuLabel>
                     
                     <DropdownMenuItem 
-                      className="hover:bg-surface-2 dark:hover:bg-zinc-800 cursor-pointer"
+                      className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer"
                     >
                       <Palette className="mr-2 h-4 w-4" />
                       Appearance
                     </DropdownMenuItem>
                     
-                    <DropdownMenuSeparator className="bg-border-default dark:bg-zinc-800" />
+                    <DropdownMenuSeparator className="bg-[rgba(249,115,22,0.1)]" />
                     
                     <DropdownMenuItem 
                       onClick={async () => {
@@ -328,7 +328,7 @@ export default function Home() {
                           });
                         }
                       }} 
-                      className="hover:bg-surface-2 dark:hover:bg-zinc-800 cursor-pointer text-red-500 dark:text-red-400"
+                      className="hover:bg-[rgba(249,115,22,0.06)] cursor-pointer text-red-500 dark:text-red-400"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
@@ -368,9 +368,9 @@ export default function Home() {
             </div>
             
             {/* Row 2: Tabs + Search + Actions */}
-            <div className="h-14 flex items-center justify-between px-6 border-t border-border-subtle">
+            <div className="h-14 flex items-center justify-between px-6 border-t border-[rgba(249,115,22,0.08)]">
               {/* Tabs */}
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-2">
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.03]">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -378,7 +378,7 @@ export default function Home() {
                     className={cn(
                       "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                       activeTab === tab.id
-                        ? "text-text-primary bg-surface-1 shadow-sm"
+                        ? "text-[#f97316] bg-[rgba(249,115,22,0.08)] border border-[rgba(249,115,22,0.25)] shadow-sm"
                         : "text-text-tertiary hover:text-text-primary"
                     )}
                   >
@@ -404,8 +404,8 @@ export default function Home() {
                   whileTap={{ scale: 0.98 }}
                   className={cn(
                     "flex items-center gap-2 h-9 px-4 rounded-lg text-sm font-medium transition-all duration-200",
-                    "bg-surface-2 border border-border-default text-text-secondary",
-                    "hover:text-text-primary hover:border-border-strong hover:bg-surface-3"
+                    "bg-white/[0.03] border border-[rgba(249,115,22,0.15)] text-text-secondary",
+                    "hover:text-text-primary hover:border-[rgba(249,115,22,0.25)] hover:bg-[rgba(249,115,22,0.06)]"
                   )}
                 >
                   <UserPlus className="w-4 h-4" />
@@ -428,7 +428,7 @@ export default function Home() {
           </header>
 
           {/* Stats Row - Responsive grid */}
-          <div data-tour="stats-section" className="px-4 md:px-6 py-4 md:py-6 border-b border-border-default bg-gradient-to-b from-surface-2 to-transparent">
+          <div data-tour="stats-section" className="px-4 md:px-6 py-4 md:py-6 border-b border-[rgba(249,115,22,0.1)] bg-gradient-to-b from-[rgba(249,115,22,0.02)] to-transparent">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <StatCard 
                 icon={<FolderKanban className="w-5 h-5" />}

@@ -83,13 +83,13 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
           "relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
           isCollapsed && "justify-center px-2",
           isActive
-            ? "bg-[hsl(var(--interactive-selected))] text-accent-purple border border-accent-purple/20 shadow-sm"
-            : "text-text-secondary hover:text-text-primary hover:bg-[hsl(var(--interactive-hover))] dark:text-muted-foreground dark:hover:text-foreground dark:hover:bg-white/[0.04]"
+            ? "bg-[rgba(249,115,22,0.12)] text-[#f97316] border border-[rgba(249,115,22,0.2)] shadow-sm"
+            : "text-text-secondary hover:text-text-primary hover:bg-[rgba(249,115,22,0.06)] dark:text-muted-foreground dark:hover:text-foreground dark:hover:bg-white/[0.04]"
         )}
       >
         {isActive && (
           <ShineBorder
-            shineColor="#FF6B4A"
+            shineColor="#f97316"
             borderWidth={1}
             duration={10}
           />
@@ -97,10 +97,10 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
         <div className={cn(
           "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 flex-shrink-0",
           isActive 
-            ? "bg-accent-purple/15 shadow-sm" 
+            ? "bg-[rgba(249,115,22,0.15)] shadow-sm" 
             : "bg-surface-2 dark:bg-white/[0.04]"
         )}>
-          <Icon className={cn("w-4 h-4", isActive && "text-accent-purple")} />
+          <Icon className={cn("w-4 h-4", isActive && "text-[#f97316]")} />
         </div>
         <AnimatePresence mode="wait">
           {!isCollapsed && (
@@ -117,7 +117,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
           )}
         </AnimatePresence>
         {item.showBadge && !isCollapsed && (
-          <Badge variant="secondary" className="text-[9px] bg-accent-purple/15 text-accent-purple border-accent-purple/20 px-1.5 py-0.5 font-semibold">
+          <Badge variant="secondary" className="text-[9px] bg-[rgba(249,115,22,0.15)] text-[#f97316] border-[rgba(249,115,22,0.2)] px-1.5 py-0.5 font-semibold">
             New
           </Badge>
         )}
@@ -132,7 +132,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
             <span className="flex items-center gap-2">
               {item.label}
               {item.showBadge && (
-                <Badge variant="secondary" className="text-[9px] bg-accent-purple/15 text-accent-purple border-accent-purple/20 px-1.5 py-0.5">
+                <Badge variant="secondary" className="text-[9px] bg-[rgba(249,115,22,0.15)] text-[#f97316] border-[rgba(249,115,22,0.2)] px-1.5 py-0.5">
                   New
                 </Badge>
               )}
@@ -156,15 +156,15 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
           "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
           isCollapsed && "justify-center px-2",
           isActive
-            ? "bg-[hsl(var(--interactive-selected))] text-accent-purple border border-accent-purple/20"
-            : "text-text-secondary hover:text-text-primary hover:bg-[hsl(var(--interactive-hover))] dark:text-muted-foreground dark:hover:text-foreground dark:hover:bg-white/[0.04]"
+            ? "bg-[rgba(249,115,22,0.12)] text-[#f97316] border border-[rgba(249,115,22,0.2)]"
+            : "text-text-secondary hover:text-text-primary hover:bg-[rgba(249,115,22,0.06)] dark:text-muted-foreground dark:hover:text-foreground dark:hover:bg-white/[0.04]"
         )}
       >
         <div className={cn(
           "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
-          isActive ? "bg-accent-purple/15" : "bg-surface-2 dark:bg-white/[0.04]"
+          isActive ? "bg-[rgba(249,115,22,0.15)]" : "bg-surface-2 dark:bg-white/[0.04]"
         )}>
-          <Icon className={cn("w-4 h-4", isActive && "text-accent-purple")} />
+          <Icon className={cn("w-4 h-4", isActive && "text-[#f97316]")} />
         </div>
         <AnimatePresence mode="wait">
           {!isCollapsed && (
@@ -210,7 +210,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
         {/* Shine border on hover */}
         <div className="absolute inset-0 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500 pointer-events-none rounded-r-xl overflow-hidden">
           <ShineBorder
-            shineColor={["hsl(var(--accent-purple))", "hsl(var(--amber))"]}
+            shineColor={["#f97316", "#d4a574"]}
             borderWidth={1}
             duration={8}
           />
@@ -255,7 +255,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
                   exit="hidden"
                   className="flex items-center gap-2 px-3 mb-3"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-accent-purple" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#f97316]" />
                   <TextAnimate animation="fadeIn" by="character" delay={0.1} className="text-[10px] font-semibold text-text-tertiary uppercase tracking-[0.15em]">
                     Main Menu
                   </TextAnimate>
@@ -264,7 +264,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
             </AnimatePresence>
             {isCollapsed && (
               <div className="flex justify-center mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-accent-purple" />
+                <Sparkles className="w-3.5 h-3.5 text-[#f97316]" />
               </div>
             )}
             <div className="space-y-1">
