@@ -567,7 +567,7 @@ export function StudioRightPanel({
               activeTab === 'nodes' && selectedNode?.kind === 'ImageEdit' ? 'w-[960px]' : 'w-[372px]'
             )}
           >
-              <div className="flex items-center border-b border-white/8 bg-[#111111]/80 pr-2">
+              <div className="flex items-center border-b border-[rgba(249,115,22,0.10)] bg-[#111111]/80 pr-2">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
