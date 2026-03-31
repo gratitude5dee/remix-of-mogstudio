@@ -1,4 +1,6 @@
 
+import type { CharacterIdentityProfile, EvaluationSummary, ReviewStatus, ShotPacket } from '@/lib/evaluation';
+
 // Image status to track generation progress
 export type ImageStatus = 'pending' | 'prompt_ready' | 'generating' | 'completed' | 'failed';
 
@@ -22,15 +24,20 @@ export interface ShotDetails {
   dialogue: string | null;
   sound_effects: string | null;
   image_url: string | null;
+  image_asset_id?: string | null;
   image_status: ImageStatus;
   image_history?: any[];
   upscale_status?: string | null;
   upscaled_image_url?: string | null;
   video_url: string | null;
+  video_asset_id?: string | null;
   video_status: 'pending' | 'generating' | 'completed' | 'failed';
   audio_url: string | null;
   audio_status: AudioStatus;
   luma_generation_id: string | null;
+  shot_packet?: ShotPacket | null;
+  evaluation_summary?: EvaluationSummary | null;
+  review_status?: ReviewStatus;
   failure_reason?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -94,6 +101,9 @@ export interface SceneDetails {
   lighting?: string;
   weather?: string;
   voiceover?: string;
+  story_goal?: string | null;
+  evaluation_summary?: EvaluationSummary | null;
+  review_status?: ReviewStatus;
   created_at?: string;
   updated_at?: string;
 }
@@ -105,6 +115,9 @@ export interface CharacterDetails {
   name: string;
   description?: string;
   image_url?: string;
+  identity_profile?: CharacterIdentityProfile | null;
+  anchor_asset_ids?: string[];
+  consistency_summary?: EvaluationSummary | null;
   created_at?: string;
   updated_at?: string;
 }

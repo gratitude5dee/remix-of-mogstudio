@@ -13,6 +13,7 @@ import { useAIGeneration } from './useAIGeneration';
 import { useAudioGeneration } from './useAudioGeneration';
 import { Button } from '@/components/ui/button';
 import { Trash2, Move, Expand } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface ShotCardProps {
   shot: ShotDetails;
@@ -242,6 +243,14 @@ export const ShotCard: React.FC<ShotCardProps> = ({
       >
         Shot {shot.shot_number}
       </motion.div>
+
+      {shot.review_status && shot.review_status !== 'not_reviewed' ? (
+        <div className="absolute top-11 left-1/2 z-10 -translate-x-1/2">
+          <Badge variant={shot.review_status === 'clear' ? 'secondary' : 'destructive'} className="text-[10px]">
+            {shot.review_status}
+          </Badge>
+        </div>
+      ) : null}
 
       {/* Image section */}
       <div className="flex-shrink-0 pointer-events-auto" style={{ touchAction: 'auto' }}>

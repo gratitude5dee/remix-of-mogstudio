@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getVisualPromptSystemPrompt, getVisualPromptUserPrompt } from '../_shared/prompts.ts';
+import { createPromptVersion } from '../_shared/observability.ts';
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
@@ -164,6 +165,19 @@ serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    await createPromptVersion(supabase, {
+      projectId: shot.project_id,
+      stage: 'shot_prompt',
+      authorType: 'system',
+      text: visualPrompt,
+      sourceEntityType: 'shot',
+      sourceEntityId: shotId,
+      metadata: {
+        shot_type: shot.shot_type,
+        scene_id: shot.scene_id,
+      },
+    });
 
     console.log(`[generate-visual-prompt][Shot ${shotId}] Visual prompt generation successfully completed.`);
 

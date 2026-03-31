@@ -6,15 +6,17 @@ import { cn } from '@/lib/utils';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
 import CreditsDisplay from '../CreditsDisplay';
 import { Badge } from '@/components/ui/badge';
+import { appRoutes } from '@/lib/routes';
 
 interface MobileSidebarDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   activeView: string;
   onViewChange: (view: string) => void;
+  auraProjectId?: string | null;
 }
 
-export const MobileSidebarDrawer = ({ isOpen, onClose, activeView, onViewChange }: MobileSidebarDrawerProps) => {
+export const MobileSidebarDrawer = ({ isOpen, onClose, activeView, onViewChange, auraProjectId }: MobileSidebarDrawerProps) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -30,6 +32,7 @@ export const MobileSidebarDrawer = ({ isOpen, onClose, activeView, onViewChange 
 
   const mainNavItems = [
     { id: 'all', label: 'All Projects', icon: FolderKanban },
+    { id: 'aura', label: 'Aura', icon: Sparkles, isRoute: true },
     { id: 'kanvas', label: 'Kanvas', icon: Layers, isRoute: true, showBadge: true },
   ];
 
@@ -40,7 +43,16 @@ export const MobileSidebarDrawer = ({ isOpen, onClose, activeView, onViewChange 
 
   const handleNavClick = (item: typeof mainNavItems[0]) => {
     if (item.isRoute) {
-      navigate('/kanvas');
+      if (item.id === 'aura') {
+        if (auraProjectId) {
+          navigate(appRoutes.projects.observability(auraProjectId));
+        } else {
+          toast.info('Create a project first to open Aura observability.');
+          navigate(appRoutes.projectSetup);
+        }
+      } else {
+        navigate(appRoutes.kanvas);
+      }
     } else {
       onViewChange(item.id);
     }

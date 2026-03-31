@@ -25,6 +25,7 @@ const ProjectSetup = lazy(() => import("./pages/ProjectSetup"));
 const StudioPage = lazy(() => import("./pages/StudioPage"));
 const LearningStudioPage = lazy(() => import("./pages/LearningStudioPage"));
 const StoryboardPage = lazy(() => import("./pages/StoryboardPage"));
+const ProjectObservabilityPage = lazy(() => import("./pages/ProjectObservabilityPage"));
 const DirectorCutPage = lazy(() => import("./pages/DirectorCutPage"));
 const EditorPage = lazy(() => import("./pages/EditorPage"));
 const Storyboard = lazy(() => import("./pages/Storyboard"));
@@ -147,6 +148,14 @@ const App = () => {
                       element={
                         <ProtectedRoute>
                           <StoryboardPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/projects/:projectId/observability"
+                      element={
+                        <ProtectedRoute>
+                          <ProjectObservabilityPage />
                         </ProtectedRoute>
                       }
                     />

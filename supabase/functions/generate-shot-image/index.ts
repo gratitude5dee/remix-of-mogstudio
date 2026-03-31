@@ -5,6 +5,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { fal } from "https://esm.sh/@fal-ai/client@1.2.3";
 import { mergeFalModelInputs, resolveFalModelOrFallback } from "../_shared/falai-client.ts";
 import {
+  createAssetLineage,
+  createGenerationJob,
+  createProjectAsset,
+  createPromptVersion,
+  enqueueStoryboardEvaluation,
+  updateGenerationJob,
+} from "../_shared/observability.ts";
+import {
   buildCreditIdempotencyKey,
   commitCredits,
   getCreditCostForModel,
@@ -96,6 +104,7 @@ serve(async (req) => {
 
 
   let shotId: string | null = null;
+  let imageGenerationJobId: string | null = null;
   let creditReservation: { holdId: string | null; requestedAmount: number; skipped: boolean } | null = null;
   try {
     const body = await req.json();
@@ -118,7 +127,7 @@ serve(async (req) => {
     console.log(`[generate-shot-image][Shot ${shotId}] Fetching shot data...`);
     const { data: shot, error: shotError } = await supabase
       .from("shots")
-      .select("id, project_id, visual_prompt, image_status")
+      .select("id, project_id, scene_id, visual_prompt, image_status")
       .eq("id", shotId)
       .single();
 
@@ -200,6 +209,19 @@ serve(async (req) => {
         `[generate-shot-image][Shot ${shotId}] Model fallback requested=${selectedImageModel} resolved=${finalModelId} reason=${resolvedModel.fallbackReason}`
       );
     }
+
+    imageGenerationJobId = await createGenerationJob(supabase, {
+      userId: user.id,
+      projectId: shot.project_id,
+      jobType: 'image',
+      modelId: finalModelId,
+      status: 'running',
+      config: {
+        shot_id: shotId,
+        aspect_ratio: aspectRatio,
+        image_size: imageSize,
+      },
+    });
 
     const creditCost = getCreditCostForModel(finalModelId, 'image');
     creditReservation = await reserveCredits({
@@ -335,10 +357,42 @@ serve(async (req) => {
         .getPublicUrl(fileName);
 
       // Update shot with the generated image and 100% progress
+      const promptVersionId = await createPromptVersion(supabase, {
+        projectId: shot.project_id,
+        stage: 'shot_image',
+        authorType: 'system',
+        text: shot.visual_prompt,
+        sourceEntityType: 'shot',
+        sourceEntityId: shotId,
+        metadata: {
+          model_id: finalModelId,
+          storage_path: uploadData?.path ?? fileName,
+          public_url: publicUrl,
+        },
+      });
+
+      const imageAssetId = await createProjectAsset(supabase, {
+        projectId: shot.project_id,
+        userId: user.id,
+        name: fileName,
+        type: 'image',
+        url: publicUrl,
+        size: imageBuffer.byteLength,
+        storageBucket: 'workflow-media',
+        storagePath: uploadData?.path ?? fileName,
+        metadata: {
+          shot_id: shotId,
+          storage_bucket: 'workflow-media',
+          storage_path: uploadData?.path ?? fileName,
+          model_id: finalModelId,
+        },
+      });
+
       const { error: updateError } = await supabase
         .from("shots")
         .update({ 
           image_url: publicUrl,
+          image_asset_id: imageAssetId,
           image_status: "completed",
           image_progress: 100
         })
@@ -348,6 +402,20 @@ serve(async (req) => {
         console.error(`[generate-shot-image][Shot ${shotId}] Failed to update shot with image: ${updateError.message}`);
         throw new Error(`Failed to update shot: ${updateError.message}`);
       }
+
+      await createAssetLineage(supabase, {
+        projectId: shot.project_id,
+        promptVersionId,
+        generationJobId: imageGenerationJobId,
+        outputAssetId: imageAssetId,
+        shotId,
+        sceneId: shot.scene_id ?? null,
+        relationType: 'output',
+        metadata: {
+          kind: 'shot_image',
+          model_id: finalModelId,
+        },
+      });
 
       await commitCredits({
         supabase,
@@ -359,6 +427,25 @@ serve(async (req) => {
           shot_id: shotId,
           image_url: publicUrl,
         },
+      });
+
+      await updateGenerationJob(supabase, imageGenerationJobId, {
+        status: 'completed',
+        progress: 100,
+        result_url: publicUrl,
+        result_payload: {
+          shot_id: shotId,
+          asset_id: imageAssetId,
+        },
+        completed_at: new Date().toISOString(),
+      });
+
+      await enqueueStoryboardEvaluation(supabase, {
+        userId: user.id,
+        projectId: shot.project_id,
+        targetType: 'shot',
+        targetId: shotId,
+        sourceGenerationJobId: imageGenerationJobId,
       });
 
       console.log(`[generate-shot-image][Shot ${shotId}] Image generation completed successfully`);
@@ -401,6 +488,12 @@ serve(async (req) => {
           },
         });
       }
+
+      await updateGenerationJob(supabase, imageGenerationJobId, {
+        status: 'failed',
+        error_message: errorMsg,
+        completed_at: new Date().toISOString(),
+      });
         
       console.log(`[generate-shot-image][Shot ${shotId}] Status updated to 'failed' with reason: ${errorMsg}`);
 
@@ -411,6 +504,11 @@ serve(async (req) => {
     }
   } catch (error: unknown) {
     if (error instanceof InsufficientCreditsError) {
+      await updateGenerationJob(supabase, imageGenerationJobId, {
+        status: 'failed',
+        error_message: 'Insufficient credits',
+        completed_at: new Date().toISOString(),
+      });
       if (shotId) {
         await supabase
           .from("shots")

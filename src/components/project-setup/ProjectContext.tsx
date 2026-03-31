@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/providers/AuthProvider';
 import { extractInsufficientCreditsError, routeToBillingTopUp } from '@/lib/billing-errors';
 import { buildConceptPayload } from '@/services/conceptPayloadService';
+import { DEFAULT_EVALUATION_THRESHOLDS } from '@/lib/evaluation';
 
 interface ProjectContextProps {
   projectData: ProjectData;
@@ -80,7 +81,11 @@ const defaultProjectData: ProjectData = {
   storylineTextModel: 'llama-3.3-70b-versatile',
   storylineTextSettings: {},
   baseImageModel: 'fal-ai/nano-banana-2',
-  baseVideoModel: 'fal-ai/kling-video/o3/standard/text-to-video'
+  baseVideoModel: 'fal-ai/kling-video/o3/standard/text-to-video',
+  evaluationMode: 'shadow',
+  evaluationThresholds: DEFAULT_EVALUATION_THRESHOLDS,
+  canonFacts: [],
+  creativeConstraints: [],
 };
 
 const ProjectContext = createContext<ProjectContextProps | undefined>(undefined);
@@ -127,6 +132,10 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
           storyline_text_settings: storylineSettings,
           base_image_model: projectData.baseImageModel || 'fal-ai/nano-banana-2',
           base_video_model: projectData.baseVideoModel || 'fal-ai/kling-video/o3/standard/text-to-video',
+          evaluation_mode: projectData.evaluationMode || 'shadow',
+          evaluation_thresholds: projectData.evaluationThresholds || DEFAULT_EVALUATION_THRESHOLDS,
+          canon_facts: projectData.canonFacts || [],
+          creative_constraints: projectData.creativeConstraints || [],
           updated_at: new Date().toISOString(),
         },
         { onConflict: 'project_id' }
@@ -354,6 +363,10 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
           baseImageModel: projectData.baseImageModel || 'fal-ai/nano-banana-2',
           baseVideoModel: projectData.baseVideoModel || 'fal-ai/kling-video/o3/standard/text-to-video',
           styleReferenceAssetId: projectData.styleReferenceAssetId || null,
+          evaluationMode: projectData.evaluationMode || 'shadow',
+          evaluationThresholds: projectData.evaluationThresholds || DEFAULT_EVALUATION_THRESHOLDS,
+          canonFacts: projectData.canonFacts || [],
+          creativeConstraints: projectData.creativeConstraints || [],
         },
         cast: {
           addVoiceover: projectData.addVoiceover,

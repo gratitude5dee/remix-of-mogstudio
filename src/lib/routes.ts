@@ -24,6 +24,7 @@ export const appRoutes = {
     timeline: (projectId: string) => `/projects/${projectId}/timeline`,
     editor: (projectId: string) => `/projects/${projectId}/editor`,
     directorsCut: (projectId: string) => `/projects/${projectId}/directors-cut`,
+    observability: (projectId: string) => `/projects/${projectId}/observability`,
   },
   legacy: {
     studioProject: (projectId: string) => `/studio/${projectId}`,
@@ -64,6 +65,7 @@ export const ROUTE_MANIFEST: RouteManifestEntry[] = [
   { id: 'project-timeline', pattern: '/projects/:projectId/timeline', category: 'core' },
   { id: 'project-editor', pattern: '/projects/:projectId/editor', category: 'core' },
   { id: 'project-directors-cut', pattern: '/projects/:projectId/directors-cut', category: 'core' },
+  { id: 'project-observability', pattern: '/projects/:projectId/observability', category: 'core' },
   { id: 'legacy-studio-project', pattern: '/studio/:projectId', category: 'legacy' },
   { id: 'legacy-timeline-project', pattern: '/timeline/:projectId', category: 'legacy' },
   { id: 'legacy-timeline-directors-cut', pattern: '/timeline/:projectId/directors-cut', category: 'legacy' },

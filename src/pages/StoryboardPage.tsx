@@ -17,6 +17,7 @@ import { ProjectDetails, SceneDetails, CharacterDetails, SidebarData } from '@/t
 import { cn } from '@/lib/utils';
 import { useProjectAutoGenerate } from '@/hooks/useProjectAutoGenerate';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 import { appRoutes } from '@/lib/routes';
 import { getShotImageCredits, getShotVideoCredits, DIRECTORS_CUT_CREDITS } from '@/lib/constants/credits';
 import { useProjectSettingsStore } from '@/store/projectSettingsStore';
@@ -36,6 +37,7 @@ const StoryboardPage = () => {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [showProjectConfirmGenerate, setShowProjectConfirmGenerate] = useState(false);
   const [showDirectorsCutConfirm, setShowDirectorsCutConfirm] = useState(false);
+  const [openReviewTaskCount, setOpenReviewTaskCount] = useState(0);
   // Get user-selected models from project settings store
   const { settings: projectSettings, fetchSettings: fetchProjectSettings } = useProjectSettingsStore();
   const selectedImageModel = projectSettings?.baseImageModel;
@@ -199,6 +201,44 @@ const StoryboardPage = () => {
     };
   }, [projectId, fetchData]);
 
+  useEffect(() => {
+    if (!projectId) return;
+
+    const fetchOpenReviewTasks = async () => {
+      const { count, error } = await supabase
+        .from('review_tasks')
+        .select('id', { count: 'exact', head: true })
+        .eq('project_id', projectId)
+        .in('status', ['open', 'in_review']);
+
+      if (!error) {
+        setOpenReviewTaskCount(count ?? 0);
+      }
+    };
+
+    void fetchOpenReviewTasks();
+
+    const reviewChannel = supabase
+      .channel(`review_tasks_${projectId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'review_tasks',
+          filter: `project_id=eq.${projectId}`,
+        },
+        () => {
+          void fetchOpenReviewTasks();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(reviewChannel);
+    };
+  }, [projectId]);
+
   // Function to update scene details in the database
   const handleSceneUpdate = async (sceneId: string | undefined, updates: Partial<Omit<SceneDetails, 'id' | 'project_id' | 'scene_number'>>) => {
     if (!sceneId) {
@@ -359,6 +399,24 @@ const StoryboardPage = () => {
                 <GlowingTitle title={projectDetails.title} glowColor="#d4a574" />
                 
                 <div className="flex items-center gap-3">
+                  {projectId ? (
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Button
+                        variant="outline"
+                        onClick={() => navigate(appRoutes.projects.observability(projectId))}
+                        className="border-amber-400/20 bg-[#141414] text-zinc-100 hover:bg-[#1a1a1a]"
+                      >
+                        <AlertCircle className="mr-2 h-4 w-4 text-amber-300" />
+                        Observability
+                        {openReviewTaskCount > 0 ? (
+                          <Badge variant="destructive" className="ml-2">
+                            {openReviewTaskCount}
+                          </Badge>
+                        ) : null}
+                      </Button>
+                    </motion.div>
+                  ) : null}
+
                   {projectId && (
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Button

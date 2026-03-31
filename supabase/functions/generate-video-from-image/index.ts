@@ -1,6 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { FAL_MODELS, submitToFalQueue, FalResponse } from "../_shared/falai-client.ts";
+import {
+  createAssetLineage,
+  createGenerationJob,
+  createProjectAsset,
+  createPromptVersion,
+  enqueueStoryboardEvaluation,
+  updateGenerationJob,
+} from "../_shared/observability.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
@@ -29,7 +37,7 @@ serve(async (req) => {
   }
 
   try {
-    const { shot_id, image_url } = await req.json();
+    const { shot_id, image_url, prompt } = await req.json();
 
     if (!shot_id || !image_url) {
       return new Response(
@@ -41,7 +49,7 @@ serve(async (req) => {
     // Get shot information
     const { data: shot, error: shotError } = await supabase
       .from("shots")
-      .select("id, project_id")
+      .select("id, project_id, scene_id, image_asset_id, visual_prompt")
       .eq("id", shot_id)
       .single();
 
@@ -68,7 +76,21 @@ serve(async (req) => {
       );
     }
 
+    let videoGenerationJobId: string | null = null;
     try {
+      videoGenerationJobId = await createGenerationJob(supabase, {
+        userId: authData.user.id,
+        projectId: shot.project_id,
+        jobType: 'video',
+        modelId: FAL_MODELS.LTX_VIDEO_13B_DISTILLED_IMAGE_TO_VIDEO,
+        status: 'running',
+        inputAssets: shot.image_asset_id ? [shot.image_asset_id] : [],
+        config: {
+          shot_id,
+          image_url,
+        },
+      });
+
       console.log(`[Shot ${shot_id}] Starting video generation with LTX Video 13B Distilled`);
       
       // Generate video from image using LTX Video 13B Distilled
@@ -160,11 +182,44 @@ serve(async (req) => {
         .from('workflow-media')
         .getPublicUrl(fileName);
 
+      const promptVersionId = await createPromptVersion(supabase, {
+        projectId: shot.project_id,
+        stage: 'shot_video',
+        authorType: 'system',
+        text: prompt || shot.visual_prompt || 'Generate video from shot image',
+        sourceEntityType: 'shot',
+        sourceEntityId: shot_id,
+        metadata: {
+          source_image_url: image_url,
+          model_id: FAL_MODELS.LTX_VIDEO_13B_DISTILLED_IMAGE_TO_VIDEO,
+          storage_path: fileName,
+        },
+      });
+
+      const videoAssetId = await createProjectAsset(supabase, {
+        projectId: shot.project_id,
+        userId: user.id,
+        name: fileName,
+        type: 'video',
+        url: publicUrl,
+        size: videoBuffer.byteLength,
+        storageBucket: 'workflow-media',
+        storagePath: fileName,
+        metadata: {
+          shot_id,
+          storage_bucket: 'workflow-media',
+          storage_path: fileName,
+          duration: videoDuration ?? null,
+          frames: videoFrames ?? null,
+        },
+      });
+
       // Update the shot with the video URL
       const { error: updateError } = await supabase
         .from('shots')
         .update({ 
           video_url: publicUrl,
+          video_asset_id: videoAssetId,
           video_status: 'completed' 
         })
         .eq('id', shot_id);
@@ -172,6 +227,41 @@ serve(async (req) => {
       if (updateError) {
         console.error(`Error updating shot: ${updateError.message}`);
       }
+
+      await createAssetLineage(supabase, {
+        projectId: shot.project_id,
+        promptVersionId,
+        generationJobId: videoGenerationJobId,
+        sourceAssetId: shot.image_asset_id ?? null,
+        outputAssetId: videoAssetId,
+        sceneId: shot.scene_id ?? null,
+        shotId: shot_id,
+        relationType: 'output',
+        metadata: {
+          kind: 'shot_video',
+        },
+      });
+
+      await updateGenerationJob(supabase, videoGenerationJobId, {
+        status: 'completed',
+        progress: 100,
+        result_url: publicUrl,
+        result_payload: {
+          shot_id,
+          asset_id: videoAssetId,
+          duration: videoDuration ?? null,
+          frames: videoFrames ?? null,
+        },
+        completed_at: new Date().toISOString(),
+      });
+
+      await enqueueStoryboardEvaluation(supabase, {
+        userId: authData.user.id,
+        projectId: shot.project_id,
+        targetType: 'shot',
+        targetId: shot_id,
+        sourceGenerationJobId: videoGenerationJobId,
+      });
 
       console.log(`[Shot ${shot_id}] Video generation completed successfully`);
 
@@ -187,6 +277,20 @@ serve(async (req) => {
     } catch (error: unknown) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
       console.error(`[Shot ${shot_id}] Error in generate-video-from-image: ${error}`);
+
+      await supabase
+        .from('shots')
+        .update({
+          video_status: 'failed',
+          failure_reason: errorMsg,
+        })
+        .eq('id', shot_id);
+
+      await updateGenerationJob(supabase, videoGenerationJobId, {
+        status: 'failed',
+        error_message: errorMsg,
+        completed_at: new Date().toISOString(),
+      });
       
       return new Response(
         JSON.stringify({ success: false, error: errorMsg }),

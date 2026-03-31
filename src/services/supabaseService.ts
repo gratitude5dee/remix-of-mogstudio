@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { MediaItem } from '@/store/videoEditorStore';
 import { toast } from 'sonner';
 import { Json } from '@/integrations/supabase/types';
+import type { CharacterIdentityProfile, EvaluationSummary, ReviewStatus, ShotPacket } from '@/lib/evaluation';
 
 // Project types
 export interface Project {
@@ -804,6 +805,9 @@ export interface Scene {
   lighting?: string;
   weather?: string;
   voiceover?: string;
+  story_goal?: string | null;
+  evaluation_summary?: EvaluationSummary | null;
+  review_status?: ReviewStatus;
   created_at?: string;
   updated_at?: string;
 }
@@ -815,6 +819,9 @@ export interface Character {
   name: string;
   description?: string;
   image_url?: string;
+  identity_profile?: CharacterIdentityProfile | null;
+  anchor_asset_ids?: string[];
+  consistency_summary?: EvaluationSummary | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -829,6 +836,8 @@ export interface Storyline {
   tags?: string[];
   is_selected?: boolean;
   generated_by?: string;
+  evaluation_summary?: EvaluationSummary | null;
+  review_status?: ReviewStatus;
   created_at?: string;
 }
 
@@ -1028,12 +1037,17 @@ export interface Shot {
   dialogue?: string;
   sound_effects?: string;
   image_url?: string;
+  image_asset_id?: string | null;
   image_status?: string;
   video_url?: string;
+  video_asset_id?: string | null;
   video_status?: string;
   luma_generation_id?: string;
   audio_url?: string;
   audio_status?: string;
+  shot_packet?: ShotPacket | null;
+  evaluation_summary?: EvaluationSummary | null;
+  review_status?: ReviewStatus;
   failure_reason?: string;
   created_at?: string;
   updated_at?: string;

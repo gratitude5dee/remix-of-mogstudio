@@ -199,6 +199,13 @@ export default function Home() {
     public: projects.filter(p => !p.is_private).length,
   };
 
+  const latestProjectForAura =
+    projects.length > 0
+      ? [...projects].sort(
+          (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        )[0]
+      : null;
+
   const tabs = [
     { id: 'all' as const, label: 'All', count: counts.all },
     { id: 'private' as const, label: 'Private', count: counts.private },
@@ -211,7 +218,11 @@ export default function Home() {
       <div className="min-h-screen bg-background flex w-full">
         {/* Desktop Sidebar - hidden on mobile */}
         <div className="hidden md:block">
-          <Sidebar activeView={activeView} onViewChange={setActiveView} />
+          <Sidebar
+            activeView={activeView}
+            onViewChange={setActiveView}
+            auraProjectId={latestProjectForAura?.id ?? null}
+          />
         </div>
 
         {/* Mobile Sidebar Drawer */}
@@ -220,6 +231,7 @@ export default function Home() {
           onClose={() => setIsMobileSidebarOpen(false)}
           activeView={activeView}
           onViewChange={setActiveView}
+          auraProjectId={latestProjectForAura?.id ?? null}
         />
 
         {/* Main Content */}

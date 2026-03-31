@@ -2,6 +2,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '@/integrations/supabase/client';
 import {
+  DEFAULT_EVALUATION_THRESHOLDS,
+  normalizeEvaluationThresholds,
+  normalizeStringArray,
+  type EvaluationMode,
+  type EvaluationThresholds,
+} from '@/lib/evaluation';
+import {
   TEXT_MODELS as STUDIO_TEXT_MODELS,
   IMAGE_MODELS as STUDIO_IMAGE_MODELS,
   VIDEO_MODELS as STUDIO_VIDEO_MODELS,
@@ -18,6 +25,10 @@ export interface ProjectSettings {
   storylineTextModel: string;
   storylineTextSettings: Record<string, unknown>;
   baseAudioModel?: string;
+  evaluationMode: EvaluationMode;
+  evaluationThresholds: EvaluationThresholds;
+  canonFacts: string[];
+  creativeConstraints: string[];
   updatedAt: Date;
 }
 
@@ -97,6 +108,15 @@ export const useProjectSettingsStore = create<ProjectSettingsState>()(
                     ? settingsData.storyline_text_settings
                     : {},
                 baseAudioModel: settingsData.base_audio_model,
+                evaluationMode:
+                  settingsData.evaluation_mode === 'off' ||
+                  settingsData.evaluation_mode === 'soft_gate' ||
+                  settingsData.evaluation_mode === 'hard_gate'
+                    ? settingsData.evaluation_mode
+                    : 'shadow',
+                evaluationThresholds: normalizeEvaluationThresholds(settingsData.evaluation_thresholds),
+                canonFacts: normalizeStringArray(settingsData.canon_facts),
+                creativeConstraints: normalizeStringArray(settingsData.creative_constraints),
                 updatedAt: new Date(settingsData.updated_at),
               },
               isLoading: false,
@@ -111,6 +131,10 @@ export const useProjectSettingsStore = create<ProjectSettingsState>()(
                 base_video_model: 'fal-ai/kling-video/o3/standard/text-to-video',
                 storyline_text_model: 'llama-3.3-70b-versatile',
                 storyline_text_settings: {},
+                evaluation_mode: 'shadow',
+                evaluation_thresholds: DEFAULT_EVALUATION_THRESHOLDS,
+                canon_facts: [],
+                creative_constraints: [],
               })
               .select()
               .single() as any);
@@ -130,6 +154,15 @@ export const useProjectSettingsStore = create<ProjectSettingsState>()(
                     typeof newSettingsData.storyline_text_settings === 'object'
                       ? newSettingsData.storyline_text_settings
                       : {},
+                  evaluationMode:
+                    newSettingsData.evaluation_mode === 'off' ||
+                    newSettingsData.evaluation_mode === 'soft_gate' ||
+                    newSettingsData.evaluation_mode === 'hard_gate'
+                      ? newSettingsData.evaluation_mode
+                      : 'shadow',
+                  evaluationThresholds: normalizeEvaluationThresholds(newSettingsData.evaluation_thresholds),
+                  canonFacts: normalizeStringArray(newSettingsData.canon_facts),
+                  creativeConstraints: normalizeStringArray(newSettingsData.creative_constraints),
                   updatedAt: new Date(newSettingsData.updated_at),
                 },
                 isLoading: false,
@@ -155,6 +188,18 @@ export const useProjectSettingsStore = create<ProjectSettingsState>()(
           }
           if (updates.storylineTextSettings !== undefined) {
             payload.storyline_text_settings = updates.storylineTextSettings;
+          }
+          if (updates.evaluationMode !== undefined) {
+            payload.evaluation_mode = updates.evaluationMode;
+          }
+          if (updates.evaluationThresholds !== undefined) {
+            payload.evaluation_thresholds = updates.evaluationThresholds;
+          }
+          if (updates.canonFacts !== undefined) {
+            payload.canon_facts = updates.canonFacts;
+          }
+          if (updates.creativeConstraints !== undefined) {
+            payload.creative_constraints = updates.creativeConstraints;
           }
 
           const { error } = await (supabase

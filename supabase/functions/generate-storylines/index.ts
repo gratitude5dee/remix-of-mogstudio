@@ -19,11 +19,15 @@ import {
   getQuickTitlePrompt
 } from './prompts.ts';
 import { 
-  saveStorylineData, 
   updateProjectSettings, 
   triggerCharacterImageGeneration,
   triggerShotVisualPromptGeneration 
 } from './database.ts';
+import {
+  createNarrativeArtifacts,
+  createPromptVersion,
+  enqueueStoryboardEvaluation,
+} from '../_shared/observability.ts';
 
 const DEFAULT_STORYLINE_MODEL = 'llama-3.3-70b-versatile';
 const ALLOWED_STORYLINE_MODELS = new Set([
@@ -212,6 +216,19 @@ serve(async (req) => {
         // ========== PHASE 1: INSTANT SKELETON ==========
         // Generate quick title/description for immediate user feedback
         console.log('Phase 1: Generating quick title for instant skeleton...');
+        const quickTitlePrompt = getQuickTitlePrompt(project);
+        const quickTitlePromptId = await createPromptVersion(supabaseClient, {
+          projectId: project_id,
+          stage: 'storyline_title',
+          authorType: 'system',
+          text: quickTitlePrompt,
+          sourceEntityType: 'project',
+          sourceEntityId: project_id,
+          metadata: {
+            model: resolvedStorylineModel.model,
+            temperature: storylineTemperature,
+          },
+        });
         
         const quickTitleResponse = await fetch(
           `${Deno.env.get('SUPABASE_URL')}/functions/v1/gemini-storyline-generation`,
@@ -220,7 +237,7 @@ serve(async (req) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               systemPrompt: 'You are a creative writer. Return valid JSON only.',
-              prompt: getQuickTitlePrompt(project),
+              prompt: quickTitlePrompt,
               model: resolvedStorylineModel.model,
               temperature: storylineTemperature
             }),
@@ -263,6 +280,21 @@ serve(async (req) => {
         // ========== PHASE 2: TRUE STREAMING ==========
         // Stream the full story narrative token-by-token
         console.log('Phase 2: Starting true Groq streaming for story narrative...');
+        const narrativePrompt = getStoryNarrativeUserPrompt(project);
+        const narrativePromptId = await createPromptVersion(supabaseClient, {
+          projectId: project_id,
+          stage: 'storyline_narrative',
+          authorType: 'system',
+          text: narrativePrompt,
+          sourceEntityType: 'storyline',
+          sourceEntityId: storyline_id,
+          parentPromptId: quickTitlePromptId,
+          metadata: {
+            model: resolvedStorylineModel.model,
+            temperature: storylineTemperature,
+            maxTokens: storylineMaxTokens,
+          },
+        });
         
         const streamResponse = await fetch(
           `${Deno.env.get('SUPABASE_URL')}/functions/v1/groq-stream`,
@@ -271,7 +303,7 @@ serve(async (req) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               systemPrompt: getStoryNarrativeSystemPrompt(),
-              prompt: getStoryNarrativeUserPrompt(project),
+              prompt: narrativePrompt,
               model: resolvedStorylineModel.model,
               temperature: storylineTemperature,
               maxTokens: storylineMaxTokens
@@ -303,6 +335,20 @@ serve(async (req) => {
         console.log('Phase 3: Generating structured scene data...');
         const storylineSystemPrompt = getStorylineSystemPrompt(generate_alternative);
         const storylineUserPrompt = getStorylineUserPrompt(project, generate_alternative, existingStorylines);
+        const structurePromptId = await createPromptVersion(supabaseClient, {
+          projectId: project_id,
+          stage: 'storyline_structure',
+          authorType: 'system',
+          text: storylineUserPrompt,
+          sourceEntityType: 'storyline',
+          sourceEntityId: storyline_id,
+          parentPromptId: narrativePromptId,
+          metadata: {
+            model: resolvedStorylineModel.model,
+            temperature: storylineTemperature,
+            generate_alternative,
+          },
+        });
         
         const { STORYLINE_RESPONSE_SCHEMA, ALTERNATIVE_STORYLINE_SCHEMA } = await import('./gemini-schemas.ts');
         const responseSchema = generate_alternative ? ALTERNATIVE_STORYLINE_SCHEMA : STORYLINE_RESPONSE_SCHEMA;
@@ -364,7 +410,8 @@ serve(async (req) => {
               description: scene.description,
               location: scene.location,
               lighting: scene.lighting,
-              weather: scene.weather
+              weather: scene.weather,
+              story_goal: scene.description,
             });
           
           await new Promise(resolve => setTimeout(resolve, 100)); // Smooth scene appearance
@@ -410,7 +457,16 @@ serve(async (req) => {
                     .insert({
                       project_id,
                       name: char.name,
-                      description: char.description
+                      description: char.description,
+                      identity_profile: {
+                        canon_facts: [char.description],
+                        movement_tags: [],
+                        voice_tags: [],
+                        wardrobe_tags: [],
+                        hairstyle_tags: [],
+                        body_shape_tags: [],
+                        face_refs: [],
+                      }
                     });
                   
                   await new Promise(resolve => setTimeout(resolve, 100));
@@ -434,11 +490,24 @@ serve(async (req) => {
         if (!generate_alternative && sceneBreakdown.length > 0) {
           const { data: scenesWithIds } = await supabaseClient
             .from('scenes')
-            .select('id, scene_number, title, description, location, lighting, emotional_tone, color_palette')
+            .select('id, scene_number, title, description, location, lighting, story_goal')
             .eq('storyline_id', storyline_id)
             .order('scene_number');
 
           if (scenesWithIds) {
+            await createNarrativeArtifacts(supabaseClient, {
+              projectId: project_id,
+              storylineId: storyline_id,
+              scenes: scenesWithIds.map((scene) => ({
+                id: scene.id,
+                scene_number: scene.scene_number,
+                title: scene.title,
+                description: scene.description,
+                story_goal: scene.story_goal,
+              })),
+              fullStory: fullStoryText,
+            });
+
             const shotsToInsert: any[] = [];
             
             scenesWithIds.forEach((scene, sceneIdx) => {
@@ -453,8 +522,8 @@ serve(async (req) => {
                 const sceneDesc = scene.description || sceneData?.description || 'the scene unfolds';
                 const location = scene.location || sceneData?.location || 'the location';
                 const lighting = scene.lighting || sceneData?.lighting || 'cinematic lighting';
-                const tone = scene.emotional_tone || sceneData?.emotional_tone || 'dramatic';
-                const palette = scene.color_palette || sceneData?.color_palette || 'cinematic color grading';
+                const tone = sceneData?.emotional_tone || 'dramatic';
+                const palette = sceneData?.color_palette || 'cinematic color grading';
                 
                 shotIdeas = [
                   {
@@ -493,6 +562,15 @@ serve(async (req) => {
                   shot_type: shotIdea.shot_type || 'medium',
                   prompt_idea: shotIdea.description,
                   visual_prompt: shotIdea.visual_prompt,
+                  shot_packet: {
+                    story_goal: scene.story_goal || scene.description || scene.title,
+                    camera_movement: shotIdea.camera_movement,
+                    composition_notes: shotIdea.composition_notes,
+                    continuity_refs: sceneIdx > 0 ? [`scene_${scenesWithIds[sceneIdx - 1].scene_number}`] : [],
+                    canon_constraints: [],
+                    style_bundle: { lighting: scene.lighting },
+                    camera_bundle: { movement: shotIdea.camera_movement },
+                  },
                   camera_movement: shotIdea.camera_movement,
                   duration_seconds: shotIdea.duration_seconds,
                   composition_notes: shotIdea.composition_notes,
@@ -505,12 +583,42 @@ serve(async (req) => {
               const { data: newShots } = await supabaseClient
                 .from('shots')
                 .insert(shotsToInsert)
-                .select('id');
+                .select('id, scene_id, visual_prompt');
               
               if (newShots) {
                 console.log(`Created ${newShots.length} shots`);
+                for (const shot of newShots) {
+                  await createPromptVersion(supabaseClient, {
+                    projectId: project_id,
+                    stage: 'shot_prompt',
+                    authorType: 'system',
+                    text: shot.visual_prompt || '',
+                    sourceEntityType: 'shot',
+                    sourceEntityId: shot.id,
+                    parentPromptId: structurePromptId,
+                    metadata: {
+                      storyline_id,
+                      scene_id: shot.scene_id,
+                    },
+                  });
+                }
                 await triggerShotVisualPromptGeneration(supabaseClient, newShots.map(s => s.id));
               }
+            }
+
+            await enqueueStoryboardEvaluation(supabaseClient, {
+              userId: user.id,
+              projectId: project_id,
+              targetType: 'storyline',
+              targetId: storyline_id,
+            });
+            for (const scene of scenesWithIds) {
+              await enqueueStoryboardEvaluation(supabaseClient, {
+                userId: user.id,
+                projectId: project_id,
+                targetType: 'scene',
+                targetId: scene.id,
+              });
             }
           }
         }

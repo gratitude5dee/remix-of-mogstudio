@@ -1,3 +1,5 @@
+import type { EvaluationMode, EvaluationThresholds } from '@/lib/evaluation';
+
 export type ProjectSetupTab = 'concept' | 'storyline' | 'settings' | 'breakdown';
 
 export type ProjectFormat =
@@ -93,6 +95,10 @@ export interface ProjectData {
   storylineTextSettings?: Record<string, unknown>;
   baseImageModel?: string;
   baseVideoModel?: string;
+  evaluationMode?: EvaluationMode;
+  evaluationThresholds?: EvaluationThresholds;
+  canonFacts?: string[];
+  creativeConstraints?: string[];
 }
 
 // Character type definition for reuse across components

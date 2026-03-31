@@ -4,6 +4,7 @@ import { Logo } from '@/components/ui/logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
 import { appRoutes } from '@/lib/routes';
+import { useProjectContext } from './ProjectContext';
 
 interface ProjectSetupHeaderProps {
   currentStep?: number;
@@ -12,6 +13,7 @@ interface ProjectSetupHeaderProps {
 
 const ProjectSetupHeader = ({ currentStep = 1, totalSteps = 4 }: ProjectSetupHeaderProps) => {
   const navigate = useNavigate();
+  const { projectId } = useProjectContext();
   
   const handleBack = () => {
     navigate(appRoutes.home);
@@ -51,6 +53,15 @@ const ProjectSetupHeader = ({ currentStep = 1, totalSteps = 4 }: ProjectSetupHea
         </div>
         
         <div className="flex items-center gap-3">
+          {projectId ? (
+            <Button
+              variant="outline"
+              className="border-primary/30 bg-transparent text-primary hover:bg-primary/10"
+              onClick={() => navigate(appRoutes.projects.observability(projectId))}
+            >
+              Observability
+            </Button>
+          ) : null}
           <ThemeToggle />
           <Button variant="ghost" className="bg-transparent hover:bg-primary/10 text-primary">
             Upgrade

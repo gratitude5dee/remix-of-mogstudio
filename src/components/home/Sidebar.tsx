@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { TextAnimate } from '@/components/ui/text-animate';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { useSidebar } from '@/contexts/SidebarContext';
+import { appRoutes } from '@/lib/routes';
 import {
   Tooltip,
   TooltipContent,
@@ -21,9 +22,10 @@ import {
 interface SidebarProps {
   activeView: string;
   onViewChange: (view: string) => void;
+  auraProjectId?: string | null;
 }
 
-export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
+export const Sidebar = ({ activeView, onViewChange, auraProjectId }: SidebarProps) => {
   const [favoritesOpen, setFavoritesOpen] = useState(true);
   const { isCollapsed, setIsCollapsed } = useSidebar();
   const navigate = useNavigate();
@@ -40,6 +42,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
 
   const mainNavItems = [
     { id: 'all', label: 'All Projects', icon: FolderKanban },
+    { id: 'aura', label: 'Aura', icon: Sparkles, isRoute: true },
     { id: 'kanvas', label: 'Kanvas', icon: Layers, isRoute: true, showBadge: true },
   ];
 
@@ -72,7 +75,17 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
         whileTap={{ scale: 0.98 }}
         onClick={() => {
           if (item.isRoute) {
-            navigate('/kanvas');
+            if (item.id === 'aura') {
+              if (auraProjectId) {
+                navigate(appRoutes.projects.observability(auraProjectId));
+              } else {
+                toast.info('Create a project first to open Aura observability.');
+                navigate(appRoutes.projectSetup);
+              }
+              return;
+            }
+
+            navigate(appRoutes.kanvas);
           } else {
             onViewChange(item.id);
           }
