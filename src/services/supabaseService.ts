@@ -974,7 +974,7 @@ export const storylineService = {
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      return data || [];
+      return (data as unknown as Storyline[]) || [];
     } catch (error) {
       handleError(error, 'listing storylines');
       return [];
