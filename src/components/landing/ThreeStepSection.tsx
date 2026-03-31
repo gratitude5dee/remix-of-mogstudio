@@ -10,7 +10,7 @@ const steps = [
       <div className="space-y-2 p-3">
         {['Brand concept A', 'Video treatment', 'Visual identity'].map((item, i) => (
           <div key={i} className="flex items-center gap-2 bg-white/[0.04] rounded-lg px-3 py-2 border border-white/[0.06]">
-            <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
+            <div className="w-2 h-2 rounded-full bg-orange-400/50" />
             <span className="text-[10px] text-white/40 font-mono">{item}</span>
           </div>
         ))}
