@@ -112,7 +112,7 @@ export const AuraProjectList = ({ projects }: AuraProjectListProps) => {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{project.title}</p>
                 <p className="text-xs text-muted-foreground">
-                  {project.format || 'Video'} · Updated {new Date(project.updated_at).toLocaleDateString()}
+                  {(project as any).format || 'Video'} · Updated {new Date(project.updated_at).toLocaleDateString()}
                 </p>
               </div>
 

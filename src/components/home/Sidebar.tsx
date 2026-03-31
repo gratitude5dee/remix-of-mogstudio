@@ -75,16 +75,6 @@ export const Sidebar = ({ activeView, onViewChange, auraProjectId }: SidebarProp
         whileTap={{ scale: 0.98 }}
         onClick={() => {
           if (item.isRoute) {
-            if (item.id === 'aura') {
-              if (auraProjectId) {
-                navigate(appRoutes.projects.observability(auraProjectId));
-              } else {
-                toast.info('Create a project first to open Aura observability.');
-                navigate(appRoutes.projectSetup);
-              }
-              return;
-            }
-
             navigate(appRoutes.kanvas);
           } else {
             onViewChange(item.id);
