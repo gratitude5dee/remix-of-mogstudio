@@ -94,13 +94,13 @@ export function WorkflowGeneratorTab({
   return (
     <div
       className={cn(
-        'flex overflow-hidden border border-white/10 bg-[#0f0f0f]/98 text-white shadow-[0_24px_72px_rgba(0,0,0,0.38)]',
+        'flex overflow-hidden border border-[rgba(249,115,22,0.12)] bg-[#0f0f0f]/98 text-white shadow-[0_24px_72px_rgba(0,0,0,0.38)]',
         isPopup ? 'rounded-[30px] bg-[#111111]/98 backdrop-blur-2xl' : 'rounded-[28px]'
       )}
       style={maxHeight ? { maxHeight } : undefined}
     >
       <div className="flex min-h-0 flex-1 flex-col">
-      <div className={cn('border-b border-white/8', isPopup ? 'px-5 py-4' : 'px-5 py-4')}>
+      <div className={cn('border-b border-[rgba(249,115,22,0.10)]', isPopup ? 'px-5 py-4' : 'px-5 py-4')}>
         <div className="flex items-start gap-3">
           <motion.div
             className={cn(
@@ -124,7 +124,7 @@ export function WorkflowGeneratorTab({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-[#141414] text-zinc-400 transition-colors hover:border-white/15 hover:bg-[#1b1b1b] hover:text-white"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(249,115,22,0.12)] bg-[#141414] text-zinc-400 transition-colors hover:border-[rgba(249,115,22,0.20)] hover:bg-[#1b1b1b] hover:text-white"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -133,7 +133,7 @@ export function WorkflowGeneratorTab({
 
             {isPopup ? (
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-white/10 bg-[#151515] px-3 py-1 text-[11px] text-zinc-300">
+                <span className="rounded-full border border-[rgba(249,115,22,0.12)] bg-[#151515] px-3 py-1 text-[11px] text-zinc-300">
                   New workflow
                 </span>
                 {selectedNodeLabel ? (
@@ -148,7 +148,7 @@ export function WorkflowGeneratorTab({
       </div>
 
       <div className={cn('min-h-0 flex-1 overflow-y-auto space-y-4', isPopup ? 'p-4' : 'p-5')}>
-        <div className={cn('border border-white/8 bg-[#121212]', isPopup ? 'rounded-[24px] p-4' : 'rounded-[22px] p-4')}>
+        <div className={cn('border border-[rgba(249,115,22,0.10)] bg-[#121212]', isPopup ? 'rounded-[24px] p-4' : 'rounded-[22px] p-4')}>
           <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-zinc-500">
             <Sparkles className="h-3.5 w-3.5" />
             <span>{isPopup ? 'Starter workflows' : 'Prompt'}</span>
@@ -165,10 +165,10 @@ export function WorkflowGeneratorTab({
                   whileHover={{ x: 4 }}
                   onClick={() => handleExampleClick(example.prompt)}
                   className={cn(
-                    'group flex w-full items-center gap-3 rounded-[18px] border border-white/8 bg-[#171717] px-3 py-3 text-left transition-colors hover:border-white/12 hover:bg-[#1b1b1b]'
+                    'group flex w-full items-center gap-3 rounded-[18px] border border-[rgba(249,115,22,0.10)] bg-[#171717] px-3 py-3 text-left transition-colors hover:border-[rgba(249,115,22,0.18)] hover:bg-[#1b1b1b]'
                   )}
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/8 bg-[#111111] text-zinc-300">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[rgba(249,115,22,0.10)] bg-[#111111] text-zinc-300">
                     <Icon className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -182,7 +182,7 @@ export function WorkflowGeneratorTab({
           </div>
         </div>
 
-        <div className={cn('border border-white/8 bg-[#121212]', isPopup ? 'rounded-[24px] p-4' : 'rounded-[22px] p-4')}>
+        <div className={cn('border border-[rgba(249,115,22,0.10)] bg-[#121212]', isPopup ? 'rounded-[24px] p-4' : 'rounded-[22px] p-4')}>
           <div className="mb-3 flex items-center justify-between">
             <div className="text-[11px] uppercase tracking-[0.22em] text-zinc-500">
               {isPopup ? 'Message' : 'Examples'}
@@ -203,7 +203,7 @@ export function WorkflowGeneratorTab({
               onBlur={handlePromptBlur}
               placeholder="Describe the workflow you want to create..."
               className={cn(
-                'w-full resize-none rounded-[20px] border border-white/10 bg-[#171717] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-0',
+                'w-full resize-none rounded-[20px] border border-[rgba(249,115,22,0.12)] bg-[#171717] px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-0',
                 isPopup ? 'min-h-[132px]' : 'min-h-[120px]'
               )}
               disabled={isGenerating}
@@ -218,7 +218,7 @@ export function WorkflowGeneratorTab({
           </div>
           {isPopup ? (
             <div className="mt-3 flex items-center gap-2 text-[11px] text-zinc-500">
-              <span className="rounded-full border border-white/8 bg-[#171717] px-2.5 py-1 text-zinc-300">
+              <span className="rounded-full border border-[rgba(249,115,22,0.10)] bg-[#171717] px-2.5 py-1 text-zinc-300">
                 Workflow only
               </span>
               <span>Uses your current canvas context</span>
@@ -240,7 +240,7 @@ export function WorkflowGeneratorTab({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-t border-white/8 px-5 py-4"
+            className="border-t border-[rgba(249,115,22,0.10)] px-5 py-4"
           >
             <div className="flex items-center gap-2 rounded-[18px] border border-[#f97316]/15 bg-[#1c1510] px-3 py-3 text-sm text-[#fdba74]">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -251,11 +251,11 @@ export function WorkflowGeneratorTab({
       </AnimatePresence>
 
       {!isPopup ? (
-        <div className="border-t border-white/8 px-5 py-3 text-center text-[11px] text-zinc-500">
+        <div className="border-t border-[rgba(249,115,22,0.10)] px-5 py-3 text-center text-[11px] text-zinc-500">
           Press <kbd className="rounded bg-[#171717] px-1.5 py-0.5 font-mono text-zinc-300">Enter</kbd> to generate
         </div>
       ) : (
-        <div className="border-t border-white/8 px-5 py-3 text-[11px] text-zinc-500">
+        <div className="border-t border-[rgba(249,115,22,0.10)] px-5 py-3 text-[11px] text-zinc-500">
           Starter workflows insert through the same Studio graph path as manual node creation.
         </div>
       )}
