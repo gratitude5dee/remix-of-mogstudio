@@ -521,7 +521,7 @@ export function StudioRightPanel({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.92 }}
             onClick={() => setIsCollapsed(false)}
-            className="flex h-full w-[58px] flex-col items-center justify-between overflow-hidden rounded-[26px] border border-white/10 bg-[#090909]/98 px-2 py-4 shadow-[-20px_0_64px_rgba(0,0,0,0.38)] backdrop-blur-2xl"
+            className="flex h-full w-[58px] flex-col items-center justify-between overflow-hidden rounded-[26px] border border-[rgba(249,115,22,0.12)] bg-[#090909]/98 px-2 py-4 shadow-[-20px_0_64px_rgba(0,0,0,0.38)] backdrop-blur-2xl"
             title={`Expand ${activeTabConfig.label}`}
             aria-label={`Expand ${activeTabConfig.label}`}
           >
