@@ -89,7 +89,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
       >
         {isActive && (
           <ShineBorder
-            shineColor="#FF6B4A"
+            shineColor="#f97316"
             borderWidth={1}
             duration={10}
           />
