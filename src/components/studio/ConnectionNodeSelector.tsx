@@ -65,7 +65,7 @@ export const ConnectionNodeSelector: React.FC<ConnectionNodeSelectorProps> = ({
     >
       <div
         className={cn(
-          'overflow-hidden rounded-[22px] border border-white/10 bg-[#111111]/97 shadow-[0_20px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all',
+          'overflow-hidden rounded-[22px] border border-[rgba(249,115,22,0.15)] bg-[#111111]/97 shadow-[0_0_12px_rgba(249,115,22,0.06),0_20px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all',
           isTransforming && 'shadow-[0_0_30px_rgba(249,115,22,0.18)]'
         )}
       >
