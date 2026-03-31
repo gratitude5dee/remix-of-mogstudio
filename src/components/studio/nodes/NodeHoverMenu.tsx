@@ -145,7 +145,7 @@ export const NodeHoverMenu = ({
     <AnimatePresence>
       {isVisible ? (
         <div
-          className="absolute left-1/2 top-0 z-30 -translate-x-1/2 -translate-y-[calc(100%+10px)]"
+          className="absolute left-1/2 top-0 z-30 -translate-x-1/2 -translate-y-[calc(100%+5px)]"
           onMouseDown={(event) => event.stopPropagation()}
           onClick={(event) => event.stopPropagation()}
         >

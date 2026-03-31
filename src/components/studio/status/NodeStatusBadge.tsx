@@ -19,6 +19,7 @@ export const NodeStatusBadge: React.FC<NodeStatusBadgeProps> = ({
   estimatedTime,
   className
 }) => {
+  if (status === 'idle') return null;
   const getStatusConfig = () => {
     switch (status) {
       case 'queued':
