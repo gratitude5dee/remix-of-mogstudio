@@ -4151,6 +4151,13 @@ export type Database = {
             referencedRelation: "mog_agent_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mog_rate_limits_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "mog_agent_profiles_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mrkt_activations: {
@@ -9253,6 +9260,60 @@ export type Database = {
           is_verified?: boolean | null
           moltbook_id?: string | null
           name?: string | null
+          updated_at?: string | null
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      mog_agent_profiles_public: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          description: string | null
+          follower_count: number | null
+          following_count: number | null
+          id: string | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          karma: number | null
+          last_active_at: string | null
+          moltbook_id: string | null
+          name: string | null
+          post_count: number | null
+          updated_at: string | null
+          wallet_address: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          follower_count?: number | null
+          following_count?: number | null
+          id?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          karma?: number | null
+          last_active_at?: string | null
+          moltbook_id?: string | null
+          name?: string | null
+          post_count?: number | null
+          updated_at?: string | null
+          wallet_address?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          follower_count?: number | null
+          following_count?: number | null
+          id?: string | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          karma?: number | null
+          last_active_at?: string | null
+          moltbook_id?: string | null
+          name?: string | null
+          post_count?: number | null
           updated_at?: string | null
           wallet_address?: string | null
         }
