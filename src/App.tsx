@@ -10,6 +10,7 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/providers/AuthProvider";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PerfShell from "@/components/perf/PerfShell";
+import { StudioErrorBoundary } from "@/components/studio/StudioErrorBoundary";
 import CustomCursor from "@/components/CustomCursor";
 import { CursorLoadingProvider, useCursorLoading } from "@/contexts/CursorLoadingContext";
 import { SidebarProvider } from "@/contexts/SidebarContext";
