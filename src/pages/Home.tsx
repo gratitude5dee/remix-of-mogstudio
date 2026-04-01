@@ -257,7 +257,6 @@ export default function Home() {
                     transition={{ delay: 0.3, type: "spring" }}
                     className="text-lg"
                   >
-                    📊
                   </motion.span>
                 </div>
                 <div className="h-5 w-px bg-[rgba(249,115,22,0.1)]" />
