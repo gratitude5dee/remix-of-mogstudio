@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Aperture,
@@ -692,6 +692,60 @@ function WorldviewCanvas({
 }
 
 // ---------------------------------------------------------------------------
+// SparkErrorBoundary — catches WASM/WebGL crashes in the 3D viewer
+// ---------------------------------------------------------------------------
+
+interface SparkErrorBoundaryProps {
+  viewerUrl?: string;
+  fallbackImageUrl?: string;
+  children: React.ReactNode;
+}
+
+interface SparkErrorBoundaryState {
+  hasError: boolean;
+}
+
+class SparkErrorBoundary extends React.Component<SparkErrorBoundaryProps, SparkErrorBoundaryState> {
+  constructor(props: SparkErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): SparkErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.warn('SparkErrorBoundary caught:', error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      const { viewerUrl, fallbackImageUrl } = this.props;
+      if (viewerUrl) {
+        return (
+          <iframe
+            src={viewerUrl}
+            title="World Viewer (fallback)"
+            className="absolute inset-0 h-full w-full border-0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope"
+          />
+        );
+      }
+      if (fallbackImageUrl) {
+        return <img src={fallbackImageUrl} alt="World" className="absolute inset-0 h-full w-full object-cover" />;
+      }
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <p className="text-sm text-zinc-400">3D viewer unavailable</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // GSplatViewer — World viewer mode with camera HUD and capture
 // ---------------------------------------------------------------------------
 
@@ -800,14 +854,16 @@ function GSplatViewer({
       className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-zinc-700/40 bg-black"
     >
       {/* SparkJS Gaussian Splat Viewer with fallbacks */}
-      <SparkSplatViewer
-        ref={sparkRef}
-        splatUrl={splatUrl}
-        viewerUrl={viewerUrl}
-        fallbackImageUrl={fallbackImageUrl}
-        displayName={world?.displayName}
-        className="absolute inset-0 h-full w-full"
-      />
+      <SparkErrorBoundary viewerUrl={viewerUrl} fallbackImageUrl={fallbackImageUrl}>
+        <SparkSplatViewer
+          ref={sparkRef}
+          splatUrl={splatUrl}
+          viewerUrl={viewerUrl}
+          fallbackImageUrl={fallbackImageUrl}
+          displayName={world?.displayName}
+          className="absolute inset-0 h-full w-full"
+        />
+      </SparkErrorBoundary>
 
       {/* Camera HUD — top-left */}
       <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">

@@ -58,6 +58,20 @@ export const SparkSplatViewer = forwardRef<
 
     let cancelled = false;
     let animId: number;
+
+    // Catch async WASM failures that escape try/catch
+    const handleUnhandledRejection = (e: PromiseRejectionEvent) => {
+      const msg = String(e.reason?.message ?? e.reason ?? '');
+      if (msg.includes('wasm') || msg.includes('WASM') || msg.includes('sparkjs') || msg.includes('SparkRenderer')) {
+        console.warn('Caught unhandled WASM rejection:', e.reason);
+        if (!cancelled) {
+          setWasmFailed(true);
+          setLoading(false);
+        }
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let renderer: any;
     let resizeObserver: ResizeObserver;
@@ -214,6 +228,7 @@ export const SparkSplatViewer = forwardRef<
       if (animId) cancelAnimationFrame(animId);
       resizeObserver?.disconnect();
       renderer?.dispose?.();
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, [splatUrl]);
 

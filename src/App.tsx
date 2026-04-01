@@ -10,6 +10,7 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/providers/AuthProvider";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PerfShell from "@/components/perf/PerfShell";
+import { StudioErrorBoundary } from "@/components/studio/StudioErrorBoundary";
 import CustomCursor from "@/components/CustomCursor";
 import { CursorLoadingProvider, useCursorLoading } from "@/contexts/CursorLoadingContext";
 import { SidebarProvider } from "@/contexts/SidebarContext";
@@ -88,7 +89,7 @@ const App = () => {
             <AuthProvider>
               <SidebarProvider>
               <CursorLoadingProvider>
-                <LoadingScreen isLoading={isLoading} message="Initializing MOG Studio..." />
+                <LoadingScreen isLoading={isLoading} message="Initializing WZRD Studio..." />
                 <CursorWrapper />
                 <Toaster />
                 <Sonner />
@@ -230,7 +231,9 @@ const App = () => {
                       path={appRoutes.kanvas}
                       element={
                         <ProtectedRoute>
-                          <KanvasPage />
+                          <StudioErrorBoundary fallbackTitle="Kanvas encountered an error" fallbackDescription="The multi-studio canvas hit an unexpected issue">
+                            <KanvasPage />
+                          </StudioErrorBoundary>
                         </ProtectedRoute>
                       }
                     />

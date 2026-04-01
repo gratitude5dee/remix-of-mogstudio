@@ -804,15 +804,28 @@ export default function KanvasPage() {
     async function loadInitialState() {
       setPageLoading(true);
       try {
-        const [loadedAssets, loadedJobs, ...modelGroups] = await Promise.all([
+        const studioKeys = KANVAS_STUDIO_ORDER.filter((s) => s !== "worldview");
+        const [assetsResult, jobsResult, ...modelResults] = await Promise.allSettled([
           listKanvasAssets(),
           listKanvasJobs(),
-          ...KANVAS_STUDIO_ORDER.filter((s) => s !== "worldview").map((entry) => fetchKanvasModels(entry)),
+          ...studioKeys.map((entry) => fetchKanvasModels(entry)),
         ]);
 
         if (cancelled) {
           return;
         }
+
+        const loadedAssets = assetsResult.status === "fulfilled" ? assetsResult.value : [];
+        const loadedJobs = jobsResult.status === "fulfilled" ? jobsResult.value : [];
+
+        if (assetsResult.status === "rejected") console.warn("Failed to load assets:", assetsResult.reason);
+        if (jobsResult.status === "rejected") console.warn("Failed to load jobs:", jobsResult.reason);
+
+        const modelGroups = modelResults.map((r, i) => {
+          if (r.status === "fulfilled") return r.value;
+          console.warn(`Failed to load models for ${studioKeys[i]}:`, r.reason);
+          return [] as KanvasModel[];
+        });
 
         setAssets(loadedAssets);
         setJobs(loadedJobs);
@@ -925,12 +938,19 @@ export default function KanvasPage() {
     }
 
     const intervalId = window.setInterval(() => {
-      void Promise.all(activeJobs.slice(0, 5).map((job) => refreshKanvasJobStatus(job.id)))
-        .then((updatedJobs) => {
-          setJobs((current) => mergeJobs(current, updatedJobs));
-        })
-        .catch((error) => {
-          console.error("Failed to refresh Kanvas jobs:", error);
+      void Promise.allSettled(activeJobs.slice(0, 5).map((job) => refreshKanvasJobStatus(job.id)))
+        .then((results) => {
+          const updatedJobs = results
+            .filter((r): r is PromiseFulfilledResult<KanvasJob> => r.status === "fulfilled")
+            .map((r) => r.value);
+          if (updatedJobs.length > 0) {
+            setJobs((current) => mergeJobs(current, updatedJobs));
+          }
+          results.forEach((r, i) => {
+            if (r.status === "rejected") {
+              console.warn(`Failed to refresh job ${activeJobs[i]?.id}:`, r.reason);
+            }
+          });
         });
     }, 4000);
 
@@ -1118,7 +1138,7 @@ export default function KanvasPage() {
               </Button>
               <div className="hidden rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-2 md:block">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
-                  MogStudio
+                  WZRD Studio
                 </p>
                 <p className="text-sm font-semibold text-white">Kanvas Multi-Studio</p>
               </div>
