@@ -120,7 +120,7 @@ function mergeJobs(current: KanvasJob[], incoming: KanvasJob[]): KanvasJob[] {
     map.set(job.id, job);
   }
   return Array.from(map.values()).sort((left, right) =>
-    right.createdAt.localeCompare(left.createdAt)
+    (right.createdAt ?? '').localeCompare(left.createdAt ?? '')
   );
 }
 
@@ -417,6 +417,8 @@ function AssetSelector({
                         src={previewUrl}
                         alt={getAssetTitle(asset)}
                         className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : asset.asset_type === "video" && previewUrl ? (
                       <video
@@ -503,6 +505,8 @@ function HistoryRail({
                           src={previewUrl}
                           alt={`${job.studio} result`}
                           className="h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : job.resultPayload?.mediaType === "video" && previewUrl ? (
                         <video src={previewUrl} muted className="h-full w-full object-cover" />
@@ -613,6 +617,7 @@ function PreviewStage({
               src={previewUrl}
               alt={`${studio} output`}
               className="aspect-[16/9] w-full object-cover"
+              decoding="async"
             />
           ) : previewUrl && selectedJob?.resultPayload?.mediaType === "video" ? (
             <video
@@ -1602,6 +1607,8 @@ export default function KanvasPage() {
                                   src={previewUrl}
                                   alt={getAssetTitle(asset)}
                                   className="h-full w-full object-cover"
+                                  loading="lazy"
+                                  decoding="async"
                                 />
                               ) : asset.asset_type === "video" && previewUrl ? (
                                 <video src={previewUrl} muted className="h-full w-full object-cover" />
