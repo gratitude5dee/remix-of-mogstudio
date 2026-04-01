@@ -120,7 +120,7 @@ function mergeJobs(current: KanvasJob[], incoming: KanvasJob[]): KanvasJob[] {
     map.set(job.id, job);
   }
   return Array.from(map.values()).sort((left, right) =>
-    right.createdAt.localeCompare(left.createdAt)
+    (right.createdAt ?? '').localeCompare(left.createdAt ?? '')
   );
 }
 
