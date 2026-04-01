@@ -39,7 +39,8 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
     style: false,
     clothing: false,
     objects: false,
-    sound: false
+    sound: false,
+    worldview: false
   });
 
   useEffect(() => {
