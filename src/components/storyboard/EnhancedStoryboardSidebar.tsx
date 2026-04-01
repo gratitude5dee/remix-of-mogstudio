@@ -208,6 +208,13 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
             isOpen={openSections.sound}
             onToggle={() => toggleSection('sound')}
           />
+
+          {/* Worldview Section */}
+          <WorldviewSidebarSection
+            sceneId={sceneId}
+            isOpen={openSections.worldview}
+            onToggle={() => toggleSection('worldview')}
+          />
         </div>
       </ScrollArea>
     </div>
