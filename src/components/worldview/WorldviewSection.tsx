@@ -692,6 +692,60 @@ function WorldviewCanvas({
 }
 
 // ---------------------------------------------------------------------------
+// SparkErrorBoundary — catches WASM/WebGL crashes in the 3D viewer
+// ---------------------------------------------------------------------------
+
+interface SparkErrorBoundaryProps {
+  viewerUrl?: string;
+  fallbackImageUrl?: string;
+  children: React.ReactNode;
+}
+
+interface SparkErrorBoundaryState {
+  hasError: boolean;
+}
+
+class SparkErrorBoundary extends React.Component<SparkErrorBoundaryProps, SparkErrorBoundaryState> {
+  constructor(props: SparkErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): SparkErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.warn('SparkErrorBoundary caught:', error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      const { viewerUrl, fallbackImageUrl } = this.props;
+      if (viewerUrl) {
+        return (
+          <iframe
+            src={viewerUrl}
+            title="World Viewer (fallback)"
+            className="absolute inset-0 h-full w-full border-0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope"
+          />
+        );
+      }
+      if (fallbackImageUrl) {
+        return <img src={fallbackImageUrl} alt="World" className="absolute inset-0 h-full w-full object-cover" />;
+      }
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <p className="text-sm text-zinc-400">3D viewer unavailable</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // GSplatViewer — World viewer mode with camera HUD and capture
 // ---------------------------------------------------------------------------
 
