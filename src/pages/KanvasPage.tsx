@@ -938,12 +938,19 @@ export default function KanvasPage() {
     }
 
     const intervalId = window.setInterval(() => {
-      void Promise.all(activeJobs.slice(0, 5).map((job) => refreshKanvasJobStatus(job.id)))
-        .then((updatedJobs) => {
-          setJobs((current) => mergeJobs(current, updatedJobs));
-        })
-        .catch((error) => {
-          console.error("Failed to refresh Kanvas jobs:", error);
+      void Promise.allSettled(activeJobs.slice(0, 5).map((job) => refreshKanvasJobStatus(job.id)))
+        .then((results) => {
+          const updatedJobs = results
+            .filter((r): r is PromiseFulfilledResult<KanvasJob> => r.status === "fulfilled")
+            .map((r) => r.value);
+          if (updatedJobs.length > 0) {
+            setJobs((current) => mergeJobs(current, updatedJobs));
+          }
+          results.forEach((r, i) => {
+            if (r.status === "rejected") {
+              console.warn(`Failed to refresh job ${activeJobs[i]?.id}:`, r.reason);
+            }
+          });
         });
     }, 4000);
 
