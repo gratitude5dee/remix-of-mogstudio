@@ -103,7 +103,7 @@ const Login = () => {
               <AnimatedLogo size="lg" showVersion={true} autoplay={true} delay={0.3} />
               <div className="text-center space-y-2">
                 <h1 className="text-[22px] font-semibold tracking-[-0.02em] text-foreground">
-                  Welcome to <span className="bg-gradient-to-r from-[hsl(var(--glow-primary))] to-[hsl(var(--glow-secondary))] bg-clip-text text-transparent">MOG Studio</span>
+                  Welcome to <span className="bg-gradient-to-r from-[hsl(var(--glow-primary))] to-[hsl(var(--glow-secondary))] bg-clip-text text-transparent">WZRD Studio</span>
                 </h1>
                 <p className="text-[13px] text-muted-foreground leading-relaxed">
                   Create cinematic AI-powered content
