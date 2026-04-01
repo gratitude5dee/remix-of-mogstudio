@@ -854,14 +854,16 @@ function GSplatViewer({
       className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-zinc-700/40 bg-black"
     >
       {/* SparkJS Gaussian Splat Viewer with fallbacks */}
-      <SparkSplatViewer
-        ref={sparkRef}
-        splatUrl={splatUrl}
-        viewerUrl={viewerUrl}
-        fallbackImageUrl={fallbackImageUrl}
-        displayName={world?.displayName}
-        className="absolute inset-0 h-full w-full"
-      />
+      <SparkErrorBoundary viewerUrl={viewerUrl} fallbackImageUrl={fallbackImageUrl}>
+        <SparkSplatViewer
+          ref={sparkRef}
+          splatUrl={splatUrl}
+          viewerUrl={viewerUrl}
+          fallbackImageUrl={fallbackImageUrl}
+          displayName={world?.displayName}
+          className="absolute inset-0 h-full w-full"
+        />
+      </SparkErrorBoundary>
 
       {/* Camera HUD — top-left */}
       <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
