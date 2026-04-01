@@ -9,6 +9,7 @@ import { LocationSection } from '@/components/timeline/sections/LocationSection'
 import { ClothingSection } from '@/components/timeline/sections/ClothingSection';
 import { ObjectSubjectSection } from '@/components/timeline/sections/ObjectSubjectSection';
 import { SoundSection } from '@/components/timeline/sections/SoundSection';
+import { WorldviewSidebarSection } from '@/components/timeline/sections/WorldviewSidebarSection';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, FileCode } from 'lucide-react';
 
