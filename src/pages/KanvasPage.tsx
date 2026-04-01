@@ -804,15 +804,28 @@ export default function KanvasPage() {
     async function loadInitialState() {
       setPageLoading(true);
       try {
-        const [loadedAssets, loadedJobs, ...modelGroups] = await Promise.all([
+        const studioKeys = KANVAS_STUDIO_ORDER.filter((s) => s !== "worldview");
+        const [assetsResult, jobsResult, ...modelResults] = await Promise.allSettled([
           listKanvasAssets(),
           listKanvasJobs(),
-          ...KANVAS_STUDIO_ORDER.filter((s) => s !== "worldview").map((entry) => fetchKanvasModels(entry)),
+          ...studioKeys.map((entry) => fetchKanvasModels(entry)),
         ]);
 
         if (cancelled) {
           return;
         }
+
+        const loadedAssets = assetsResult.status === "fulfilled" ? assetsResult.value : [];
+        const loadedJobs = jobsResult.status === "fulfilled" ? jobsResult.value : [];
+
+        if (assetsResult.status === "rejected") console.warn("Failed to load assets:", assetsResult.reason);
+        if (jobsResult.status === "rejected") console.warn("Failed to load jobs:", jobsResult.reason);
+
+        const modelGroups = modelResults.map((r, i) => {
+          if (r.status === "fulfilled") return r.value;
+          console.warn(`Failed to load models for ${studioKeys[i]}:`, r.reason);
+          return [] as KanvasModel[];
+        });
 
         setAssets(loadedAssets);
         setJobs(loadedJobs);
