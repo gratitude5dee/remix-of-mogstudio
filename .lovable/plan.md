@@ -1,27 +1,51 @@
 
 
-# Fix Upside-Down Marble Model in SparkSplatViewer
+# Add "Worldview" Section to Timeline Sidebar
 
-## Problem
-The Gaussian splat model loaded via SparkJS renders upside-down. This is a common issue with splat files exported from certain pipelines — the Y-axis convention differs (Z-up vs Y-up).
+## Overview
+Add a new collapsible "Worldview" section below "Sound & Audio" in the timeline left navbar. It will contain a "Generate Worldview" button that opens the same WorldviewSection UI from `/kanvas`. Once a world is generated, a preview thumbnail displays inline in the sidebar.
 
-## Fix
+## Plan
 
-**File: `src/components/worldview/SparkSplatViewer.tsx`**
+### 1. Create `WorldviewSidebarSection` component
+**New file: `src/components/timeline/sections/WorldviewSidebarSection.tsx`**
 
-After the splat mesh is added to the scene (line 142), rotate it 180° around the X-axis to flip it right-side up:
+- Follows the same collapsible pattern as `SoundSection` (Collapsible + motion + same styling)
+- Props: `sceneId`, `isOpen`, `onToggle` (matching existing section interface)
+- Contains a "Generate Worldview" button that opens a Dialog/Sheet with `<WorldviewSection />` embedded
+- Uses `useWorldviewStore` to check if an active world exists — if so, displays a thumbnail preview (the world's `assets.thumbnailUrl` or `assets.panoramaUrl`) inline
+- Globe2 icon with amber/orange accent color to match the existing Worldview branding
 
-```ts
-scene.add(splatMesh as unknown as import('three').Object3D);
-// Flip the splat upright — splat files often use Z-up convention
-(splatMesh as unknown as import('three').Object3D).rotation.x = Math.PI;
+**Key structure:**
+```text
+[Collapsible Trigger: Globe2 icon + "Worldview" label]
+  └─ [CollapsibleContent]
+       ├─ If world exists: thumbnail preview + "View World" button
+       └─ If no world: "Generate Worldview" button
+            └─ Opens Dialog containing <WorldviewSection />
 ```
 
-This single-line rotation correction will orient the world correctly so users can navigate through the scene naturally.
+### 2. Integrate into `EnhancedStoryboardSidebar`
+**File: `src/components/storyboard/EnhancedStoryboardSidebar.tsx`**
+
+- Import `WorldviewSidebarSection`
+- Add `worldview: false` to `openSections` state
+- Render `<WorldviewSidebarSection>` after `<SoundSection>` (line ~208)
+
+### 3. Dialog for full Worldview UI
+The "Generate Worldview" button opens a large Dialog (or Sheet) that renders the full `<WorldviewSection />` component from `src/components/worldview/WorldviewSection.tsx`. This reuses the entire world generation pipeline already built for `/kanvas`.
+
+## Technical Details
+
+- Reuses `useWorldviewStore` (Zustand) — same store powers both `/kanvas` and this sidebar
+- The `WorldviewSection` component is self-contained with its own scene management, so embedding it in a Dialog works without additional wiring
+- Thumbnail preview uses the `World.assets.thumbnailUrl` or `panoramaUrl` from the store
+- The Dialog will use `max-w-5xl` sizing to give the 3D viewer adequate space
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/worldview/SparkSplatViewer.tsx` | Add `rotation.x = Math.PI` to the splat mesh after adding to scene |
+| `src/components/timeline/sections/WorldviewSidebarSection.tsx` | **New** — Collapsible section with generate button + preview |
+| `src/components/storyboard/EnhancedStoryboardSidebar.tsx` | Import & render WorldviewSidebarSection after SoundSection |
 
