@@ -1,48 +1,42 @@
 
 
-# Fix KanvasPage `localeCompare` Crash & Improve Image Loading
+# Fix Kanvas Image Rendering After Generation
 
 ## Root Cause
 
-The `mergeJobs` function on line 122-124 of `KanvasPage.tsx` sorts jobs using:
+The `normalizeKanvasJobRow` function in `src/features/kanvas/helpers.ts` expects **snake_case** database column names (`row.result_payload`, `row.result_url`, `row.created_at`, etc.). This works for the initial `listKanvasJobs()` call which reads directly from the Supabase DB.
+
+However, `submitKanvasJob` and `refreshKanvasJobStatus` return data from edge functions that have already been mapped to **camelCase** (`resultPayload`, `resultUrl`, `createdAt`). When `normalizeKanvasJobRow` reads `row.result_payload` on a camelCase object, it gets `undefined`, producing `resultPayload: null`. The preview then shows "Ready to generate" because there's no result URL to display.
+
+This affects **all models** — the first-loaded jobs from the DB show fine, but any newly generated or polled job never renders its output.
+
+## Fix
+
+### Step 1: Make `normalizeKanvasJobRow` handle both formats
+**File: `src/features/kanvas/helpers.ts`**
+
+Update the normalizer to read both snake_case and camelCase property names with fallback logic:
+
 ```ts
-right.createdAt.localeCompare(left.createdAt)
+// For each field, try snake_case first (DB rows), then camelCase (edge function responses)
+const rawResultPayload = row.result_payload ?? row.resultPayload;
+const rawResultUrl = row.result_url ?? row.resultUrl;
+const rawCreatedAt = row.created_at ?? row.createdAt;
+const rawUpdatedAt = row.updated_at ?? row.updatedAt;
+// ... same pattern for all fields
 ```
 
-When a job comes back from the backend with `created_at` as `null` or `undefined`, `normalizeKanvasJobRow` maps it directly (`createdAt: row.created_at`), producing an undefined `createdAt`. The `.localeCompare()` call then throws.
+This single change fixes the entire rendering pipeline because `submitKanvasJob`, `refreshKanvasJobStatus`, and `listKanvasJobs` all funnel through this normalizer.
 
-## Plan
-
-### 1. Fix the `mergeJobs` sort crash
-**File: `src/pages/KanvasPage.tsx` (lines 122-124)**
-
-Add null-safe sorting:
-```ts
-return Array.from(map.values()).sort((left, right) =>
-  (right.createdAt ?? '').localeCompare(left.createdAt ?? '')
-);
-```
-
-### 2. Add defensive default in `normalizeKanvasJobRow`
-**File: `src/features/kanvas/helpers.ts` (line 330)**
-
-Ensure `createdAt` always has a fallback:
-```ts
-createdAt: row.created_at ?? new Date().toISOString(),
-updatedAt: row.updated_at ?? new Date().toISOString(),
-```
-
-### 3. Improve image rendering performance
+### Step 2: Verify `mergeAssets` sort safety
 **File: `src/pages/KanvasPage.tsx`**
 
-Add `loading="lazy"` and `decoding="async"` to the 4 `<img>` tags (asset thumbnails at lines ~416, ~502, ~1601, and the main preview at ~612) to reduce blocking during render:
-- Thumbnail images: add `loading="lazy" decoding="async"`
-- Main preview image: add `decoding="async"` (keep eager loading since it's above the fold)
+The `mergeAssets` function (line 112-114) also uses `.localeCompare` on `created_at` without null-safety. Apply the same fallback pattern used in `mergeJobs`.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/pages/KanvasPage.tsx` | Null-safe `mergeJobs` sort; add `loading`/`decoding` attrs to images |
-| `src/features/kanvas/helpers.ts` | Fallback defaults for `createdAt`/`updatedAt` in normalizer |
+| `src/features/kanvas/helpers.ts` | Dual snake_case/camelCase field resolution in `normalizeKanvasJobRow` |
+| `src/pages/KanvasPage.tsx` | Null-safe `mergeAssets` sort |
 
