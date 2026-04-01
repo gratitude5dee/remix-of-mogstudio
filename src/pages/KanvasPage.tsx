@@ -617,6 +617,7 @@ function PreviewStage({
               src={previewUrl}
               alt={`${studio} output`}
               className="aspect-[16/9] w-full object-cover"
+              decoding="async"
             />
           ) : previewUrl && selectedJob?.resultPayload?.mediaType === "video" ? (
             <video
