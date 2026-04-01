@@ -327,10 +327,10 @@ export function normalizeKanvasJobRow(row: GenerationJobRow): KanvasJob {
     config: asRecord(row.config),
     inputAssets: asStringArray(row.input_assets),
     resultPayload,
-    createdAt: row.created_at,
+    createdAt: row.created_at ?? new Date().toISOString(),
     startedAt: row.started_at,
     completedAt: row.completed_at,
-    updatedAt: row.updated_at,
+    updatedAt: row.updated_at ?? new Date().toISOString(),
   };
 }
 

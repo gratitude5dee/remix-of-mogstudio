@@ -1607,6 +1607,8 @@ export default function KanvasPage() {
                                   src={previewUrl}
                                   alt={getAssetTitle(asset)}
                                   className="h-full w-full object-cover"
+                                  loading="lazy"
+                                  decoding="async"
                                 />
                               ) : asset.asset_type === "video" && previewUrl ? (
                                 <video src={previewUrl} muted className="h-full w-full object-cover" />
