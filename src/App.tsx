@@ -89,7 +89,7 @@ const App = () => {
             <AuthProvider>
               <SidebarProvider>
               <CursorLoadingProvider>
-                <LoadingScreen isLoading={isLoading} message="Initializing MOG Studio..." />
+                <LoadingScreen isLoading={isLoading} message="Initializing WZRD Studio..." />
                 <CursorWrapper />
                 <Toaster />
                 <Sonner />
