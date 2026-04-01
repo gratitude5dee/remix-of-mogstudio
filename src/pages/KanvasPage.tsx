@@ -505,6 +505,8 @@ function HistoryRail({
                           src={previewUrl}
                           alt={`${job.studio} result`}
                           className="h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : job.resultPayload?.mediaType === "video" && previewUrl ? (
                         <video src={previewUrl} muted className="h-full w-full object-cover" />
