@@ -110,7 +110,7 @@ function mergeAssets(current: KanvasAsset[], incoming: KanvasAsset[]): KanvasAss
     map.set(asset.id, asset);
   }
   return Array.from(map.values()).sort((left, right) =>
-    right.created_at.localeCompare(left.created_at)
+    (right.created_at ?? '').localeCompare(left.created_at ?? '')
   );
 }
 

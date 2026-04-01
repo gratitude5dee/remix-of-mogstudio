@@ -288,14 +288,29 @@ export function buildLipSyncRequest(input: {
 }
 
 export function normalizeKanvasJobRow(row: GenerationJobRow): KanvasJob {
-  const resultPayloadRecord = asRecord(row.result_payload);
+  // Support both snake_case (DB rows) and camelCase (edge function responses)
+  const rawResultPayload = row.result_payload ?? (row as any).resultPayload;
+  const rawResultUrl = row.result_url ?? (row as any).resultUrl;
+  const rawJobType = row.job_type ?? (row as any).jobType;
+  const rawUserId = row.user_id ?? (row as any).userId;
+  const rawProjectId = row.project_id ?? (row as any).projectId;
+  const rawModelId = row.model_id ?? (row as any).modelId;
+  const rawExternalRequestId = row.external_request_id ?? (row as any).externalRequestId;
+  const rawErrorMessage = row.error_message ?? (row as any).errorMessage;
+  const rawInputAssets = row.input_assets ?? (row as any).inputAssets;
+  const rawCreatedAt = row.created_at ?? (row as any).createdAt;
+  const rawUpdatedAt = row.updated_at ?? (row as any).updatedAt;
+  const rawStartedAt = row.started_at ?? (row as any).startedAt;
+  const rawCompletedAt = row.completed_at ?? (row as any).completedAt;
+
+  const resultPayloadRecord = asRecord(rawResultPayload);
   const mediaType =
-    resultPayloadRecord.mediaType === "video" ? "video" : (row.job_type as KanvasMediaType);
+    resultPayloadRecord.mediaType === "video" ? "video" : (rawJobType as KanvasMediaType);
   const outputs = asOutputArray(resultPayloadRecord.outputs);
   const primaryUrl =
     typeof resultPayloadRecord.primaryUrl === "string"
       ? resultPayloadRecord.primaryUrl
-      : row.result_url;
+      : rawResultUrl;
   const previewUrl =
     typeof resultPayloadRecord.previewUrl === "string"
       ? resultPayloadRecord.previewUrl
@@ -308,29 +323,29 @@ export function normalizeKanvasJobRow(row: GenerationJobRow): KanvasJob {
           primaryUrl,
           previewUrl,
           outputs,
-          raw: "raw" in resultPayloadRecord ? resultPayloadRecord.raw : row.result_payload,
+          raw: "raw" in resultPayloadRecord ? resultPayloadRecord.raw : rawResultPayload,
         }
       : null;
 
   return {
     id: row.id,
-    userId: row.user_id,
-    projectId: row.project_id,
+    userId: rawUserId,
+    projectId: rawProjectId,
     studio: (row.studio ?? "image") as KanvasStudio,
-    modelId: row.model_id,
-    externalRequestId: row.external_request_id,
-    jobType: row.job_type as KanvasMediaType,
+    modelId: rawModelId,
+    externalRequestId: rawExternalRequestId,
+    jobType: rawJobType as KanvasMediaType,
     status: row.status as KanvasJob["status"],
     progress: row.progress,
-    resultUrl: row.result_url,
-    errorMessage: row.error_message,
+    resultUrl: rawResultUrl,
+    errorMessage: rawErrorMessage,
     config: asRecord(row.config),
-    inputAssets: asStringArray(row.input_assets),
+    inputAssets: asStringArray(rawInputAssets),
     resultPayload,
-    createdAt: row.created_at ?? new Date().toISOString(),
-    startedAt: row.started_at,
-    completedAt: row.completed_at,
-    updatedAt: row.updated_at ?? new Date().toISOString(),
+    createdAt: rawCreatedAt ?? new Date().toISOString(),
+    startedAt: rawStartedAt,
+    completedAt: rawCompletedAt,
+    updatedAt: rawUpdatedAt ?? new Date().toISOString(),
   };
 }
 
