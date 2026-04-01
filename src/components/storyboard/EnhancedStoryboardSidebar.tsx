@@ -9,6 +9,7 @@ import { LocationSection } from '@/components/timeline/sections/LocationSection'
 import { ClothingSection } from '@/components/timeline/sections/ClothingSection';
 import { ObjectSubjectSection } from '@/components/timeline/sections/ObjectSubjectSection';
 import { SoundSection } from '@/components/timeline/sections/SoundSection';
+import { WorldviewSidebarSection } from '@/components/timeline/sections/WorldviewSidebarSection';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, FileCode } from 'lucide-react';
 
@@ -38,7 +39,8 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
     style: false,
     clothing: false,
     objects: false,
-    sound: false
+    sound: false,
+    worldview: false
   });
 
   useEffect(() => {
@@ -205,6 +207,13 @@ const EnhancedStoryboardSidebar: React.FC<EnhancedStoryboardSidebarProps> = ({
             sceneId={sceneId}
             isOpen={openSections.sound}
             onToggle={() => toggleSection('sound')}
+          />
+
+          {/* Worldview Section */}
+          <WorldviewSidebarSection
+            sceneId={sceneId}
+            isOpen={openSections.worldview}
+            onToggle={() => toggleSection('worldview')}
           />
         </div>
       </ScrollArea>
