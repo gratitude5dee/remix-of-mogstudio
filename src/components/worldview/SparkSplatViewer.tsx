@@ -140,6 +140,8 @@ export const SparkSplatViewer = forwardRef<
         }
 
         scene.add(splatMesh as unknown as import('three').Object3D);
+        // Flip the splat upright — splat files often use Z-up convention
+        (splatMesh as unknown as import('three').Object3D).rotation.x = Math.PI;
 
         // Store internals for capture
         internalsRef.current = { renderer, scene, camera };
