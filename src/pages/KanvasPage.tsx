@@ -1138,7 +1138,7 @@ export default function KanvasPage() {
               </Button>
               <div className="hidden rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-2 md:block">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
-                  MogStudio
+                  WZRD Studio
                 </p>
                 <p className="text-sm font-semibold text-white">Kanvas Multi-Studio</p>
               </div>

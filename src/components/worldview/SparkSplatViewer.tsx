@@ -228,6 +228,7 @@ export const SparkSplatViewer = forwardRef<
       if (animId) cancelAnimationFrame(animId);
       resizeObserver?.disconnect();
       renderer?.dispose?.();
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, [splatUrl]);
 

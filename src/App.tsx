@@ -231,7 +231,9 @@ const App = () => {
                       path={appRoutes.kanvas}
                       element={
                         <ProtectedRoute>
-                          <KanvasPage />
+                          <StudioErrorBoundary fallbackTitle="Kanvas encountered an error" fallbackDescription="The multi-studio canvas hit an unexpected issue">
+                            <KanvasPage />
+                          </StudioErrorBoundary>
                         </ProtectedRoute>
                       }
                     />
