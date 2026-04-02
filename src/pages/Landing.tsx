@@ -11,7 +11,6 @@ import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 import FAQAccordion from '@/components/landing/FAQAccordion';
 import { PricingSectionRedesigned } from '@/components/landing/PricingSectionRedesigned';
 import ArenaZeroHero from '@/components/landing/ArenaZeroHero';
-import ArenaZeroHero from '@/components/landing/ArenaZeroHero';
 import CreateTodaySection from '@/components/landing/CreateTodaySection';
 import TopChoiceGrid from '@/components/landing/TopChoiceGrid';
 import PhotodumpBanner from '@/components/landing/PhotodumpBanner';
