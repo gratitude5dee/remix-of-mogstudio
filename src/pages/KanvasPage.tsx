@@ -1348,32 +1348,6 @@ export default function KanvasPage() {
                     )}
                   </div>
 
-                  {studio === "lipsync" && (
-                    <div className="mb-6 flex flex-wrap gap-3">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={cn(
-                          "border-white/10 bg-black/30 text-white",
-                          lipsyncMode === "talking-head" && "border-lime-300/40 bg-lime-300/10 text-white"
-                        )}
-                        onClick={() => setLipsyncMode("talking-head")}
-                      >
-                        Portrait Image
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={cn(
-                          "border-white/10 bg-black/30 text-white",
-                          lipsyncMode === "lip-sync" && "border-lime-300/40 bg-lime-300/10 text-white"
-                        )}
-                        onClick={() => setLipsyncMode("lip-sync")}
-                      >
-                        Existing Video
-                      </Button>
-                    </div>
-                  )}
 
                   <div className="relative">
                     <MentionDropdown
