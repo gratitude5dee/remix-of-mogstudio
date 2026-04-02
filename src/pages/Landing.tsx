@@ -188,6 +188,15 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* ===== CINEMATIC EDITORIAL SECTIONS ===== */}
+      <div className="relative bg-black">
+        <ArenaZeroHero />
+        <CreateTodaySection />
+        <TopChoiceGrid />
+        <PhotodumpBanner />
+        <SoulCinemaGallery />
+      </div>
+
       {/* ===== REST OF PAGE ===== */}
       <div
         className="relative"
