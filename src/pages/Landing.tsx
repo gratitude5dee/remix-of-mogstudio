@@ -10,8 +10,7 @@ import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 
 import FAQAccordion from '@/components/landing/FAQAccordion';
 import { PricingSectionRedesigned } from '@/components/landing/PricingSectionRedesigned';
-import { StickyFooter } from '@/components/landing/StickyFooter';
-import { VideoBackground } from '@/components/landing/VideoBackground';
+import ArenaZeroHero from '@/components/landing/ArenaZeroHero';
 import ArenaZeroHero from '@/components/landing/ArenaZeroHero';
 import CreateTodaySection from '@/components/landing/CreateTodaySection';
 import TopChoiceGrid from '@/components/landing/TopChoiceGrid';
