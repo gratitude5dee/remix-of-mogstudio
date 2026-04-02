@@ -350,25 +350,12 @@ export default function ImageStudioSection({
     </div>
   );
 
-  /* ---- Footer ---- */
-  const renderFooter = () => (
-    <div className="fixed bottom-6 left-[272px] right-12 flex justify-between text-[9px] uppercase tracking-[0.3em] text-zinc-600 font-bold z-40 pointer-events-none">
-      <span>© 2024 WZRD.STUDIO • THE NOIR FUTURIST</span>
-      <span className="flex gap-8">
-        <span>PRIVACY</span>
-        <span>TERMS</span>
-        <span>API</span>
-      </span>
-    </div>
-  );
-
   /* ---- Render ---- */
   return (
     <div className="relative min-h-screen bg-black">
       {renderSidebar()}
       {renderMainContent()}
       {renderPromptBar()}
-      {renderFooter()}
     </div>
   );
 }
