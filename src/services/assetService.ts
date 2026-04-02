@@ -143,8 +143,18 @@ function buildProjectAssetUpdate(updates: Partial<ProjectAsset>): ProjectAssetUp
 
 export const assetService = {
   async upload(request: AssetUploadRequest): Promise<AssetUploadResponse> {
+    // Explicitly pass auth token to avoid session race conditions
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) {
+      throw new Error("No active session. Please sign in again.");
+    }
+
     const { data, error } = await supabase.functions.invoke("asset-upload", {
       body: request,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
 
     if (error) {
