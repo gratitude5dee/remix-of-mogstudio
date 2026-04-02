@@ -270,12 +270,7 @@ serve(async (req) => {
       );
     }
 
-    // Queue processing job (thumbnail generation, metadata extraction, etc.)
-    await supabaseClient.from("processing_queue").insert({
-      asset_id: asset.id,
-      job_type: "process_asset",
-      priority: 1,
-    });
+    // Processing queue skipped — table does not exist yet
 
     return new Response(
       JSON.stringify({
