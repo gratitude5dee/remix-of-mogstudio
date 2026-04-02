@@ -1,31 +1,94 @@
 
 
-# Fix Image Studio Background Integration
+# Build Cinematic "Edit" View for /kanvas
 
-## Problem
-The `ImageStudioSection` renders inside the KanvasPage's flex layout (which has its own radial gradient background `bg-[#050506]` with green glows, padding, and a compact sidebar). The Image studio's `bg-black` doesn't fully cover the parent's background, and the fixed sidebar at `left-0` overlaps the page's own compact nav sidebar. This creates visible background bleed-through and layout conflicts.
+## Overview
+Add a new `"edit"` studio mode to the Kanvas page with a 4-pane layout: Tool Sidebar, Asset Library, Main Canvas with dotted grid, and Asset Detail panel. Follows the Noir Futurist design system.
 
-## Fix
+## Changes
 
-### `src/components/kanvas/ImageStudioSection.tsx`
+### 1. Add "edit" to KanvasStudio type
 
-**Root container**: Change from `relative min-h-screen bg-black` to a fixed full-screen overlay that sits below the header but covers everything else:
+**`src/features/kanvas/types.ts`** — Add `"edit"` to the union:
+```ts
+export type KanvasStudio = "image" | "video" | "cinema" | "lipsync" | "worldview" | "character-creation" | "edit";
 ```
-fixed inset-0 top-[80px] bg-[#050506] z-20 overflow-y-auto
+
+### 2. Register "edit" in helpers
+
+**`src/features/kanvas/helpers.ts`**:
+- Add `"edit"` to `KANVAS_STUDIO_ORDER` array (after `"video"`)
+- Add entry in `KANVAS_STUDIO_META` with label "Edit", headline "Edit Studio"
+- Add `"edit"` case in `normalizeStudioParam`
+
+### 3. Register icon in KanvasPage
+
+**`src/pages/KanvasPage.tsx`**:
+- Import `Pencil` from lucide-react
+- Add `edit: Pencil` to `STUDIO_ICONS`
+- Add `studio === "edit"` branch (after video, before worldview) rendering `<EditStudioSection>`
+- Pass relevant props: `assets`, `jobs`, `uploading`, `onUpload`, `pageLoading`
+
+### 4. Create EditStudioSection component (NEW)
+
+**`src/components/kanvas/EditStudioSection.tsx`**
+
+A self-contained fixed overlay (same pattern as Image/Video studios: `fixed inset-0 top-[80px] bg-[#050506] z-20`).
+
+**Internal layout — 4 panels:**
+
+```text
+┌──────┬────────────┬─────────────────────┬──────────────┐
+│ 80px │   320px    │    Flex center      │    380px     │
+│ Tool │   Asset    │    Edit Canvas      │   Asset      │
+│ Bar  │  Library   │   (dotted grid)     │   Detail     │
+└──────┴────────────┴─────────────────────┴──────────────┘
+         ← Fixed bottom toolbar spans canvas area →
 ```
-This ensures the Image studio's dark background completely covers the parent page's radial gradients and sidebars.
 
-**Sidebar**: Keep the fixed positioning but ensure `z-30` so it layers above the content.
+**EditToolBar (far left, 80px):**
+- Header: lime wand icon + "TOOLS" + "V2.0.4"
+- Nav stack: Inpaint (active, lime border-right + lime text), Placement, Relight, Upscale, History (inactive zinc-600)
+- Bottom: "+" FAB with "New Asset" label
+- Internal state `activeTool` controls which tool is highlighted
 
-**Main content**: Adjust `pb-48` to account for the fixed container scroll context.
+**AssetLibrary (next, 320px):**
+- Header: "Library" title + circular "+" button
+- 2-column grid of placeholder asset cards (atmospheric gradient backgrounds)
+- First card has lime border (selected state)
+- Internal state `selectedAssetIndex`
 
-### `src/pages/KanvasPage.tsx`
+**EditWorkspace (center, remaining width):**
+- Dotted grid background: `bg-[radial-gradient(circle,#333_1px,transparent_1px)]` with `background-size: 24px 24px`
+- Centered image container with deep shadow
+- 4 corner selection brackets (lime 2px borders on corners)
+- Floating label: lime dot + "SELECTED: ASSET_026"
+- Inpaint mask glow: absolute div with `bg-[#ccff00]/40 blur-xl mix-blend-color-dodge`
 
-No changes needed — the ImageStudioSection will visually take over the viewport when active, which is the same pattern VideoStudioSection uses.
+**AssetDetailSidebar (right, 380px):**
+- "ASSET DETAIL" overline in hot pink (#ff3399)
+- Title "Volume 8 : WZRD.tech" in Space Grotesk
+- Rating: lime star + "4.8" + "Based on 124 curated views"
+- METADATA grid: Resolution (4096x2160), Format (PNG Alpha)
+- CTA buttons: "Add to Cart" (white solid pill), "Wishlist" (transparent bordered pill)
+- Bottom warning: "CREDITS ARE RUNNING LOW" amber alert
+
+**EditBottomBar (floating toolbar):**
+- Fixed bottom, centered between left panels and right panel
+- Glass pill with backdrop-blur
+- Active: "Brush" (lime pill), Inactive: "Selection", "Pan"
+- Separator + Undo/Redo/Download icons
+
+### 5. Edge function type (optional, no-op)
+
+**`supabase/functions/_shared/kanvas.ts`** — The backend `KanvasStudio` type doesn't include `"edit"` but this is fine since edit mode is client-only (no generation requests). No backend changes needed.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/ImageStudioSection.tsx` | Change root div to fixed overlay with proper z-indexing and matching page background color |
+| `src/features/kanvas/types.ts` | Add `"edit"` to KanvasStudio union |
+| `src/features/kanvas/helpers.ts` | Add edit to studio order, meta, and normalizer |
+| `src/components/kanvas/EditStudioSection.tsx` | **New** — Full 4-pane edit layout |
+| `src/pages/KanvasPage.tsx` | Import EditStudioSection, add icon + render branch |
 
