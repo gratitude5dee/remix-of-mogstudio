@@ -1,93 +1,74 @@
 
 
-# Build Lipsync Production Studio
+# Build Cinema Studio (Movie Cast Builder) for /kanvas
 
 ## Overview
-Create a new `LipsyncStudioSection` component rendered as a fixed full-viewport overlay (same pattern as Image/Video/Edit studios) when `studio === "lipsync"`. It features a left sidebar wizard navigation and three switchable views: Lipsync Dashboard, UGC Templates, and Audio Settings.
+Create a new `CinemaStudioSection` component rendered as a fixed full-viewport overlay when `studio === "cinema"`, replacing the current generic fallback UI. Features a 280px project sidebar and a cinematic main canvas with hero typography, filter pills, and a genre poster carousel.
 
 ## Architecture
 
 ```text
-┌─────────────────────────────────────────────────────┐
-│ KanvasPage (existing)                               │
-│  studio === "lipsync" → <LipsyncStudioSection />    │
-│    ┌──────────┬────────────────────────────────────┐ │
-│    │ Wizard   │ activeView switches between:       │ │
-│    │ Sidebar  │  • LipsyncDashboard (default)      │ │
-│    │ 260px    │  • UGCTemplates                     │ │
-│    │          │  • UGCAudioSettings                 │ │
-│    └──────────┴────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────┐
+│ KanvasPage                                    │
+│  studio === "cinema" → <CinemaStudioSection/> │
+│    ┌────────────┬────────────────────────────┐ │
+│    │ Project    │ Main Canvas:               │ │
+│    │ Sidebar    │  • Hero "CRAFT YOUR DREAM" │ │
+│    │ 280px      │  • Filter pills            │ │
+│    │            │  • Genre poster carousel   │ │
+│    │            │  • Floating FAB            │ │
+│    └────────────┴────────────────────────────┘ │
+└───────────────────────────────────────────────┘
 ```
 
-## New File: `src/components/kanvas/LipsyncStudioSection.tsx`
+## New File: `src/components/kanvas/CinemaStudioSection.tsx`
 
 ### Props
-Receives all lipsync-related props from KanvasPage: `prompt`, `onPromptChange`, `lipsyncMode`, `onLipsyncModeChange`, `imageId`, `videoId`, `audioId`, `onImageChange`, `onVideoChange`, `onAudioChange`, `currentModel`, `models`, `onModelChange`, `submitting`, `onGenerate`, `jobs`, `selectedJob`, `assets` (image/video/audio arrays), `uploading*`, `onUpload`.
+Receives cinema-related props from KanvasPage: `prompt`, `onPromptChange`, `cinemaSettings`, `onCinemaSettingsChange`, `currentModel`, `models`, `onModelChange`, `submitting`, `onGenerate`, `jobs`, `selectedJob`, `assets`.
 
 ### State
-- `activeStep`: "script" | "voice" | "avatar" | "environment" | "render" — drives sidebar highlight and which view renders
-- `selectedTemplate`: string | null — for UGC template selection
+- `activeNav`: "master-files" | "scene-generator" | "voice-synth" | "vfx-stack" — sidebar navigation
+- `activeFilter`: "genre" | "budget" | "era" | "archetype" | "identity" | "star-power" — filter pills
 
-### Layout (fixed overlay, bg-[#000000])
-- Film grain overlay div with SVG noise pattern, `mix-blend-overlay opacity-20`
-- Left sidebar 260px (`bg-[#090909]`)
-- Main content `ml-[260px]` scrollable
+### Layout (fixed overlay, bg-[#090909])
 
-### Left Sidebar (`<WizardSidebar>`)
-- Header: "UGC FACTORY" in lime, "PRODUCTION WIZARD" in muted gray
-- 5 nav steps: Script, Voice, Avatar, Environment, Render
-  - Active: `bg-[#ccff00] text-black font-bold rounded-full`
-  - Inactive: `text-zinc-500 hover:text-white`
-- Footer: Support, Archive links + "Export Project" pill button
+**Left Sidebar (280px, bg-[#0e0e0e])**:
+- Header: Lime sparkle icon circle + "Project Alpha" / "IN PRODUCTION"
+- "NEW SEQUENCE" full-width lime button
+- Nav items: Master Files (active, flush-left lime pill with `rounded-r-full`), Scene Generator, Voice Synth, VFX Stack
+- Footer: Preferences, System Info links
 
-### View Mapping
-- **Script** step → `<LipsyncDashboard>` — the main lipsync generation view
-- **Voice** step → `<UGCAudioSettings>` — language, accent, voice type, emotion, preview player
-- **Avatar** step → `<UGCTemplates>` — template grid with cinematic cards
-- **Environment / Render** → placeholder panels (styled consistently)
+**Main Canvas (ml-[280px])**:
+- Massive watermark "CRAFT" at `text-[200px] text-white/[0.02]` behind content
+- Hero: "CRAFT YOUR " (white) + "DREAM" (lime) / "MOVIE CAST" (white) — `text-7xl md:text-8xl font-black`
+- Floating avatar circle to the right with pink glow shadow
+- Filter pills row: Genre (active lime), Budget, Era, Archetype, Identity, Star Power (dark outline pills)
+- Genre poster carousel: 3 cards (320×480px) — Adventure (pink overline), Sci-Fi (cyan overline), Noir (gray overline) with Unsplash images, gradient overlays, `group-hover:scale-105`
+- Floating lime FAB (bottom-right, clapperboard icon, `w-20 h-20`)
 
-### LipsyncDashboard (Reference: screen-19)
-- Hero: "LIPSYNC MODELS," (white) + "ONE CLICK AWAY" (lime), massive Space Grotesk
-- Two-column layout:
-  - **Left**: Upload asset card (dark glass, lime upload icon), Audio toggle pills ("Audio Text" active lime / "Generate Audio" inactive), Script textarea with char count, massive lime Generate button
-  - **Right**: 3 workflow step cards (01 Upload, 02 Generate, 03 Select) with lime left border on active, Latest Render card with preview image + metadata + Preview/Upscale pills
-- Wired to real props: upload triggers `onUpload`, Generate calls `onGenerate`, prompt uses `prompt`/`onPromptChange`
-
-### UGCTemplates (Reference: screen-21)
-- Hero: "Choose your " + "Template" (lime)
-- 3-column grid of tall cards with gradient overlays, category labels, titles
-- Selected card gets `border-2 border-[#ccff00]` + lime checkmark
-- Floating lime circle FAB bottom-right with arrow
-
-### UGCAudioSettings (Reference: screen-20)
-- Hero: "AUDIO " + "SETTINGS" (lime)
-- Two dropdowns (Language, Accent) side by side
-- Voice Type pill row (Whispers active lime, others dark)
-- Emotional Delivery 6-card grid (Happy active with lime border)
-- Voice Preview player bar at bottom with play button, waveform, timestamps
-- "NEXT STEP" lime pill button bottom-right
+### Cinema Controls Integration
+The existing cinema camera settings (Camera, Lens, Focal Length, Aperture), model selector, and generate button from the current fallback block will be accessible when clicking the "Scene Generator" nav item — rendered below the carousel in a collapsible panel.
 
 ## KanvasPage Changes
 
 **`src/pages/KanvasPage.tsx`**:
-1. Import `LipsyncStudioSection`
-2. Add `studio === "lipsync"` branch before the generic `else` fallback (after `character-creation` check), rendering `<LipsyncStudioSection>` with all lipsync props passed through
-3. Remove the lipsync-specific code from the generic else block (the `studio === "lipsync"` conditionals for mode buttons, asset selectors, prompt logic) — these are now handled inside the new component
+1. Import `CinemaStudioSection`
+2. Add `studio === "cinema"` branch before the generic `else` fallback (after lipsync check)
+3. Pass cinema props: `cinemaPrompt`, `setCinemaPrompt`, `cinemaCameraSettings`, `setCinemaCameraSettings`, cinema models, `handleGenerate`, `currentStudioJobs`, `selectedJob`, `assets`
+4. The generic `else` block becomes effectively dead code (all studios now have dedicated components) but we leave it as a safe fallback
 
-## Design System Compliance
-- All backgrounds: `#000000`, `#090909`, `#0e0e0e`, `#131313`
-- No opaque borders — only `border-white/5` or `border-white/10`
-- Lime accent `#ccff00` for active states, buttons, highlights
-- Hot pink `#ff3399` for Upscale button accent
+## Design System
+- Backgrounds: `#090909`, `#0e0e0e`, `#131313`
+- No opaque borders — `border-white/5`, `border-white/10`
+- Lime `#ccff00` for active states, buttons, FAB
+- Pink `#ff68a8` for Adventure overline, Cyan `#00d4ec` for Sci-Fi
 - Space Grotesk for all display typography
-- Film grain SVG noise overlay on main content
-- Hidden scrollbars via `scrollbar-hide` / custom CSS
+- Hidden scrollbars on carousel
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/LipsyncStudioSection.tsx` | **New** — Full lipsync production wizard with 3 views |
-| `src/pages/KanvasPage.tsx` | Add `studio === "lipsync"` branch rendering LipsyncStudioSection with props |
+| `src/components/kanvas/CinemaStudioSection.tsx` | **New** — Full cinema studio with sidebar, hero, carousel, FAB |
+| `src/pages/KanvasPage.tsx` | Add `studio === "cinema"` branch rendering CinemaStudioSection with props |
 
