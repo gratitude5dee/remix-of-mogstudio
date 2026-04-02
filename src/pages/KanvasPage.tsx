@@ -1540,9 +1540,7 @@ export default function KanvasPage() {
                           <SelectValue placeholder="Select a model" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(studio === "image"
-                            ? currentImageModels
-                            : studio === "cinema"
+                          {(studio === "cinema"
                               ? currentCinemaModels
                               : currentLipsyncModels
                           ).map((model) => (
