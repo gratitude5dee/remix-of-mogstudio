@@ -260,7 +260,7 @@ const Landing = () => {
           <div className="mx-auto max-w-6xl px-4"><div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" /></div>
 
           {/* Footer */}
-          <StickyFooter />
+          <CinematicFooter />
         </div>
       </div>
     </div>
