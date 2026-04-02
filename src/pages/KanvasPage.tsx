@@ -1317,6 +1317,8 @@ export default function KanvasPage() {
                 uploadingAudio={uploadingByType.audio}
                 onUpload={handleAssetUpload}
               />
+            ) : studio === "cinema" ? (
+              <CinemaStudioSection />
             ) : (
             <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.55fr)_420px]">
               <div className="space-y-6">
