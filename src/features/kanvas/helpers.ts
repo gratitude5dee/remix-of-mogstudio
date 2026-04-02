@@ -18,7 +18,7 @@ import type {
 
 type GenerationJobRow = any;
 
-export const KANVAS_STUDIO_ORDER: KanvasStudio[] = ["image", "video", "lipsync", "cinema", "worldview", "character-creation"];
+export const KANVAS_STUDIO_ORDER: KanvasStudio[] = ["image", "video", "edit", "lipsync", "cinema", "worldview", "character-creation"];
 
 export const KANVAS_STUDIO_META: Record<
   KanvasStudio,
