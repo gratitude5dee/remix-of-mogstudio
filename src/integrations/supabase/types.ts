@@ -1140,6 +1140,9 @@ export type Database = {
           generation_params: Json | null
           id: string
           image_url: string
+          is_primary: boolean | null
+          label: string | null
+          sort_order: number | null
           variant: string | null
         }
         Insert: {
@@ -1148,6 +1151,9 @@ export type Database = {
           generation_params?: Json | null
           id?: string
           image_url: string
+          is_primary?: boolean | null
+          label?: string | null
+          sort_order?: number | null
           variant?: string | null
         }
         Update: {
@@ -1156,6 +1162,9 @@ export type Database = {
           generation_params?: Json | null
           id?: string
           image_url?: string
+          is_primary?: boolean | null
+          label?: string | null
+          sort_order?: number | null
           variant?: string | null
         }
         Relationships: [
@@ -1170,48 +1179,86 @@ export type Database = {
       }
       character_blueprints: {
         Row: {
+          body_details: Json | null
           created_at: string
           description: string | null
+          face_details: Json | null
           id: string
+          image_url: string | null
+          is_favorite: boolean | null
+          kind: string | null
           metadata: Json | null
           name: string
+          project_id: string | null
+          prompt_fragment: string | null
+          slug: string
           status: string
           style: string | null
+          style_details: Json | null
           thumbnail_url: string | null
           traits: Json | null
           updated_at: string
+          usage_count: number | null
           user_id: string
           visual_prompt: string | null
         }
         Insert: {
+          body_details?: Json | null
           created_at?: string
           description?: string | null
+          face_details?: Json | null
           id?: string
+          image_url?: string | null
+          is_favorite?: boolean | null
+          kind?: string | null
           metadata?: Json | null
           name: string
+          project_id?: string | null
+          prompt_fragment?: string | null
+          slug?: string
           status?: string
           style?: string | null
+          style_details?: Json | null
           thumbnail_url?: string | null
           traits?: Json | null
           updated_at?: string
+          usage_count?: number | null
           user_id: string
           visual_prompt?: string | null
         }
         Update: {
+          body_details?: Json | null
           created_at?: string
           description?: string | null
+          face_details?: Json | null
           id?: string
+          image_url?: string | null
+          is_favorite?: boolean | null
+          kind?: string | null
           metadata?: Json | null
           name?: string
+          project_id?: string | null
+          prompt_fragment?: string | null
+          slug?: string
           status?: string
           style?: string | null
+          style_details?: Json | null
           thumbnail_url?: string | null
           traits?: Json | null
           updated_at?: string
+          usage_count?: number | null
           user_id?: string
           visual_prompt?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "character_blueprints_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       character_scene_appearances: {
         Row: {
