@@ -18,6 +18,7 @@ import {
   Image as ImageIcon,
   Loader2,
   Mic2,
+  Pencil,
   Sparkles,
   Upload,
   Video,
