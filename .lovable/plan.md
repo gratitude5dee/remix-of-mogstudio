@@ -1,51 +1,44 @@
 
 
-# Add "Worldview" Section to Timeline Sidebar
+# Fix Character Blueprints Table & Build Errors
 
-## Overview
-Add a new collapsible "Worldview" section below "Sound & Audio" in the timeline left navbar. It will contain a "Generate Worldview" button that opens the same WorldviewSection UI from `/kanvas`. Once a world is generated, a preview thumbnail displays inline in the sidebar.
+## Problem
+1. **Migration not applied**: The file `20260401120000_create_character_creation.sql` exists but `character_blueprints` and `character_blueprint_images` tables were never created in the database — hence the "Could not find table in schema cache" error.
+2. **Mammoth import error**: `supabase/functions/document-parse/index.ts` uses `import('npm:mammoth')` which Deno can't resolve without a `deno.json` mapping. This causes the edge function build to fail for the entire project.
+3. **TypeScript errors**: `characterBlueprintService.ts` has `as Record<string, unknown>` casts that conflict with the Supabase `SelectQueryError` type since the table isn't in the generated types yet.
 
 ## Plan
 
-### 1. Create `WorldviewSidebarSection` component
-**New file: `src/components/timeline/sections/WorldviewSidebarSection.tsx`**
+### Step 1: Create the database tables via migration tool
+Run the SQL from the existing migration file to create `character_blueprints` and `character_blueprint_images` with all indexes, RLS policies, and the trigger. Then reload the PostgREST schema cache with `NOTIFY pgrst, 'reload schema'`.
 
-- Follows the same collapsible pattern as `SoundSection` (Collapsible + motion + same styling)
-- Props: `sceneId`, `isOpen`, `onToggle` (matching existing section interface)
-- Contains a "Generate Worldview" button that opens a Dialog/Sheet with `<WorldviewSection />` embedded
-- Uses `useWorldviewStore` to check if an active world exists — if so, displays a thumbnail preview (the world's `assets.thumbnailUrl` or `assets.panoramaUrl`) inline
-- Globe2 icon with amber/orange accent color to match the existing Worldview branding
+### Step 2: Fix the mammoth import in document-parse
+**File: `supabase/functions/document-parse/index.ts`** (line 59)
 
-**Key structure:**
-```text
-[Collapsible Trigger: Globe2 icon + "Worldview" label]
-  └─ [CollapsibleContent]
-       ├─ If world exists: thumbnail preview + "View World" button
-       └─ If no world: "Generate Worldview" button
-            └─ Opens Dialog containing <WorldviewSection />
+Change `import('npm:mammoth')` to use an ESM CDN like the PDF import on line 50:
+```ts
+const mammoth = await import('https://esm.sh/mammoth@1.8.0');
 ```
 
-### 2. Integrate into `EnhancedStoryboardSidebar`
-**File: `src/components/storyboard/EnhancedStoryboardSidebar.tsx`**
+### Step 3: Fix TypeScript cast errors in characterBlueprintService.ts
+**File: `src/services/characterBlueprintService.ts`**
 
-- Import `WorldviewSidebarSection`
-- Add `worldview: false` to `openSections` state
-- Render `<WorldviewSidebarSection>` after `<SoundSection>` (line ~208)
+Change all `as Record<string, unknown>` and `as Record<string, unknown>[]` casts to go through `unknown` first to satisfy TypeScript's overlap check:
+- Line 58: `(data as unknown as Record<string, unknown>[])` 
+- Line 73: `(data as unknown as Record<string, unknown>)`
+- Line 120: same pattern
+- Line 166: same pattern  
+- Line 214: same pattern for array
+- Line 235: same pattern
 
-### 3. Dialog for full Worldview UI
-The "Generate Worldview" button opens a large Dialog (or Sheet) that renders the full `<WorldviewSection />` component from `src/components/worldview/WorldviewSection.tsx`. This reuses the entire world generation pipeline already built for `/kanvas`.
-
-## Technical Details
-
-- Reuses `useWorldviewStore` (Zustand) — same store powers both `/kanvas` and this sidebar
-- The `WorldviewSection` component is self-contained with its own scene management, so embedding it in a Dialog works without additional wiring
-- Thumbnail preview uses the `World.assets.thumbnailUrl` or `panoramaUrl` from the store
-- The Dialog will use `max-w-5xl` sizing to give the 3D viewer adequate space
+### Step 4: Regenerate Supabase types
+After the migration applies, the generated types file will update to include `character_blueprints` and `character_blueprint_images`, eliminating the `SelectQueryError` type issues long-term.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/timeline/sections/WorldviewSidebarSection.tsx` | **New** — Collapsible section with generate button + preview |
-| `src/components/storyboard/EnhancedStoryboardSidebar.tsx` | Import & render WorldviewSidebarSection after SoundSection |
+| Database (migration) | Create `character_blueprints` + `character_blueprint_images` tables, indexes, RLS, trigger |
+| `supabase/functions/document-parse/index.ts` | Fix mammoth import to use esm.sh CDN |
+| `src/services/characterBlueprintService.ts` | Fix TypeScript cast errors with `unknown` intermediate |
 
