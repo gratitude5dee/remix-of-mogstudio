@@ -1354,42 +1354,21 @@ export default function KanvasPage() {
                       suggestions={mentionSuggestions}
                       visible={showMentionDropdown}
                       onSelect={(mention) => {
-                        const currentPrompt =
-                          studio === "cinema"
-                              ? cinemaPrompt
-                              : lipsyncPrompt;
-                        const replaced = onSelectSuggestion(mention, currentPrompt);
-                        if (studio === "cinema") setCinemaPrompt(replaced);
-                        else setLipsyncPrompt(replaced);
+                        const replaced = onSelectSuggestion(mention, cinemaPrompt);
+                        setCinemaPrompt(replaced);
                       }}
                     />
                     <Textarea
-                      value={
-                        studio === "cinema"
-                            ? cinemaPrompt
-                            : lipsyncPrompt
-                      }
+                      value={cinemaPrompt}
                       onChange={(event) => {
                         const nextValue = event.currentTarget.value;
-                        if (studio === "cinema") {
-                          setCinemaPrompt(nextValue);
-                        } else {
-                          setLipsyncPrompt(nextValue);
-                        }
+                        setCinemaPrompt(nextValue);
                         onMentionChange(nextValue);
                       }}
                       onBlur={() => {
-                        // Delay to allow click on dropdown
                         setTimeout(closeMentionDropdown, 200);
                       }}
-                      placeholder={getPromptPlaceholder(
-                        studio,
-                        studio === "lipsync"
-                            ? lipsyncMode === "talking-head"
-                              ? Boolean(lipsyncImageId)
-                              : Boolean(lipsyncVideoId)
-                            : false
-                      )}
+                      placeholder={getPromptPlaceholder(studio, false)}
                       className="min-h-[150px] rounded-[30px] border-white/10 bg-black/40 px-5 py-4 text-base text-white placeholder:text-zinc-600"
                     />
                   </div>
