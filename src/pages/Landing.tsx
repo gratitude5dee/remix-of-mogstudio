@@ -207,8 +207,6 @@ const Landing = () => {
         <div className="absolute top-40 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(139,92,246,0.05) 40%, transparent 70%)', filter: 'blur(60px)' }} />
 
         <div className="relative z-10">
-          {/* Model Library */}
-          <ModelLibrarySection />
 
           <div className="mx-auto max-w-6xl px-4"><div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" /></div>
 
