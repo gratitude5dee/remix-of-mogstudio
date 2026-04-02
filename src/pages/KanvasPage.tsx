@@ -1332,11 +1332,9 @@ export default function KanvasPage() {
                       value={
                         studio === "image"
                           ? imagePrompt
-                          : (studio as string) === "video"
-                            ? videoPrompt
-                            : studio === "cinema"
-                              ? cinemaPrompt
-                              : lipsyncPrompt
+                          : studio === "cinema"
+                            ? cinemaPrompt
+                            : lipsyncPrompt
                       }
                       onChange={(event) => {
                         const nextValue = event.currentTarget.value;
