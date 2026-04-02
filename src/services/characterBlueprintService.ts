@@ -117,7 +117,7 @@ export async function createBlueprint(input: {
     .single();
 
   if (error) throw error;
-  return rowToBlueprint(data as Record<string, unknown>);
+  return rowToBlueprint(data as unknown as Record<string, unknown>);
 }
 
 // ---------------------------------------------------------------------------
