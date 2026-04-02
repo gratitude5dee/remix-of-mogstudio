@@ -93,6 +93,7 @@ import { VideoStudioSection } from "@/components/kanvas/VideoStudioSection";
 import ImageStudioSection from "@/components/kanvas/ImageStudioSection";
 import EditStudioSection from "@/components/kanvas/EditStudioSection";
 import LipsyncStudioSection from "@/components/kanvas/LipsyncStudioSection";
+import CinemaStudioSection from "@/components/kanvas/CinemaStudioSection";
 import { MentionDropdown } from "@/components/character-creation/MentionDropdown";
 import { useCharacterMention } from "@/hooks/useCharacterMention";
 import { appRoutes } from "@/lib/routes";
