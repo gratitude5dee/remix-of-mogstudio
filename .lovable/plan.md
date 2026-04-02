@@ -1,107 +1,93 @@
 
 
-# Wire Up Edit Studio to Backend
+# Build Lipsync Production Studio
 
-## Current State
-The Edit Studio (`EditStudioSection`) is a **static mockup** — hardcoded placeholder gradients, no real assets, no connection to the backend `image-edit-operation` edge function, and the Generate button does nothing. The backend already supports `inpaint`, `removeBackground`, `splitLayers`, and `enhancePrompt` operations via the `imageEditService`.
+## Overview
+Create a new `LipsyncStudioSection` component rendered as a fixed full-viewport overlay (same pattern as Image/Video/Edit studios) when `studio === "lipsync"`. It features a left sidebar wizard navigation and three switchable views: Lipsync Dashboard, UGC Templates, and Audio Settings.
 
-## Plan
+## Architecture
 
-### 1. Pass props from KanvasPage to EditStudioSection
-
-**`src/pages/KanvasPage.tsx`** — Pass the same asset/job/generation props already available:
-```tsx
-<EditStudioSection
-  assets={imageAssets}
-  jobs={currentStudioJobs}
-  selectedJob={selectedJob}
-  uploading={uploadingByType.image}
-  onUpload={handleAssetUpload}
-  projectId={projectId}
-/>
+```text
+┌─────────────────────────────────────────────────────┐
+│ KanvasPage (existing)                               │
+│  studio === "lipsync" → <LipsyncStudioSection />    │
+│    ┌──────────┬────────────────────────────────────┐ │
+│    │ Wizard   │ activeView switches between:       │ │
+│    │ Sidebar  │  • LipsyncDashboard (default)      │ │
+│    │ 260px    │  • UGCTemplates                     │ │
+│    │          │  • UGCAudioSettings                 │ │
+│    └──────────┴────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────┘
 ```
 
-### 2. Rewrite EditStudioSection to be functional
+## New File: `src/components/kanvas/LipsyncStudioSection.tsx`
 
-**`src/components/kanvas/EditStudioSection.tsx`** — Major changes:
+### Props
+Receives all lipsync-related props from KanvasPage: `prompt`, `onPromptChange`, `lipsyncMode`, `onLipsyncModeChange`, `imageId`, `videoId`, `audioId`, `onImageChange`, `onVideoChange`, `onAudioChange`, `currentModel`, `models`, `onModelChange`, `submitting`, `onGenerate`, `jobs`, `selectedJob`, `assets` (image/video/audio arrays), `uploading*`, `onUpload`.
 
-**Props & State:**
-- Accept `assets`, `jobs`, `selectedJob`, `uploading`, `onUpload`, `projectId`
-- Track `selectedAssetId` — the user-selected image from their library
-- Track `activeOperation` — which edit tool is active (inpaint, removeBackground, etc.)
-- Track `isProcessing` — loading state during backend calls
-- Track `resultImageUrl` — the output from the last operation
+### State
+- `activeStep`: "script" | "voice" | "avatar" | "environment" | "render" — drives sidebar highlight and which view renders
+- `selectedTemplate`: string | null — for UGC template selection
 
-**Left Sidebar — Real Asset Library:**
-- Replace hardcoded gradient squares with actual `assets` from props
-- Clicking an asset sets it as the active canvas image
-- "New Asset" button triggers `onUpload`
-- Show upload spinner when `uploading` is true
+### Layout (fixed overlay, bg-[#000000])
+- Film grain overlay div with SVG noise pattern, `mix-blend-overlay opacity-20`
+- Left sidebar 260px (`bg-[#090909]`)
+- Main content `ml-[260px]` scrollable
 
-**Center Canvas — Selected Asset Display:**
-- Show the selected asset's actual image (or the result image after an operation)
-- The canvas tool palette maps to real `ImageEditTool` operations:
-  - Brush → `inpaint`
-  - Wand → `removeBackground`
-  - Eraser → `splitLayers`
-  - Zoom → (client-side zoom, no backend call)
-- The "Active Mask" overlay only shows when `inpaint` tool is selected
-- Generate button calls `imageEditService.executeOperation()` with the selected operation, image URL, and prompt
-- Show loading spinner on the Generate button while processing
-- On success, display the result image on the canvas and show a toast
+### Left Sidebar (`<WizardSidebar>`)
+- Header: "UGC FACTORY" in lime, "PRODUCTION WIZARD" in muted gray
+- 5 nav steps: Script, Voice, Avatar, Environment, Render
+  - Active: `bg-[#ccff00] text-black font-bold rounded-full`
+  - Inactive: `text-zinc-500 hover:text-white`
+- Footer: Support, Archive links + "Export Project" pill button
 
-**Right Sidebar — Dynamic Asset Detail:**
-- Show metadata from the selected asset (filename, dimensions, format) instead of hardcoded values
-- "Low Credits" warning uses actual credit count from `useCredits` hook (conditionally shown)
-- Rating section hidden (not applicable for user assets)
+### View Mapping
+- **Script** step → `<LipsyncDashboard>` — the main lipsync generation view
+- **Voice** step → `<UGCAudioSettings>` — language, accent, voice type, emotion, preview player
+- **Avatar** step → `<UGCTemplates>` — template grid with cinematic cards
+- **Environment / Render** → placeholder panels (styled consistently)
 
-**Recent Creations (below canvas or in sidebar):**
-- Show completed `jobs` with thumbnails, similar to Image/Video studios
+### LipsyncDashboard (Reference: screen-19)
+- Hero: "LIPSYNC MODELS," (white) + "ONE CLICK AWAY" (lime), massive Space Grotesk
+- Two-column layout:
+  - **Left**: Upload asset card (dark glass, lime upload icon), Audio toggle pills ("Audio Text" active lime / "Generate Audio" inactive), Script textarea with char count, massive lime Generate button
+  - **Right**: 3 workflow step cards (01 Upload, 02 Generate, 03 Select) with lime left border on active, Latest Render card with preview image + metadata + Preview/Upscale pills
+- Wired to real props: upload triggers `onUpload`, Generate calls `onGenerate`, prompt uses `prompt`/`onPromptChange`
 
-### 3. Connect to imageEditService
+### UGCTemplates (Reference: screen-21)
+- Hero: "Choose your " + "Template" (lime)
+- 3-column grid of tall cards with gradient overlays, category labels, titles
+- Selected card gets `border-2 border-[#ccff00]` + lime checkmark
+- Floating lime circle FAB bottom-right with arrow
 
-**In EditStudioSection**, import and call `imageEditService.executeOperation()`:
+### UGCAudioSettings (Reference: screen-20)
+- Hero: "AUDIO " + "SETTINGS" (lime)
+- Two dropdowns (Language, Accent) side by side
+- Voice Type pill row (Whispers active lime, others dark)
+- Emotional Delivery 6-card grid (Happy active with lime border)
+- Voice Preview player bar at bottom with play button, waveform, timestamps
+- "NEXT STEP" lime pill button bottom-right
 
-```ts
-const handleGenerate = async () => {
-  if (!selectedAsset || !projectId) return;
-  setIsProcessing(true);
-  try {
-    const result = await imageEditService.executeOperation({
-      projectId,
-      nodeId: selectedAsset.id,
-      operation: activeOperation,
-      prompt: inpaintPrompt,
-      imageUrl: selectedAsset.url,
-    });
-    if (result.asset) setResultImageUrl(result.asset.url);
-    toast.success('Edit complete');
-  } catch (err) {
-    toast.error(err.message);
-  } finally {
-    setIsProcessing(false);
-  }
-};
-```
+## KanvasPage Changes
 
-### 4. Map sidebar tools to operations
+**`src/pages/KanvasPage.tsx`**:
+1. Import `LipsyncStudioSection`
+2. Add `studio === "lipsync"` branch before the generic `else` fallback (after `character-creation` check), rendering `<LipsyncStudioSection>` with all lipsync props passed through
+3. Remove the lipsync-specific code from the generic else block (the `studio === "lipsync"` conditionals for mode buttons, asset selectors, prompt logic) — these are now handled inside the new component
 
-| UI Tool | Backend Operation | Requires Prompt | Requires Mask |
-|---------|------------------|-----------------|---------------|
-| Brush (Inpaint) | `inpaint` | Yes | Yes (future) |
-| Wand (Remove BG) | `removeBackground` | No | No |
-| Eraser (Split Layers) | `splitLayers` | No | No |
-| Zoom | Client-only | — | — |
-
-The prompt bar is only shown/enabled when `inpaint` is the active tool. For `removeBackground` and `splitLayers`, clicking Generate executes immediately.
-
-## Design Preservation
-All Noir Futurist styling stays intact — backgrounds, typography, lime accents, panel widths. Only the data sources and interactivity change.
+## Design System Compliance
+- All backgrounds: `#000000`, `#090909`, `#0e0e0e`, `#131313`
+- No opaque borders — only `border-white/5` or `border-white/10`
+- Lime accent `#ccff00` for active states, buttons, highlights
+- Hot pink `#ff3399` for Upscale button accent
+- Space Grotesk for all display typography
+- Film grain SVG noise overlay on main content
+- Hidden scrollbars via `scrollbar-hide` / custom CSS
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/EditStudioSection.tsx` | Accept props, wire assets/jobs, connect to imageEditService, make Generate functional |
-| `src/pages/KanvasPage.tsx` | Pass assets, jobs, projectId, upload props to EditStudioSection |
+| `src/components/kanvas/LipsyncStudioSection.tsx` | **New** — Full lipsync production wizard with 3 views |
+| `src/pages/KanvasPage.tsx` | Add `studio === "lipsync"` branch rendering LipsyncStudioSection with props |
 
