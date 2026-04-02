@@ -1276,7 +1276,13 @@ export default function KanvasPage() {
                 pageLoading={pageLoading}
               />
             ) : studio === "edit" ? (
-              <EditStudioSection />
+              <EditStudioSection
+                assets={imageAssets}
+                jobs={currentStudioJobs}
+                selectedJob={selectedJob}
+                uploading={uploadingByType.image}
+                onUpload={handleAssetUpload}
+              />
             ) : studio === "worldview" ? (
               <WorldviewSection />
             ) : studio === "character-creation" ? (
