@@ -1599,8 +1599,6 @@ export default function KanvasPage() {
                       onChange={(key, value) => {
                         if (studio === "image") {
                           setImageSettings((current) => ({ ...current, [key]: value }));
-                        } else if ((studio as string) === "video") {
-                          setVideoSettings((current) => ({ ...current, [key]: value }));
                         } else if (studio === "cinema") {
                           setCinemaSettings((current) => ({ ...current, [key]: value }));
                         } else {
