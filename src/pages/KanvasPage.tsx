@@ -1252,10 +1252,7 @@ export default function KanvasPage() {
               <WorldviewSection />
             ) : studio === "character-creation" ? (
               <CharacterCreationSection />
-            ) : (() => {
-              // Cast to full union so TS doesn't complain about branches already handled above
-              const st = studio as KanvasStudio;
-              return (
+            ) : (
             <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.55fr)_420px]">
               <div className="space-y-6">
                 <PreviewStage
