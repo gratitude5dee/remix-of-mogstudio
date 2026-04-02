@@ -92,6 +92,7 @@ import { CharacterCreationSection } from "@/components/character-creation";
 import { VideoStudioSection } from "@/components/kanvas/VideoStudioSection";
 import ImageStudioSection from "@/components/kanvas/ImageStudioSection";
 import EditStudioSection from "@/components/kanvas/EditStudioSection";
+import LipsyncStudioSection from "@/components/kanvas/LipsyncStudioSection";
 import { MentionDropdown } from "@/components/character-creation/MentionDropdown";
 import { useCharacterMention } from "@/hooks/useCharacterMention";
 import { appRoutes } from "@/lib/routes";
@@ -1287,6 +1288,34 @@ export default function KanvasPage() {
               <WorldviewSection />
             ) : studio === "character-creation" ? (
               <CharacterCreationSection />
+            ) : studio === "lipsync" ? (
+              <LipsyncStudioSection
+                prompt={lipsyncPrompt}
+                onPromptChange={setLipsyncPrompt}
+                lipsyncMode={lipsyncMode}
+                onLipsyncModeChange={setLipsyncMode}
+                imageId={lipsyncImageId}
+                videoId={lipsyncVideoId}
+                audioId={lipsyncAudioId}
+                onImageChange={setLipsyncImageId}
+                onVideoChange={setLipsyncVideoId}
+                onAudioChange={setLipsyncAudioId}
+                currentModel={currentLipsyncModel}
+                models={currentLipsyncModels}
+                onModelChange={(id) => {
+                  setLipsyncModelId(id);
+                  setLipsyncSettings({});
+                }}
+                submitting={submitting}
+                onGenerate={() => void handleGenerate()}
+                jobs={currentStudioJobs}
+                selectedJob={selectedJob ?? null}
+                assets={assets}
+                uploadingImage={uploadingByType.image}
+                uploadingVideo={uploadingByType.video}
+                uploadingAudio={uploadingByType.audio}
+                onUpload={handleAssetUpload}
+              />
             ) : (
             <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.55fr)_420px]">
               <div className="space-y-6">
@@ -1319,123 +1348,32 @@ export default function KanvasPage() {
                     )}
                   </div>
 
-                  {studio === "lipsync" && (
-                    <div className="mb-6 flex flex-wrap gap-3">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={cn(
-                          "border-white/10 bg-black/30 text-white",
-                          lipsyncMode === "talking-head" && "border-lime-300/40 bg-lime-300/10 text-white"
-                        )}
-                        onClick={() => setLipsyncMode("talking-head")}
-                      >
-                        Portrait Image
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={cn(
-                          "border-white/10 bg-black/30 text-white",
-                          lipsyncMode === "lip-sync" && "border-lime-300/40 bg-lime-300/10 text-white"
-                        )}
-                        onClick={() => setLipsyncMode("lip-sync")}
-                      >
-                        Existing Video
-                      </Button>
-                    </div>
-                  )}
 
                   <div className="relative">
                     <MentionDropdown
                       suggestions={mentionSuggestions}
                       visible={showMentionDropdown}
                       onSelect={(mention) => {
-                        const currentPrompt =
-                          studio === "cinema"
-                              ? cinemaPrompt
-                              : lipsyncPrompt;
-                        const replaced = onSelectSuggestion(mention, currentPrompt);
-                        if (studio === "cinema") setCinemaPrompt(replaced);
-                        else setLipsyncPrompt(replaced);
+                        const replaced = onSelectSuggestion(mention, cinemaPrompt);
+                        setCinemaPrompt(replaced);
                       }}
                     />
                     <Textarea
-                      value={
-                        studio === "cinema"
-                            ? cinemaPrompt
-                            : lipsyncPrompt
-                      }
+                      value={cinemaPrompt}
                       onChange={(event) => {
                         const nextValue = event.currentTarget.value;
-                        if (studio === "cinema") {
-                          setCinemaPrompt(nextValue);
-                        } else {
-                          setLipsyncPrompt(nextValue);
-                        }
+                        setCinemaPrompt(nextValue);
                         onMentionChange(nextValue);
                       }}
                       onBlur={() => {
-                        // Delay to allow click on dropdown
                         setTimeout(closeMentionDropdown, 200);
                       }}
-                      placeholder={getPromptPlaceholder(
-                        studio,
-                        studio === "lipsync"
-                            ? lipsyncMode === "talking-head"
-                              ? Boolean(lipsyncImageId)
-                              : Boolean(lipsyncVideoId)
-                            : false
-                      )}
+                      placeholder={getPromptPlaceholder(studio, false)}
                       className="min-h-[150px] rounded-[30px] border-white/10 bg-black/40 px-5 py-4 text-base text-white placeholder:text-zinc-600"
                     />
                   </div>
 
                   <div className="mt-6 grid gap-4 xl:grid-cols-2">
-
-
-                    {studio === "lipsync" && lipsyncMode === "talking-head" && (
-                      <AssetSelector
-                        title={getAssetRequirementLabel(studio, "image", lipsyncMode)}
-                        assetType="image"
-                        assets={imageAssets}
-                        selectedIds={lipsyncImageId ? [lipsyncImageId] : []}
-                        uploading={uploadingByType.image}
-                        optional={!currentLipsyncModel?.requiresAssets.includes("image")}
-                        onToggle={(assetId) =>
-                          setLipsyncImageId((current) => (current === assetId ? null : assetId))
-                        }
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
-
-                    {studio === "lipsync" && lipsyncMode === "lip-sync" && (
-                      <AssetSelector
-                        title={getAssetRequirementLabel(studio, "video", lipsyncMode)}
-                        assetType="video"
-                        assets={videoAssets}
-                        selectedIds={lipsyncVideoId ? [lipsyncVideoId] : []}
-                        uploading={uploadingByType.video}
-                        onToggle={(assetId) =>
-                          setLipsyncVideoId((current) => (current === assetId ? null : assetId))
-                        }
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
-
-                    {studio === "lipsync" && (
-                      <AssetSelector
-                        title="Audio"
-                        assetType="audio"
-                        assets={audioAssets}
-                        selectedIds={lipsyncAudioId ? [lipsyncAudioId] : []}
-                        uploading={uploadingByType.audio}
-                        onToggle={(assetId) =>
-                          setLipsyncAudioId((current) => (current === assetId ? null : assetId))
-                        }
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
                   </div>
 
                   {studio === "cinema" && (
@@ -1532,18 +1470,10 @@ export default function KanvasPage() {
                       <Select
                         value={currentModel?.id ?? ""}
                         onValueChange={(value) => {
-                          if (studio === "cinema") {
-                            const nextModel = currentCinemaModels.find((model) => model.id === value);
-                            if (nextModel) {
-                              setCinemaModelId(nextModel.id);
-                              setCinemaSettings({ ...nextModel.defaults });
-                            }
-                          } else {
-                            const nextModel = currentLipsyncModels.find((model) => model.id === value);
-                            if (nextModel) {
-                              setLipsyncModelId(nextModel.id);
-                              setLipsyncSettings({ ...nextModel.defaults });
-                            }
+                          const nextModel = currentCinemaModels.find((model) => model.id === value);
+                          if (nextModel) {
+                            setCinemaModelId(nextModel.id);
+                            setCinemaSettings({ ...nextModel.defaults });
                           }
                         }}
                       >
@@ -1551,10 +1481,7 @@ export default function KanvasPage() {
                           <SelectValue placeholder="Select a model" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(studio === "cinema"
-                              ? currentCinemaModels
-                              : currentLipsyncModels
-                          ).map((model) => (
+                          {currentCinemaModels.map((model) => (
                             <SelectItem key={model.id} value={model.id}>
                               {model.name}
                             </SelectItem>
@@ -1595,17 +1522,9 @@ export default function KanvasPage() {
                   <div className="mt-6">
                     <ModelControls
                       model={currentModel}
-                      settings={
-                        studio === "cinema"
-                            ? cinemaSettings
-                            : lipsyncSettings
-                      }
+                      settings={cinemaSettings}
                       onChange={(key, value) => {
-                        if (studio === "cinema") {
-                          setCinemaSettings((current) => ({ ...current, [key]: value }));
-                        } else {
-                          setLipsyncSettings((current) => ({ ...current, [key]: value }));
-                        }
+                        setCinemaSettings((current) => ({ ...current, [key]: value }));
                       }}
                     />
                   </div>
