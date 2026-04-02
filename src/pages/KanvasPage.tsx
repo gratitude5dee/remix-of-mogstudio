@@ -1524,12 +1524,6 @@ export default function KanvasPage() {
                               setImageModelId(nextModel.id);
                               setImageSettings({ ...nextModel.defaults });
                             }
-                          } else if ((studio as string) === "video") {
-                            const nextModel = currentVideoModels.find((model) => model.id === value);
-                            if (nextModel) {
-                              setVideoModelId(nextModel.id);
-                              setVideoSettings({ ...nextModel.defaults });
-                            }
                           } else if (studio === "cinema") {
                             const nextModel = currentCinemaModels.find((model) => model.id === value);
                             if (nextModel) {
