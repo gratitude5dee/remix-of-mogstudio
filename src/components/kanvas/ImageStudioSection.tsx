@@ -259,7 +259,7 @@ export default function ImageStudioSection({
         <div className="flex-shrink-0 flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
           <Zap className="h-3 w-3 text-[#ccff00]" />
           <span className="text-[11px] font-bold text-white whitespace-nowrap">
-            {currentModel?.label ?? "Select Model"}
+            {currentModel?.name ?? "Select Model"}
           </span>
         </div>
 
