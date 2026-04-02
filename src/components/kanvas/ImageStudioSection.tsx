@@ -154,7 +154,7 @@ export default function ImageStudioSection({
               >
                 <span className="flex items-center gap-2.5">
                   {isActive && <Zap className="h-3.5 w-3.5 text-[#ccff00]" />}
-                  {m.label}
+                  {m.name}
                 </span>
                 {isActive && <Check className="h-3.5 w-3.5 text-[#ccff00]" />}
               </button>
