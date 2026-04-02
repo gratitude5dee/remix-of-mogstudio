@@ -1,52 +1,107 @@
 
 
-# Redesign Edit Studio → Cinematic Inpaint Workspace
+# Wire Up Edit Studio to Backend
 
-## Overview
-Replace the current 4-pane `EditStudioSection` with the reference "Studio/Inpaint" layout: a 260px left sidebar with nav + recent library grid, a central canvas with floating tool palette + active mask overlay + prompt bar, and a 340px right detail sidebar with properties, editor notes, and credits warning.
+## Current State
+The Edit Studio (`EditStudioSection`) is a **static mockup** — hardcoded placeholder gradients, no real assets, no connection to the backend `image-edit-operation` edge function, and the Generate button does nothing. The backend already supports `inpaint`, `removeBackground`, `splitLayers`, and `enhancePrompt` operations via the `imageEditService`.
 
-## Changes
+## Plan
 
-### `src/components/kanvas/EditStudioSection.tsx` — Full Rewrite
+### 1. Pass props from KanvasPage to EditStudioSection
 
-**Left Sidebar (260px):**
-- Header: "STUDIO" bold + "V1.0.4-NOIR" muted
-- "NEW ASSET" wide pill button (`bg-[#1a1919] text-[#ccff00] border border-white/5 rounded-full`)
-- Nav menu: Library (active with lime border-right), Tools, Layers, History, Assets (inactive zinc-500)
-- "RECENT LIBRARY" 2×2 grid of placeholder images below nav
-- Footer: Support + Sign Out links at `mt-auto`
+**`src/pages/KanvasPage.tsx`** — Pass the same asset/job/generation props already available:
+```tsx
+<EditStudioSection
+  assets={imageAssets}
+  jobs={currentStudioJobs}
+  selectedJob={selectedJob}
+  uploading={uploadingByType.image}
+  onUpload={handleAssetUpload}
+  projectId={projectId}
+/>
+```
 
-**Center Canvas (flex-grow, `ml-[260px] mr-[340px]`):**
-- Background: `bg-[#0e0e0e]`
-- Large image container: `aspect-[4/3] max-w-4xl rounded-3xl` with placeholder gradient
-- Vertical floating tool palette inside image (left edge): brush (active lime), wand, eraser, zoom in a backdrop-blur pill
-- Active Mask rectangle overlay: lime border box with "ACTIVE MASK" badge on top
-- Layer info bottom-left: "CURRENT LAYER" overline + "MAIN_COVER_01" title
-- Floating prompt bar at bottom center: glass pill with sparkle icon, text input, lime "Generate" button
+### 2. Rewrite EditStudioSection to be functional
 
-**Right Sidebar (340px):**
-- "ASSET DETAIL" overline (zinc-500, not pink)
-- Hero image thumbnail (aspect-[21/9])
-- Title "Ancient Ledger" + rating pill (star 4.8)
-- Ref line: "#STUDIO-9921"
-- "PROPERTIES" section: Resolution, Format, Material as flex rows (not cards)
-- "EDITOR NOTES" section: paragraph text
-- "LOW CREDITS" warning: hot pink border/text, rounded-[2rem], with triangle icon
-- "MANAGE WORKFLOW" button: wide dark pill
+**`src/components/kanvas/EditStudioSection.tsx`** — Major changes:
 
-**Bottom bar removed** — replaced by the in-canvas floating prompt bar and vertical tool palette.
+**Props & State:**
+- Accept `assets`, `jobs`, `selectedJob`, `uploading`, `onUpload`, `projectId`
+- Track `selectedAssetId` — the user-selected image from their library
+- Track `activeOperation` — which edit tool is active (inpaint, removeBackground, etc.)
+- Track `isProcessing` — loading state during backend calls
+- Track `resultImageUrl` — the output from the last operation
 
-### State
-- `activeSidebarTab`: "library" | "tools" | "layers" | "history" | "assets"
-- `activeCanvasTool`: "brush" | "wand" | "eraser" | "zoom"
-- `inpaintPrompt`: string
+**Left Sidebar — Real Asset Library:**
+- Replace hardcoded gradient squares with actual `assets` from props
+- Clicking an asset sets it as the active canvas image
+- "New Asset" button triggers `onUpload`
+- Show upload spinner when `uploading` is true
 
-### No other files changed
-The `KanvasPage.tsx` already renders `<EditStudioSection />` for `studio === "edit"`. No type or helper changes needed.
+**Center Canvas — Selected Asset Display:**
+- Show the selected asset's actual image (or the result image after an operation)
+- The canvas tool palette maps to real `ImageEditTool` operations:
+  - Brush → `inpaint`
+  - Wand → `removeBackground`
+  - Eraser → `splitLayers`
+  - Zoom → (client-side zoom, no backend call)
+- The "Active Mask" overlay only shows when `inpaint` tool is selected
+- Generate button calls `imageEditService.executeOperation()` with the selected operation, image URL, and prompt
+- Show loading spinner on the Generate button while processing
+- On success, display the result image on the canvas and show a toast
+
+**Right Sidebar — Dynamic Asset Detail:**
+- Show metadata from the selected asset (filename, dimensions, format) instead of hardcoded values
+- "Low Credits" warning uses actual credit count from `useCredits` hook (conditionally shown)
+- Rating section hidden (not applicable for user assets)
+
+**Recent Creations (below canvas or in sidebar):**
+- Show completed `jobs` with thumbnails, similar to Image/Video studios
+
+### 3. Connect to imageEditService
+
+**In EditStudioSection**, import and call `imageEditService.executeOperation()`:
+
+```ts
+const handleGenerate = async () => {
+  if (!selectedAsset || !projectId) return;
+  setIsProcessing(true);
+  try {
+    const result = await imageEditService.executeOperation({
+      projectId,
+      nodeId: selectedAsset.id,
+      operation: activeOperation,
+      prompt: inpaintPrompt,
+      imageUrl: selectedAsset.url,
+    });
+    if (result.asset) setResultImageUrl(result.asset.url);
+    toast.success('Edit complete');
+  } catch (err) {
+    toast.error(err.message);
+  } finally {
+    setIsProcessing(false);
+  }
+};
+```
+
+### 4. Map sidebar tools to operations
+
+| UI Tool | Backend Operation | Requires Prompt | Requires Mask |
+|---------|------------------|-----------------|---------------|
+| Brush (Inpaint) | `inpaint` | Yes | Yes (future) |
+| Wand (Remove BG) | `removeBackground` | No | No |
+| Eraser (Split Layers) | `splitLayers` | No | No |
+| Zoom | Client-only | — | — |
+
+The prompt bar is only shown/enabled when `inpaint` is the active tool. For `removeBackground` and `splitLayers`, clicking Generate executes immediately.
+
+## Design Preservation
+All Noir Futurist styling stays intact — backgrounds, typography, lime accents, panel widths. Only the data sources and interactivity change.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/EditStudioSection.tsx` | Full rewrite to match reference inpaint workspace |
+| `src/components/kanvas/EditStudioSection.tsx` | Accept props, wire assets/jobs, connect to imageEditService, make Generate functional |
+| `src/pages/KanvasPage.tsx` | Pass assets, jobs, projectId, upload props to EditStudioSection |
 
