@@ -1379,19 +1379,6 @@ export default function KanvasPage() {
                       />
                     )}
 
-                    {(studio as string) === "video" && (
-                      <AssetSelector
-                        title={getAssetRequirementLabel(studio, "image", videoMode)}
-                        assetType="image"
-                        assets={imageAssets}
-                        selectedIds={videoReferenceId ? [videoReferenceId] : []}
-                        uploading={uploadingByType.image}
-                        onToggle={(assetId) =>
-                          setVideoReferenceId((current) => (current === assetId ? null : assetId))
-                        }
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
 
                     {studio === "lipsync" && lipsyncMode === "talking-head" && (
                       <AssetSelector
