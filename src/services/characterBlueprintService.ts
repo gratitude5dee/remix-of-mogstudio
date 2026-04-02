@@ -211,7 +211,7 @@ export async function listBlueprintImages(blueprintId: string): Promise<Characte
     .order('sort_order', { ascending: true });
 
   if (error) throw error;
-  return ((data as Record<string, unknown>[]) ?? []).map(rowToImage);
+  return ((data as unknown as Record<string, unknown>[]) ?? []).map(rowToImage);
 }
 
 export async function addBlueprintImage(input: {
