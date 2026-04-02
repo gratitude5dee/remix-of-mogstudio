@@ -104,6 +104,7 @@ const ACCEPTED_TYPES: Record<KanvasAssetType, string> = {
 const STUDIO_ICONS: Record<KanvasStudio, typeof ImageIcon> = {
   image: ImageIcon,
   video: Video,
+  edit: Pencil,
   cinema: Clapperboard,
   lipsync: Mic2,
   worldview: Globe2,

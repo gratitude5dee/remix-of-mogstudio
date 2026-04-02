@@ -1,6 +1,6 @@
 import type { ProjectAsset } from "@/types/assets";
 
-export type KanvasStudio = "image" | "video" | "cinema" | "lipsync" | "worldview" | "character-creation";
+export type KanvasStudio = "image" | "video" | "edit" | "cinema" | "lipsync" | "worldview" | "character-creation";
 export type KanvasMode =
   | "text-to-image"
   | "image-to-image"

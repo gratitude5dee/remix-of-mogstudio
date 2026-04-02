@@ -395,6 +395,9 @@ export function buildRequestForStudio(
       return buildCinemaRequest(input as Parameters<typeof buildCinemaRequest>[0]);
     case "lipsync":
       return buildLipSyncRequest(input as Parameters<typeof buildLipSyncRequest>[0]);
+    case "edit":
+      // Edit mode is client-only, no generation requests
+      return undefined;
     case "worldview":
       // Worldview uses its own service layer, not the kanvas generation pipeline
       return undefined;
