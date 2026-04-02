@@ -226,25 +226,25 @@ serve(async (req) => {
       .from("project-assets")
       .getPublicUrl(storagePath);
 
-    // Create database record
+    // Create database record (matches actual project_assets schema)
     const { data: asset, error: dbError } = await supabaseClient
       .from("project_assets")
       .insert({
-        user_id: user.id,
         project_id: projectId || null,
-        file_name: fileName,
-        original_file_name: file.name,
-        mime_type: file.type,
-        file_size_bytes: file.size,
-        asset_type: assetType,
-        asset_category: assetCategory,
-        storage_provider: "supabase",
-        storage_bucket: "project-assets",
-        storage_path: storagePath,
-        cdn_url: urlData.publicUrl,
-        processing_status: "pending",
-        visibility: visibility || "private",
-        media_metadata: {},
+        name: file.name,
+        url: urlData.publicUrl,
+        thumbnail_url: urlData.publicUrl,
+        type: assetType,
+        size: file.size,
+        metadata: {
+          mime_type: file.type,
+          storage_bucket: "project-assets",
+          storage_path: storagePath,
+          asset_category: assetCategory,
+          visibility: visibility || "private",
+          original_file_name: file.name,
+          user_id: user.id,
+        },
       })
       .select()
       .single();
@@ -270,12 +270,7 @@ serve(async (req) => {
       );
     }
 
-    // Queue processing job (thumbnail generation, metadata extraction, etc.)
-    await supabaseClient.from("processing_queue").insert({
-      asset_id: asset.id,
-      job_type: "process_asset",
-      priority: 1,
-    });
+    // Processing queue skipped — table does not exist yet
 
     return new Response(
       JSON.stringify({
