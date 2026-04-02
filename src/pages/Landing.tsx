@@ -16,7 +16,7 @@ import TopChoiceGrid from '@/components/landing/TopChoiceGrid';
 import PhotodumpBanner from '@/components/landing/PhotodumpBanner';
 import SoulCinemaGallery from '@/components/landing/SoulCinemaGallery';
 import CinematicFooter from '@/components/landing/CinematicFooter';
-import { ModelLibrarySection } from '@/components/landing/ModelLibrarySection';
+
 
 import { ThreeStepSection } from '@/components/landing/ThreeStepSection';
 import { FinalCTASection } from '@/components/landing/FinalCTASection';
