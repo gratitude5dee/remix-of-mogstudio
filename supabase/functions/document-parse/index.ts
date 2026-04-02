@@ -56,7 +56,7 @@ async function parsePdf(data: Uint8Array): Promise<{ text: string; pageCount: nu
  * Extract text from a DOCX file using mammoth.
  */
 async function parseDocx(data: Uint8Array): Promise<{ text: string }> {
-  const mammoth = await import('npm:mammoth');
+  const mammoth = await import('https://esm.sh/mammoth@1.8.0');
   const result = await mammoth.default.extractRawText({ buffer: data });
   return { text: result.value };
 }

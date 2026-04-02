@@ -1133,6 +1133,86 @@ export type Database = {
           },
         ]
       }
+      character_blueprint_images: {
+        Row: {
+          blueprint_id: string
+          created_at: string
+          generation_params: Json | null
+          id: string
+          image_url: string
+          variant: string | null
+        }
+        Insert: {
+          blueprint_id: string
+          created_at?: string
+          generation_params?: Json | null
+          id?: string
+          image_url: string
+          variant?: string | null
+        }
+        Update: {
+          blueprint_id?: string
+          created_at?: string
+          generation_params?: Json | null
+          id?: string
+          image_url?: string
+          variant?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_blueprint_images_blueprint_id_fkey"
+            columns: ["blueprint_id"]
+            isOneToOne: false
+            referencedRelation: "character_blueprints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      character_blueprints: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          status: string
+          style: string | null
+          thumbnail_url: string | null
+          traits: Json | null
+          updated_at: string
+          user_id: string
+          visual_prompt: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          status?: string
+          style?: string | null
+          thumbnail_url?: string | null
+          traits?: Json | null
+          updated_at?: string
+          user_id: string
+          visual_prompt?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          status?: string
+          style?: string | null
+          thumbnail_url?: string | null
+          traits?: Json | null
+          updated_at?: string
+          user_id?: string
+          visual_prompt?: string | null
+        }
+        Relationships: []
+      }
       character_scene_appearances: {
         Row: {
           accessories: string[] | null

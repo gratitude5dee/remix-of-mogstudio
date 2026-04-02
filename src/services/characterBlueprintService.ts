@@ -55,7 +55,7 @@ export async function listBlueprints(): Promise<CharacterBlueprint[]> {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return ((data as Record<string, unknown>[]) ?? []).map(rowToBlueprint);
+  return ((data as unknown as Record<string, unknown>[]) ?? []).map(rowToBlueprint);
 }
 
 // ---------------------------------------------------------------------------
@@ -70,7 +70,7 @@ export async function getBlueprint(id: string): Promise<CharacterBlueprint | nul
     .maybeSingle();
 
   if (error) throw error;
-  return data ? rowToBlueprint(data as Record<string, unknown>) : null;
+  return data ? rowToBlueprint(data as unknown as Record<string, unknown>) : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -117,7 +117,7 @@ export async function createBlueprint(input: {
     .single();
 
   if (error) throw error;
-  return rowToBlueprint(data as Record<string, unknown>);
+  return rowToBlueprint(data as unknown as Record<string, unknown>);
 }
 
 // ---------------------------------------------------------------------------
@@ -163,7 +163,7 @@ export async function updateBlueprintRecord(
     .single();
 
   if (error) throw error;
-  return rowToBlueprint(data as Record<string, unknown>);
+  return rowToBlueprint(data as unknown as Record<string, unknown>);
 }
 
 // ---------------------------------------------------------------------------
@@ -211,7 +211,7 @@ export async function listBlueprintImages(blueprintId: string): Promise<Characte
     .order('sort_order', { ascending: true });
 
   if (error) throw error;
-  return ((data as Record<string, unknown>[]) ?? []).map(rowToImage);
+  return ((data as unknown as Record<string, unknown>[]) ?? []).map(rowToImage);
 }
 
 export async function addBlueprintImage(input: {
@@ -232,7 +232,7 @@ export async function addBlueprintImage(input: {
     .single();
 
   if (error) throw error;
-  return rowToImage(data as Record<string, unknown>);
+  return rowToImage(data as unknown as Record<string, unknown>);
 }
 
 // ---------------------------------------------------------------------------
@@ -254,5 +254,5 @@ export async function searchBlueprintsBySlug(
     .limit(limit);
 
   if (error) throw error;
-  return ((data as Record<string, unknown>[]) ?? []).map(rowToBlueprint);
+  return ((data as unknown as Record<string, unknown>[]) ?? []).map(rowToBlueprint);
 }
