@@ -1470,18 +1470,10 @@ export default function KanvasPage() {
                       <Select
                         value={currentModel?.id ?? ""}
                         onValueChange={(value) => {
-                          if (studio === "cinema") {
-                            const nextModel = currentCinemaModels.find((model) => model.id === value);
-                            if (nextModel) {
-                              setCinemaModelId(nextModel.id);
-                              setCinemaSettings({ ...nextModel.defaults });
-                            }
-                          } else {
-                            const nextModel = currentLipsyncModels.find((model) => model.id === value);
-                            if (nextModel) {
-                              setLipsyncModelId(nextModel.id);
-                              setLipsyncSettings({ ...nextModel.defaults });
-                            }
+                          const nextModel = currentCinemaModels.find((model) => model.id === value);
+                          if (nextModel) {
+                            setCinemaModelId(nextModel.id);
+                            setCinemaSettings({ ...nextModel.defaults });
                           }
                         }}
                       >
@@ -1489,10 +1481,7 @@ export default function KanvasPage() {
                           <SelectValue placeholder="Select a model" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(studio === "cinema"
-                              ? currentCinemaModels
-                              : currentLipsyncModels
-                          ).map((model) => (
+                          {currentCinemaModels.map((model) => (
                             <SelectItem key={model.id} value={model.id}>
                               {model.name}
                             </SelectItem>
