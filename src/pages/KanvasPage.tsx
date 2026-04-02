@@ -1585,16 +1585,12 @@ export default function KanvasPage() {
                     <ModelControls
                       model={currentModel}
                       settings={
-                        studio === "image"
-                          ? imageSettings
-                          : studio === "cinema"
+                        studio === "cinema"
                             ? cinemaSettings
                             : lipsyncSettings
                       }
                       onChange={(key, value) => {
-                        if (studio === "image") {
-                          setImageSettings((current) => ({ ...current, [key]: value }));
-                        } else if (studio === "cinema") {
+                        if (studio === "cinema") {
                           setCinemaSettings((current) => ({ ...current, [key]: value }));
                         } else {
                           setLipsyncSettings((current) => ({ ...current, [key]: value }));
