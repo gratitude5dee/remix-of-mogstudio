@@ -63,22 +63,29 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client with user context
-    const supabaseClient = createClient(
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Unauthorized" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+
+    // Verify the forwarded JWT with a server-side auth client
+    const authClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      {
-        global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
-        },
-      }
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Verify authentication
     const {
       data: { user },
       error: authError,
-    } = await supabaseClient.auth.getUser();
+    } = await authClient.auth.getUser(token);
 
     if (authError || !user) {
       return new Response(
@@ -89,6 +96,17 @@ serve(async (req) => {
         }
       );
     }
+
+    // Use the authenticated user's JWT for all downstream RLS-scoped operations
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: {
+          headers: { Authorization: authHeader },
+        },
+      }
+    );
 
     // Parse request body
     const body: UploadRequest = await req.json();
