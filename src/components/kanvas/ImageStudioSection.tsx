@@ -106,7 +106,7 @@ export default function ImageStudioSection({
 
   /* ---- Sidebar ---- */
   const renderSidebar = () => (
-    <aside className="fixed left-0 top-[80px] h-[calc(100vh-80px)] w-[260px] border-r border-white/5 bg-black p-6 flex flex-col gap-8 overflow-y-auto z-30"
+    <aside className="fixed left-0 top-[80px] h-[calc(100vh-80px)] w-[260px] border-r border-white/5 bg-[#050506] p-6 flex flex-col gap-8 overflow-y-auto z-30"
       style={{ scrollbarWidth: "none" }}
     >
       {/* Studio Features */}
@@ -352,7 +352,7 @@ export default function ImageStudioSection({
 
   /* ---- Render ---- */
   return (
-    <div className="relative min-h-screen bg-black">
+    <div className="fixed inset-0 top-[80px] bg-[#050506] z-20 overflow-y-auto">
       {renderSidebar()}
       {renderMainContent()}
       {renderPromptBar()}
