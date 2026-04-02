@@ -1351,9 +1351,7 @@ export default function KanvasPage() {
                     />
                     <Textarea
                       value={
-                        studio === "image"
-                          ? imagePrompt
-                          : studio === "cinema"
+                        studio === "cinema"
                             ? cinemaPrompt
                             : lipsyncPrompt
                       }
