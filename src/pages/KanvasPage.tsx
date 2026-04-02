@@ -1370,9 +1370,7 @@ export default function KanvasPage() {
                       }}
                       placeholder={getPromptPlaceholder(
                         studio,
-                        studio === "image"
-                          ? imageReferenceIds.length > 0
-                          : studio === "lipsync"
+                        studio === "lipsync"
                             ? lipsyncMode === "talking-head"
                               ? Boolean(lipsyncImageId)
                               : Boolean(lipsyncVideoId)
