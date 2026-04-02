@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import {
   Check,
+  Eye,
   Film,
   Loader2,
   Plus,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { KanvasAsset, KanvasAssetType, KanvasJob, KanvasModel } from "@/features/kanvas/types";
+import { getJobPrimaryUrl } from "@/features/kanvas/helpers";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -96,9 +98,11 @@ export default function ImageStudioSection({
   onModelChange,
   submitting,
   onGenerate,
+  jobs,
 }: ImageStudioSectionProps) {
   const [imageCount, _setImageCount] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const completedJobs = jobs.filter((j) => j.status === "completed").slice(0, 8);
 
   /* ---- Sidebar ---- */
   const renderSidebar = () => (
@@ -183,7 +187,7 @@ export default function ImageStudioSection({
 
   /* ---- Main Content ---- */
   const renderMainContent = () => (
-    <div className="ml-[260px] pt-20 pb-48 px-12 min-h-screen flex flex-col items-center w-full">
+    <div className="ml-[260px] pt-20 pb-48 px-12 min-h-0 flex flex-col items-center w-full">
       {/* Hero Typography */}
       <div className="text-center">
         <h1
@@ -211,13 +215,8 @@ export default function ImageStudioSection({
             key={i}
             className="min-w-[340px] aspect-[4/5] rounded-3xl relative overflow-hidden group cursor-pointer border border-white/5 snap-center flex-shrink-0"
           >
-            {/* Gradient Background */}
             <div className={cn("absolute inset-0 bg-gradient-to-br", card.gradient)} />
-
-            {/* Atmospheric shimmer */}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-
-            {/* Content */}
             <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#ccff00]">
                 {card.category}
@@ -227,11 +226,59 @@ export default function ImageStudioSection({
               </h3>
               <p className="text-xs text-zinc-500 leading-relaxed">{card.subtitle}</p>
             </div>
-
-            {/* Hover scale on inner element */}
             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/[0.02] transition-colors duration-700" />
           </div>
         ))}
+      </div>
+
+      {/* Recent Creations Gallery */}
+      {completedJobs.length > 0 && (
+        <div className="w-full max-w-[1200px] mt-16">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600 mb-2">GALLERY</p>
+              <h2 className="text-2xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Recent Creations
+              </h2>
+            </div>
+            <button className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-400 hover:text-[#ccff00] transition-colors">
+              View All →
+            </button>
+          </div>
+          <div className="h-px w-full bg-gradient-to-r from-[#ccff00]/40 via-[#ccff00]/10 to-transparent mb-8" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {completedJobs.map((job) => {
+              const url = getJobPrimaryUrl(job);
+              if (!url) return null;
+              return (
+                <div
+                  key={job.id}
+                  className="aspect-square rounded-2xl relative overflow-hidden group cursor-pointer border border-white/5 bg-white/5"
+                >
+                  <img
+                    src={url}
+                    alt="Generated"
+                    className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Eye className="h-6 w-6 text-[#ccff00] drop-shadow-lg" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Inline Footer */}
+      <div className="w-full max-w-[1200px] mt-20 pt-8 border-t border-white/5 flex justify-between text-[9px] uppercase tracking-[0.3em] text-zinc-600 font-bold pb-8">
+        <span>© 2024 WZRD.STUDIO • THE NOIR FUTURIST</span>
+        <span className="flex gap-8">
+          <span>PRIVACY</span>
+          <span>TERMS</span>
+          <span>API</span>
+        </span>
       </div>
     </div>
   );
@@ -303,25 +350,12 @@ export default function ImageStudioSection({
     </div>
   );
 
-  /* ---- Footer ---- */
-  const renderFooter = () => (
-    <div className="fixed bottom-6 left-[272px] right-12 flex justify-between text-[9px] uppercase tracking-[0.3em] text-zinc-600 font-bold z-40 pointer-events-none">
-      <span>© 2024 WZRD.STUDIO • THE NOIR FUTURIST</span>
-      <span className="flex gap-8">
-        <span>PRIVACY</span>
-        <span>TERMS</span>
-        <span>API</span>
-      </span>
-    </div>
-  );
-
   /* ---- Render ---- */
   return (
     <div className="relative min-h-screen bg-black">
       {renderSidebar()}
       {renderMainContent()}
       {renderPromptBar()}
-      {renderFooter()}
     </div>
   );
 }
