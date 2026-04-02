@@ -1374,50 +1374,6 @@ export default function KanvasPage() {
                   </div>
 
                   <div className="mt-6 grid gap-4 xl:grid-cols-2">
-
-
-                    {studio === "lipsync" && lipsyncMode === "talking-head" && (
-                      <AssetSelector
-                        title={getAssetRequirementLabel(studio, "image", lipsyncMode)}
-                        assetType="image"
-                        assets={imageAssets}
-                        selectedIds={lipsyncImageId ? [lipsyncImageId] : []}
-                        uploading={uploadingByType.image}
-                        optional={!currentLipsyncModel?.requiresAssets.includes("image")}
-                        onToggle={(assetId) =>
-                          setLipsyncImageId((current) => (current === assetId ? null : assetId))
-                        }
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
-
-                    {studio === "lipsync" && lipsyncMode === "lip-sync" && (
-                      <AssetSelector
-                        title={getAssetRequirementLabel(studio, "video", lipsyncMode)}
-                        assetType="video"
-                        assets={videoAssets}
-                        selectedIds={lipsyncVideoId ? [lipsyncVideoId] : []}
-                        uploading={uploadingByType.video}
-                        onToggle={(assetId) =>
-                          setLipsyncVideoId((current) => (current === assetId ? null : assetId))
-                        }
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
-
-                    {studio === "lipsync" && (
-                      <AssetSelector
-                        title="Audio"
-                        assetType="audio"
-                        assets={audioAssets}
-                        selectedIds={lipsyncAudioId ? [lipsyncAudioId] : []}
-                        uploading={uploadingByType.audio}
-                        onToggle={(assetId) =>
-                          setLipsyncAudioId((current) => (current === assetId ? null : assetId))
-                        }
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
                   </div>
 
                   {studio === "cinema" && (
