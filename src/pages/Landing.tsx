@@ -17,7 +17,7 @@ import PhotodumpBanner from '@/components/landing/PhotodumpBanner';
 import SoulCinemaGallery from '@/components/landing/SoulCinemaGallery';
 import CinematicFooter from '@/components/landing/CinematicFooter';
 import { ModelLibrarySection } from '@/components/landing/ModelLibrarySection';
-import { GeneratedShowcaseSection } from '@/components/landing/GeneratedShowcaseSection';
+
 import { ThreeStepSection } from '@/components/landing/ThreeStepSection';
 import { FinalCTASection } from '@/components/landing/FinalCTASection';
 import { IPhoneMockup } from '@/components/landing/IPhoneMockup';
