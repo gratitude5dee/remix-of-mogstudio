@@ -1340,8 +1340,6 @@ export default function KanvasPage() {
                         const nextValue = event.currentTarget.value;
                         if (studio === "image") {
                           setImagePrompt(nextValue);
-                        } else if ((studio as string) === "video") {
-                          setVideoPrompt(nextValue);
                         } else if (studio === "cinema") {
                           setCinemaPrompt(nextValue);
                         } else {
