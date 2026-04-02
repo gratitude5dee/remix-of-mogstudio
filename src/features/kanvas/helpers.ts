@@ -18,7 +18,7 @@ import type {
 
 type GenerationJobRow = any;
 
-export const KANVAS_STUDIO_ORDER: KanvasStudio[] = ["image", "video", "lipsync", "cinema", "worldview", "character-creation"];
+export const KANVAS_STUDIO_ORDER: KanvasStudio[] = ["image", "video", "edit", "lipsync", "cinema", "worldview", "character-creation"];
 
 export const KANVAS_STUDIO_META: Record<
   KanvasStudio,
@@ -33,6 +33,11 @@ export const KANVAS_STUDIO_META: Record<
     label: "Video",
     headline: "Video Studio",
     description: "Turn prompts and frames into motion-first clips.",
+  },
+  edit: {
+    label: "Edit",
+    headline: "Edit Studio",
+    description: "Inpaint, relight, upscale, and refine your assets.",
   },
   cinema: {
     label: "Cinema Studio",
@@ -143,7 +148,7 @@ export function createDefaultCinemaSettings(): KanvasCinemaSettings {
 }
 
 export function normalizeStudioParam(value: string | null | undefined): KanvasStudio {
-  if (value === "image" || value === "video" || value === "cinema" || value === "lipsync" || value === "worldview" || value === "character-creation") {
+  if (value === "image" || value === "video" || value === "edit" || value === "cinema" || value === "lipsync" || value === "worldview" || value === "character-creation") {
     return value;
   }
   return "image";
@@ -390,6 +395,9 @@ export function buildRequestForStudio(
       return buildCinemaRequest(input as Parameters<typeof buildCinemaRequest>[0]);
     case "lipsync":
       return buildLipSyncRequest(input as Parameters<typeof buildLipSyncRequest>[0]);
+    case "edit":
+      // Edit mode is client-only, no generation requests
+      return undefined;
     case "worldview":
       // Worldview uses its own service layer, not the kanvas generation pipeline
       return undefined;

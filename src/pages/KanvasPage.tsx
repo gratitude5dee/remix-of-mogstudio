@@ -18,6 +18,7 @@ import {
   Image as ImageIcon,
   Loader2,
   Mic2,
+  Pencil,
   Sparkles,
   Upload,
   Video,
@@ -90,6 +91,7 @@ import { WorldviewSection } from "@/components/worldview";
 import { CharacterCreationSection } from "@/components/character-creation";
 import { VideoStudioSection } from "@/components/kanvas/VideoStudioSection";
 import ImageStudioSection from "@/components/kanvas/ImageStudioSection";
+import EditStudioSection from "@/components/kanvas/EditStudioSection";
 import { MentionDropdown } from "@/components/character-creation/MentionDropdown";
 import { useCharacterMention } from "@/hooks/useCharacterMention";
 import { appRoutes } from "@/lib/routes";
@@ -104,6 +106,7 @@ const ACCEPTED_TYPES: Record<KanvasAssetType, string> = {
 const STUDIO_ICONS: Record<KanvasStudio, typeof ImageIcon> = {
   image: ImageIcon,
   video: Video,
+  edit: Pencil,
   cinema: Clapperboard,
   lipsync: Mic2,
   worldview: Globe2,
@@ -1272,6 +1275,8 @@ export default function KanvasPage() {
                 onUpload={handleAssetUpload}
                 pageLoading={pageLoading}
               />
+            ) : studio === "edit" ? (
+              <EditStudioSection />
             ) : studio === "worldview" ? (
               <WorldviewSection />
             ) : studio === "character-creation" ? (
