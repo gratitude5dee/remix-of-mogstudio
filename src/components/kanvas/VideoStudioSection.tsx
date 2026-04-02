@@ -5,11 +5,7 @@ import {
   Lightbulb,
   Loader2,
   Play,
-  Plus,
   SlidersHorizontal,
-  Sparkles,
-  Upload,
-  Video,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
