@@ -1317,11 +1317,11 @@ export default function KanvasPage() {
                       visible={showMentionDropdown}
                       onSelect={(mention) => {
                         const currentPrompt =
-                          studio === "image"
+                          (studio as string) === "image"
                             ? imagePrompt
-                            : studio === "video"
+                            : (studio as string) === "video"
                               ? videoPrompt
-                              : studio === "cinema"
+                              : (studio as string) === "cinema"
                                 ? cinemaPrompt
                                 : lipsyncPrompt;
                         const replaced = onSelectSuggestion(mention, currentPrompt);
