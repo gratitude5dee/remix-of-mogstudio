@@ -18,7 +18,7 @@ import type {
 
 type GenerationJobRow = any;
 
-export const KANVAS_STUDIO_ORDER: KanvasStudio[] = ["image", "video", "lipsync", "cinema", "worldview"];
+export const KANVAS_STUDIO_ORDER: KanvasStudio[] = ["image", "video", "lipsync", "cinema", "worldview", "character-creation"];
 
 export const KANVAS_STUDIO_META: Record<
   KanvasStudio,
@@ -48,6 +48,11 @@ export const KANVAS_STUDIO_META: Record<
     label: "Worldview",
     headline: "Worldview Studio",
     description: "Generate 3D worlds, capture takes, and compose AI shots.",
+  },
+  "character-creation": {
+    label: "Characters",
+    headline: "Character Creation",
+    description: "Design characters & objects, store them, and reference with @mentions.",
   },
 };
 
@@ -138,7 +143,7 @@ export function createDefaultCinemaSettings(): KanvasCinemaSettings {
 }
 
 export function normalizeStudioParam(value: string | null | undefined): KanvasStudio {
-  if (value === "image" || value === "video" || value === "cinema" || value === "lipsync" || value === "worldview") {
+  if (value === "image" || value === "video" || value === "cinema" || value === "lipsync" || value === "worldview" || value === "character-creation") {
     return value;
   }
   return "image";
@@ -387,6 +392,9 @@ export function buildRequestForStudio(
       return buildLipSyncRequest(input as Parameters<typeof buildLipSyncRequest>[0]);
     case "worldview":
       // Worldview uses its own service layer, not the kanvas generation pipeline
+      return undefined;
+    case "character-creation":
+      // Character creation uses its own store/service layer
       return undefined;
   }
 }

@@ -87,6 +87,9 @@ import type {
   KanvasStudio,
 } from "@/features/kanvas/types";
 import { WorldviewSection } from "@/components/worldview";
+import { CharacterCreationSection } from "@/components/character-creation";
+import { MentionDropdown } from "@/components/character-creation/MentionDropdown";
+import { useCharacterMention } from "@/hooks/useCharacterMention";
 import { appRoutes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -102,6 +105,7 @@ const STUDIO_ICONS: Record<KanvasStudio, typeof ImageIcon> = {
   cinema: Clapperboard,
   lipsync: Mic2,
   worldview: Globe2,
+  "character-creation": Sparkles,
 };
 
 function mergeAssets(current: KanvasAsset[], incoming: KanvasAsset[]): KanvasAsset[] {
@@ -733,6 +737,16 @@ export default function KanvasPage() {
     audio: false,
   });
 
+  // @mention character references
+  const {
+    suggestions: mentionSuggestions,
+    showSuggestions: showMentionDropdown,
+    onPromptChange: onMentionChange,
+    onSelectSuggestion,
+    resolvePrompt: resolveMentions,
+    closeSuggestions: closeMentionDropdown,
+  } = useCharacterMention();
+
   const [imagePrompt, setImagePrompt] = useState("");
   const [imageReferenceIds, setImageReferenceIds] = useState<string[]>([]);
   const [imageModelId, setImageModelId] = useState("");
@@ -809,7 +823,7 @@ export default function KanvasPage() {
     async function loadInitialState() {
       setPageLoading(true);
       try {
-        const studioKeys = KANVAS_STUDIO_ORDER.filter((s) => s !== "worldview");
+        const studioKeys = KANVAS_STUDIO_ORDER.filter((s) => s !== "worldview" && s !== "character-creation");
         const [assetsResult, jobsResult, ...modelResults] = await Promise.allSettled([
           listKanvasAssets(),
           listKanvasJobs(),
@@ -1004,6 +1018,12 @@ export default function KanvasPage() {
     );
   }
 
+  /** Expand @mentions in a prompt string before sending to generation. */
+  function expandMentions(rawPrompt: string): string {
+    const { expandedPrompt } = resolveMentions(rawPrompt);
+    return expandedPrompt;
+  }
+
   function buildCurrentRequest(): KanvasGenerationRequest {
     if (studio === "image") {
       if (imageReferenceIds.length === 0 && imagePrompt.trim().length === 0) {
@@ -1015,7 +1035,7 @@ export default function KanvasPage() {
 
       return buildImageRequest({
         modelId: currentImageModel.id,
-        prompt: imagePrompt.trim(),
+        prompt: expandMentions(imagePrompt.trim()),
         settings: imageSettings,
         imageIds: imageReferenceIds,
       });
@@ -1031,7 +1051,7 @@ export default function KanvasPage() {
 
       return buildVideoRequest({
         modelId: currentVideoModel.id,
-        prompt: videoPrompt.trim(),
+        prompt: expandMentions(videoPrompt.trim()),
         settings: videoSettings,
         imageId: videoReferenceId,
       });
@@ -1047,7 +1067,7 @@ export default function KanvasPage() {
 
       return buildCinemaRequest({
         modelId: currentCinemaModel.id,
-        prompt: cinemaPrompt.trim(),
+        prompt: expandMentions(cinemaPrompt.trim()),
         settings: cinemaSettings,
         cinema: cinemaCameraSettings,
       });
@@ -1068,7 +1088,7 @@ export default function KanvasPage() {
       return buildLipSyncRequest({
         mode: "talking-head",
         modelId: currentLipsyncModel.id,
-        prompt: lipsyncPrompt.trim(),
+        prompt: expandMentions(lipsyncPrompt.trim()),
         settings: lipsyncSettings,
         imageId: lipsyncImageId,
         audioId: lipsyncAudioId,
@@ -1206,6 +1226,8 @@ export default function KanvasPage() {
           <div className="min-w-0 flex-1">
             {studio === "worldview" ? (
               <WorldviewSection />
+            ) : studio === "character-creation" ? (
+              <CharacterCreationSection />
             ) : (
             <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.55fr)_420px]">
               <div className="space-y-6">
@@ -1265,42 +1287,68 @@ export default function KanvasPage() {
                     </div>
                   )}
 
-                  <Textarea
-                    value={
-                      studio === "image"
-                        ? imagePrompt
-                        : studio === "video"
-                          ? videoPrompt
-                          : studio === "cinema"
-                            ? cinemaPrompt
-                            : lipsyncPrompt
-                    }
-                    onChange={(event) => {
-                      const nextValue = event.currentTarget.value;
-                      if (studio === "image") {
-                        setImagePrompt(nextValue);
-                      } else if (studio === "video") {
-                        setVideoPrompt(nextValue);
-                      } else if (studio === "cinema") {
-                        setCinemaPrompt(nextValue);
-                      } else {
-                        setLipsyncPrompt(nextValue);
+                  <div className="relative">
+                    <MentionDropdown
+                      suggestions={mentionSuggestions}
+                      visible={showMentionDropdown}
+                      onSelect={(mention) => {
+                        const currentPrompt =
+                          studio === "image"
+                            ? imagePrompt
+                            : studio === "video"
+                              ? videoPrompt
+                              : studio === "cinema"
+                                ? cinemaPrompt
+                                : lipsyncPrompt;
+                        const replaced = onSelectSuggestion(mention, currentPrompt);
+                        if (studio === "image") setImagePrompt(replaced);
+                        else if (studio === "video") setVideoPrompt(replaced);
+                        else if (studio === "cinema") setCinemaPrompt(replaced);
+                        else setLipsyncPrompt(replaced);
+                      }}
+                    />
+                    <Textarea
+                      value={
+                        studio === "image"
+                          ? imagePrompt
+                          : studio === "video"
+                            ? videoPrompt
+                            : studio === "cinema"
+                              ? cinemaPrompt
+                              : lipsyncPrompt
                       }
-                    }}
-                    placeholder={getPromptPlaceholder(
-                      studio,
-                      studio === "image"
-                        ? imageReferenceIds.length > 0
-                        : studio === "video"
-                          ? Boolean(videoReferenceId)
-                          : studio === "lipsync"
-                            ? lipsyncMode === "talking-head"
-                              ? Boolean(lipsyncImageId)
-                              : Boolean(lipsyncVideoId)
-                            : false
-                    )}
-                    className="min-h-[150px] rounded-[30px] border-white/10 bg-black/40 px-5 py-4 text-base text-white placeholder:text-zinc-600"
-                  />
+                      onChange={(event) => {
+                        const nextValue = event.currentTarget.value;
+                        if (studio === "image") {
+                          setImagePrompt(nextValue);
+                        } else if (studio === "video") {
+                          setVideoPrompt(nextValue);
+                        } else if (studio === "cinema") {
+                          setCinemaPrompt(nextValue);
+                        } else {
+                          setLipsyncPrompt(nextValue);
+                        }
+                        onMentionChange(nextValue);
+                      }}
+                      onBlur={() => {
+                        // Delay to allow click on dropdown
+                        setTimeout(closeMentionDropdown, 200);
+                      }}
+                      placeholder={getPromptPlaceholder(
+                        studio,
+                        studio === "image"
+                          ? imageReferenceIds.length > 0
+                          : studio === "video"
+                            ? Boolean(videoReferenceId)
+                            : studio === "lipsync"
+                              ? lipsyncMode === "talking-head"
+                                ? Boolean(lipsyncImageId)
+                                : Boolean(lipsyncVideoId)
+                              : false
+                      )}
+                      className="min-h-[150px] rounded-[30px] border-white/10 bg-black/40 px-5 py-4 text-base text-white placeholder:text-zinc-600"
+                    />
+                  </div>
 
                   <div className="mt-6 grid gap-4 xl:grid-cols-2">
                     {studio === "image" && (
