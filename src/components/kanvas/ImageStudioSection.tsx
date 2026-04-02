@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import {
   Check,
-  ChevronRight,
   Film,
   Loader2,
   Plus,
