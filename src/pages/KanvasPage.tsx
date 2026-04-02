@@ -1275,6 +1275,8 @@ export default function KanvasPage() {
                 onUpload={handleAssetUpload}
                 pageLoading={pageLoading}
               />
+            ) : studio === "edit" ? (
+              <EditStudioSection />
             ) : studio === "worldview" ? (
               <WorldviewSection />
             ) : studio === "character-creation" ? (
