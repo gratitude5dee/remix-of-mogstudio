@@ -1355,13 +1355,11 @@ export default function KanvasPage() {
                         studio,
                         studio === "image"
                           ? imageReferenceIds.length > 0
-                          : (studio as string) === "video"
-                            ? Boolean(videoReferenceId)
-                            : studio === "lipsync"
-                              ? lipsyncMode === "talking-head"
-                                ? Boolean(lipsyncImageId)
-                                : Boolean(lipsyncVideoId)
-                              : false
+                          : studio === "lipsync"
+                            ? lipsyncMode === "talking-head"
+                              ? Boolean(lipsyncImageId)
+                              : Boolean(lipsyncVideoId)
+                            : false
                       )}
                       className="min-h-[150px] rounded-[30px] border-white/10 bg-black/40 px-5 py-4 text-base text-white placeholder:text-zinc-600"
                     />
