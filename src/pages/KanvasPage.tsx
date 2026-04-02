@@ -1522,17 +1522,9 @@ export default function KanvasPage() {
                   <div className="mt-6">
                     <ModelControls
                       model={currentModel}
-                      settings={
-                        studio === "cinema"
-                            ? cinemaSettings
-                            : lipsyncSettings
-                      }
+                      settings={cinemaSettings}
                       onChange={(key, value) => {
-                        if (studio === "cinema") {
-                          setCinemaSettings((current) => ({ ...current, [key]: value }));
-                        } else {
-                          setLipsyncSettings((current) => ({ ...current, [key]: value }));
-                        }
+                        setCinemaSettings((current) => ({ ...current, [key]: value }));
                       }}
                     />
                   </div>
