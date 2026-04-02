@@ -1288,6 +1288,34 @@ export default function KanvasPage() {
               <WorldviewSection />
             ) : studio === "character-creation" ? (
               <CharacterCreationSection />
+            ) : studio === "lipsync" ? (
+              <LipsyncStudioSection
+                prompt={lipsyncPrompt}
+                onPromptChange={setLipsyncPrompt}
+                lipsyncMode={lipsyncMode}
+                onLipsyncModeChange={setLipsyncMode}
+                imageId={lipsyncImageId}
+                videoId={lipsyncVideoId}
+                audioId={lipsyncAudioId}
+                onImageChange={setLipsyncImageId}
+                onVideoChange={setLipsyncVideoId}
+                onAudioChange={setLipsyncAudioId}
+                currentModel={currentLipsyncModel}
+                models={currentLipsyncModels}
+                onModelChange={(id) => {
+                  setLipsyncModelId(id);
+                  setLipsyncSettings({});
+                }}
+                submitting={submitting}
+                onGenerate={() => void handleGenerate()}
+                jobs={currentStudioJobs}
+                selectedJob={selectedJob ?? null}
+                assets={assets}
+                uploadingImage={uploadingByType.image}
+                uploadingVideo={uploadingByType.video}
+                uploadingAudio={uploadingByType.audio}
+                onUpload={handleAssetUpload}
+              />
             ) : (
             <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.55fr)_420px]">
               <div className="space-y-6">
