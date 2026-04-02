@@ -1381,18 +1381,6 @@ export default function KanvasPage() {
                   </div>
 
                   <div className="mt-6 grid gap-4 xl:grid-cols-2">
-                    {studio === "image" && (
-                      <AssetSelector
-                        title={getAssetRequirementLabel(studio, "image", imageMode)}
-                        assetType="image"
-                        assets={imageAssets}
-                        selectedIds={imageReferenceIds}
-                        multi
-                        uploading={uploadingByType.image}
-                        onToggle={handleImageReferenceToggle}
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
 
 
                     {studio === "lipsync" && lipsyncMode === "talking-head" && (
