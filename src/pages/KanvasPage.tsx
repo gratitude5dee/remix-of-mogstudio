@@ -1226,7 +1226,30 @@ export default function KanvasPage() {
           </aside>
 
           <div className="min-w-0 flex-1">
-            {studio === "video" ? (
+            {studio === "image" ? (
+              <ImageStudioSection
+                prompt={prompt}
+                onPromptChange={setPrompt}
+                referenceId={referenceIds.image[0] ?? null}
+                onReferenceChange={(id) => setReferenceIds((c) => ({ ...c, image: id ? [id] : [] }))}
+                currentModel={currentImageModel}
+                models={currentImageModels}
+                onModelChange={(id) => {
+                  setImageModelId(id);
+                  setImageSettings({});
+                }}
+                settings={imageSettings}
+                onSettingsChange={(k, v) => setImageSettings((c) => ({ ...c, [k]: v }))}
+                submitting={submitting}
+                onGenerate={handleGenerate}
+                jobs={currentStudioJobs}
+                selectedJob={selectedJob}
+                assets={imageAssets}
+                uploading={uploadingByType.image}
+                onUpload={handleAssetUpload}
+                pageLoading={pageLoading}
+              />
+            ) : studio === "video" ? (
               <VideoStudioSection
                 prompt={videoPrompt}
                 onPromptChange={setVideoPrompt}
