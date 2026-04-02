@@ -55,7 +55,7 @@ export async function listBlueprints(): Promise<CharacterBlueprint[]> {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return ((data as Record<string, unknown>[]) ?? []).map(rowToBlueprint);
+  return ((data as unknown as Record<string, unknown>[]) ?? []).map(rowToBlueprint);
 }
 
 // ---------------------------------------------------------------------------
