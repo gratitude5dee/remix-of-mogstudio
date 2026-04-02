@@ -1545,11 +1545,9 @@ export default function KanvasPage() {
                         <SelectContent>
                           {(studio === "image"
                             ? currentImageModels
-                            : (studio as string) === "video"
-                              ? currentVideoModels
-                              : studio === "cinema"
-                                ? currentCinemaModels
-                                : currentLipsyncModels
+                            : studio === "cinema"
+                              ? currentCinemaModels
+                              : currentLipsyncModels
                           ).map((model) => (
                             <SelectItem key={model.id} value={model.id}>
                               {model.name}
