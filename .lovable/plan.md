@@ -1,51 +1,54 @@
 
 
-# Build Edit Video & Motion Control Tab Views
+# Build Cinematic "Image" View for /kanvas
 
-## Problem
-The "Edit Video" and "Motion Control" tabs in `VideoStudioSection` exist but don't change the UI — all three tabs show the same "Create Video" content.
+## Overview
+Create a new `ImageStudioSection` component that renders when `studio === "image"`, replacing the legacy shared UI with a dedicated Noir Futurist layout matching the reference screenshot. This follows the same pattern already established by `VideoStudioSection`.
 
-## Plan
+## Architecture
 
-### File: `src/components/kanvas/VideoStudioSection.tsx`
+The component renders its own full-width layout with:
+- **Left Sidebar** (260px fixed) — Studio Features, AI Models, Storage Usage
+- **Main Content** (remaining width) — Hero typography, preset gallery cards
+- **Floating Prompt Bar** (fixed bottom) — Input + model pill + aspect ratio + generate button
+- **Footer Meta** — Copyright line at bottom
 
-Refactor the component to render different sidebar + main content based on `activeTab`:
+## New Component
 
-**When `activeTab === "create"`** — keep existing UI (dropzones for start/end frame, prompt, model settings, feature bento grid, recent creations).
+### `src/components/kanvas/ImageStudioSection.tsx`
 
-**When `activeTab === "edit"`** (per reference screenshot):
-- **Sidebar:**
-  - Headline: "Edit Video" + subtitle "Refine and manipulate cinematic shots with AI precision."
-  - Single large dropzone: "PRIMARY VIDEO SOURCE" — accepts video files (MP4, MOV), aspect-video
-  - "REFERENCE ELEMENTS (UP TO 4)" — row of 4 circular `+` buttons for reference images
-  - "EDIT PROMPT" textarea with placeholder "Describe the change you want... (e.g., 'Change her hair to neon pink and make the phone glow with digital sparks')"
-  - "AUTO SETTINGS" toggle row with "ACTIVE" label
-  - Model row: "Kling 01 Edit" display + Quality "720p HQ"
-  - Bottom action bar: Version History, Collaborate, Export Frame, Download HD buttons
-- **Main area:** Large preview panel showing uploaded video or "PREVIEW MODE" watermark text when empty
+**Props** — Same pattern as VideoStudioSection: `prompt`, `onPromptChange`, `referenceId`, `onReferenceChange`, `currentModel`, `models`, `onModelChange`, `settings`, `onSettingsChange`, `submitting`, `onGenerate`, `jobs`, `selectedJob`, `assets`, `uploading`, `onUpload`, `pageLoading`.
 
-**When `activeTab === "motion"`** (per reference screenshot):
-- **Main area (left, wider):**
-  - Massive hero: "RECREATE ANY [MOTION] WITH YOUR IMAGE" (Space Grotesk, lime accent on [MOTION])
-  - Subtitle about neural animation engine
-  - "Start by copying motion from library" header with lime underline + "VIEW ALL LIBRARY →"
-  - Row of 5 tall vertical video cards (aspect-[9/16]) with cinematic placeholders, dark gradient overlay, lime play icon pill, lime title text
-- **Right control panel (sticky):**
-  - "ADD MOTION TO COPY" dropzone (aspect-video, dashed)
-  - "ADD YOUR CHARACTER" dropzone (narrower, aspect-square)
-  - Model: "Kling 3.0 Motion Control" in lime
-  - Quality: 720P / 1080P pills
-  - Scene Control toggle
-  - VIDEO / IMAGE segmented control
-  - "GENERATE MOTION" CTA button (lime, full-width, rounded-full)
-- **Bottom:** WZRD Tip card with lime left border
+**Left Sidebar:**
+- Fixed position, 260px wide, full height below header
+- "STUDIO FEATURES" section: Active "Create Image" lime pill (bg-[#ccff00] text-black), inactive items (Cinema Studio, Soul ID, AI Influencer, Photodump) in text-zinc-400
+- "AI MODELS" section: List from `models` prop. Active model gets lime border + lightning icon + checkmark. Others plain zinc
+- "STORAGE USAGE" pinned to bottom: 64% bar in lime, glass "Upgrade Plan" button
 
-### Structure
-Extract tab content into three internal render functions: `renderCreateTab()`, `renderEditTab()`, `renderMotionTab()`. The top-level layout switches based on `activeTab`. The existing props (prompt, onGenerate, models, etc.) are reused across tabs where applicable.
+**Main Content (ml-[260px]):**
+- Hero: "TURN IDEAS" (white) + "INTO VISUALS" (lime) in Space Grotesk 8xl, centered
+- Subtitle in zinc-400
+- Horizontal scroll preset gallery: 3+ cards (min-w-[340px], aspect-[4/5], rounded-3xl) with gradient overlays, lime overline categories (PRESET, ENVIRONMENT, CHARACTERS), white titles, hover scale effect
+- Cards use placeholder cinematic gradients (no external images needed — dark atmospheric gradient backgrounds)
+
+**Floating Prompt Bar (fixed bottom):**
+- Massive pill: bg-[#131313]/90 backdrop-blur-2xl rounded-full
+- "+" button (circular glass), textarea input, model pill (lime lightning + model name), aspect ratio pill (📷 3:4), count pill, settings icon, lime "GENERATE ✦" button (rounded-full, bg-[#ccff00])
+- Submitting state shows spinner
+
+**Footer:**
+- Bottom-pinned meta line: "© 2024 WZRD.STUDIO • THE NOIR FUTURIST" left, "PRIVACY TERMS API" right
+
+### Integration in `src/pages/KanvasPage.tsx`
+
+Add `studio === "image"` branch alongside the existing `studio === "video"` check (line 1228), rendering `<ImageStudioSection>` with the same props currently passed to the legacy UI for image mode. The legacy `else` block then only handles `cinema` and `lipsync`.
+
+**Top nav:** When `studio === "image"`, the existing `StudioNavButton` already highlights the active tab. The new component renders its own sidebar, so the page-level aside is skipped (same as video).
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/VideoStudioSection.tsx` | Add `renderEditTab()` and `renderMotionTab()` content; switch layout by `activeTab` |
+| `src/components/kanvas/ImageStudioSection.tsx` | **New** — Full cinematic image studio layout |
+| `src/pages/KanvasPage.tsx` | Add `studio === "image"` branch rendering ImageStudioSection before the video check |
 
