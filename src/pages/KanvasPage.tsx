@@ -89,6 +89,7 @@ import type {
 import { WorldviewSection } from "@/components/worldview";
 import { CharacterCreationSection } from "@/components/character-creation";
 import { VideoStudioSection } from "@/components/kanvas/VideoStudioSection";
+import ImageStudioSection from "@/components/kanvas/ImageStudioSection";
 import { MentionDropdown } from "@/components/character-creation/MentionDropdown";
 import { useCharacterMention } from "@/hooks/useCharacterMention";
 import { appRoutes } from "@/lib/routes";
@@ -1225,7 +1226,30 @@ export default function KanvasPage() {
           </aside>
 
           <div className="min-w-0 flex-1">
-            {studio === "video" ? (
+            {studio === "image" ? (
+              <ImageStudioSection
+                prompt={imagePrompt}
+                onPromptChange={setImagePrompt}
+                referenceId={imageReferenceIds[0] ?? null}
+                onReferenceChange={(id) => setImageReferenceIds(id ? [id] : [])}
+                currentModel={currentImageModel}
+                models={currentImageModels}
+                onModelChange={(id) => {
+                  setImageModelId(id);
+                  setImageSettings({});
+                }}
+                settings={imageSettings}
+                onSettingsChange={(k, v) => setImageSettings((c) => ({ ...c, [k]: v }))}
+                submitting={submitting}
+                onGenerate={handleGenerate}
+                jobs={currentStudioJobs}
+                selectedJob={selectedJob}
+                assets={imageAssets}
+                uploading={uploadingByType.image}
+                onUpload={handleAssetUpload}
+                pageLoading={pageLoading}
+              />
+            ) : studio === "video" ? (
               <VideoStudioSection
                 prompt={videoPrompt}
                 onPromptChange={setVideoPrompt}
@@ -1317,30 +1341,23 @@ export default function KanvasPage() {
                       visible={showMentionDropdown}
                       onSelect={(mention) => {
                         const currentPrompt =
-                          studio === "image"
-                            ? imagePrompt
-                            : studio === "cinema"
+                          studio === "cinema"
                               ? cinemaPrompt
                               : lipsyncPrompt;
                         const replaced = onSelectSuggestion(mention, currentPrompt);
-                        if (studio === "image") setImagePrompt(replaced);
-                        else if (studio === "cinema") setCinemaPrompt(replaced);
+                        if (studio === "cinema") setCinemaPrompt(replaced);
                         else setLipsyncPrompt(replaced);
                       }}
                     />
                     <Textarea
                       value={
-                        studio === "image"
-                          ? imagePrompt
-                          : studio === "cinema"
+                        studio === "cinema"
                             ? cinemaPrompt
                             : lipsyncPrompt
                       }
                       onChange={(event) => {
                         const nextValue = event.currentTarget.value;
-                        if (studio === "image") {
-                          setImagePrompt(nextValue);
-                        } else if (studio === "cinema") {
+                        if (studio === "cinema") {
                           setCinemaPrompt(nextValue);
                         } else {
                           setLipsyncPrompt(nextValue);
@@ -1353,9 +1370,7 @@ export default function KanvasPage() {
                       }}
                       placeholder={getPromptPlaceholder(
                         studio,
-                        studio === "image"
-                          ? imageReferenceIds.length > 0
-                          : studio === "lipsync"
+                        studio === "lipsync"
                             ? lipsyncMode === "talking-head"
                               ? Boolean(lipsyncImageId)
                               : Boolean(lipsyncVideoId)
@@ -1366,18 +1381,6 @@ export default function KanvasPage() {
                   </div>
 
                   <div className="mt-6 grid gap-4 xl:grid-cols-2">
-                    {studio === "image" && (
-                      <AssetSelector
-                        title={getAssetRequirementLabel(studio, "image", imageMode)}
-                        assetType="image"
-                        assets={imageAssets}
-                        selectedIds={imageReferenceIds}
-                        multi
-                        uploading={uploadingByType.image}
-                        onToggle={handleImageReferenceToggle}
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
 
 
                     {studio === "lipsync" && lipsyncMode === "talking-head" && (
@@ -1518,13 +1521,7 @@ export default function KanvasPage() {
                       <Select
                         value={currentModel?.id ?? ""}
                         onValueChange={(value) => {
-                          if (studio === "image") {
-                            const nextModel = currentImageModels.find((model) => model.id === value);
-                            if (nextModel) {
-                              setImageModelId(nextModel.id);
-                              setImageSettings({ ...nextModel.defaults });
-                            }
-                          } else if (studio === "cinema") {
+                          if (studio === "cinema") {
                             const nextModel = currentCinemaModels.find((model) => model.id === value);
                             if (nextModel) {
                               setCinemaModelId(nextModel.id);
@@ -1543,9 +1540,7 @@ export default function KanvasPage() {
                           <SelectValue placeholder="Select a model" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(studio === "image"
-                            ? currentImageModels
-                            : studio === "cinema"
+                          {(studio === "cinema"
                               ? currentCinemaModels
                               : currentLipsyncModels
                           ).map((model) => (
@@ -1590,16 +1585,12 @@ export default function KanvasPage() {
                     <ModelControls
                       model={currentModel}
                       settings={
-                        studio === "image"
-                          ? imageSettings
-                          : studio === "cinema"
+                        studio === "cinema"
                             ? cinemaSettings
                             : lipsyncSettings
                       }
                       onChange={(key, value) => {
-                        if (studio === "image") {
-                          setImageSettings((current) => ({ ...current, [key]: value }));
-                        } else if (studio === "cinema") {
+                        if (studio === "cinema") {
                           setCinemaSettings((current) => ({ ...current, [key]: value }));
                         } else {
                           setLipsyncSettings((current) => ({ ...current, [key]: value }));
