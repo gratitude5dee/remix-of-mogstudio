@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import HeroSection from '@/components/landing/HeroSection';
 import FeatureGrid from '@/components/landing/FeatureGrid';
 
@@ -10,8 +10,12 @@ import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 
 import FAQAccordion from '@/components/landing/FAQAccordion';
 import { PricingSectionRedesigned } from '@/components/landing/PricingSectionRedesigned';
-import { StickyFooter } from '@/components/landing/StickyFooter';
-import { VideoBackground } from '@/components/landing/VideoBackground';
+import ArenaZeroHero from '@/components/landing/ArenaZeroHero';
+import CreateTodaySection from '@/components/landing/CreateTodaySection';
+import TopChoiceGrid from '@/components/landing/TopChoiceGrid';
+import PhotodumpBanner from '@/components/landing/PhotodumpBanner';
+import SoulCinemaGallery from '@/components/landing/SoulCinemaGallery';
+import CinematicFooter from '@/components/landing/CinematicFooter';
 import { ModelLibrarySection } from '@/components/landing/ModelLibrarySection';
 import { GeneratedShowcaseSection } from '@/components/landing/GeneratedShowcaseSection';
 import { ThreeStepSection } from '@/components/landing/ThreeStepSection';
@@ -182,6 +186,15 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* ===== CINEMATIC EDITORIAL SECTIONS ===== */}
+      <div className="relative bg-black">
+        <ArenaZeroHero />
+        <CreateTodaySection />
+        <TopChoiceGrid />
+        <PhotodumpBanner />
+        <SoulCinemaGallery />
+      </div>
+
       {/* ===== REST OF PAGE ===== */}
       <div
         className="relative"
@@ -245,7 +258,7 @@ const Landing = () => {
           <div className="mx-auto max-w-6xl px-4"><div className="h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" /></div>
 
           {/* Footer */}
-          <StickyFooter />
+          <CinematicFooter />
         </div>
       </div>
     </div>
