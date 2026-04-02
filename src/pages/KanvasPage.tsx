@@ -1317,16 +1317,13 @@ export default function KanvasPage() {
                       visible={showMentionDropdown}
                       onSelect={(mention) => {
                         const currentPrompt =
-                          (studio as string) === "image"
+                          studio === "image"
                             ? imagePrompt
-                            : (studio as string) === "video"
-                              ? videoPrompt
-                              : (studio as string) === "cinema"
-                                ? cinemaPrompt
-                                : lipsyncPrompt;
+                            : studio === "cinema"
+                              ? cinemaPrompt
+                              : lipsyncPrompt;
                         const replaced = onSelectSuggestion(mention, currentPrompt);
                         if (studio === "image") setImagePrompt(replaced);
-                        else if ((studio as string) === "video") setVideoPrompt(replaced);
                         else if (studio === "cinema") setCinemaPrompt(replaced);
                         else setLipsyncPrompt(replaced);
                       }}
@@ -1335,18 +1332,14 @@ export default function KanvasPage() {
                       value={
                         studio === "image"
                           ? imagePrompt
-                          : (studio as string) === "video"
-                            ? videoPrompt
-                            : studio === "cinema"
-                              ? cinemaPrompt
-                              : lipsyncPrompt
+                          : studio === "cinema"
+                            ? cinemaPrompt
+                            : lipsyncPrompt
                       }
                       onChange={(event) => {
                         const nextValue = event.currentTarget.value;
                         if (studio === "image") {
                           setImagePrompt(nextValue);
-                        } else if ((studio as string) === "video") {
-                          setVideoPrompt(nextValue);
                         } else if (studio === "cinema") {
                           setCinemaPrompt(nextValue);
                         } else {
@@ -1362,13 +1355,11 @@ export default function KanvasPage() {
                         studio,
                         studio === "image"
                           ? imageReferenceIds.length > 0
-                          : (studio as string) === "video"
-                            ? Boolean(videoReferenceId)
-                            : studio === "lipsync"
-                              ? lipsyncMode === "talking-head"
-                                ? Boolean(lipsyncImageId)
-                                : Boolean(lipsyncVideoId)
-                              : false
+                          : studio === "lipsync"
+                            ? lipsyncMode === "talking-head"
+                              ? Boolean(lipsyncImageId)
+                              : Boolean(lipsyncVideoId)
+                            : false
                       )}
                       className="min-h-[150px] rounded-[30px] border-white/10 bg-black/40 px-5 py-4 text-base text-white placeholder:text-zinc-600"
                     />
@@ -1388,19 +1379,6 @@ export default function KanvasPage() {
                       />
                     )}
 
-                    {(studio as string) === "video" && (
-                      <AssetSelector
-                        title={getAssetRequirementLabel(studio, "image", videoMode)}
-                        assetType="image"
-                        assets={imageAssets}
-                        selectedIds={videoReferenceId ? [videoReferenceId] : []}
-                        uploading={uploadingByType.image}
-                        onToggle={(assetId) =>
-                          setVideoReferenceId((current) => (current === assetId ? null : assetId))
-                        }
-                        onUpload={handleAssetUpload}
-                      />
-                    )}
 
                     {studio === "lipsync" && lipsyncMode === "talking-head" && (
                       <AssetSelector
@@ -1546,12 +1524,6 @@ export default function KanvasPage() {
                               setImageModelId(nextModel.id);
                               setImageSettings({ ...nextModel.defaults });
                             }
-                          } else if ((studio as string) === "video") {
-                            const nextModel = currentVideoModels.find((model) => model.id === value);
-                            if (nextModel) {
-                              setVideoModelId(nextModel.id);
-                              setVideoSettings({ ...nextModel.defaults });
-                            }
                           } else if (studio === "cinema") {
                             const nextModel = currentCinemaModels.find((model) => model.id === value);
                             if (nextModel) {
@@ -1573,11 +1545,9 @@ export default function KanvasPage() {
                         <SelectContent>
                           {(studio === "image"
                             ? currentImageModels
-                            : (studio as string) === "video"
-                              ? currentVideoModels
-                              : studio === "cinema"
-                                ? currentCinemaModels
-                                : currentLipsyncModels
+                            : studio === "cinema"
+                              ? currentCinemaModels
+                              : currentLipsyncModels
                           ).map((model) => (
                             <SelectItem key={model.id} value={model.id}>
                               {model.name}
@@ -1622,17 +1592,13 @@ export default function KanvasPage() {
                       settings={
                         studio === "image"
                           ? imageSettings
-                          : (studio as string) === "video"
-                            ? videoSettings
-                            : studio === "cinema"
-                              ? cinemaSettings
-                              : lipsyncSettings
+                          : studio === "cinema"
+                            ? cinemaSettings
+                            : lipsyncSettings
                       }
                       onChange={(key, value) => {
                         if (studio === "image") {
                           setImageSettings((current) => ({ ...current, [key]: value }));
-                        } else if ((studio as string) === "video") {
-                          setVideoSettings((current) => ({ ...current, [key]: value }));
                         } else if (studio === "cinema") {
                           setCinemaSettings((current) => ({ ...current, [key]: value }));
                         } else {
