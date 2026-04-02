@@ -1521,13 +1521,7 @@ export default function KanvasPage() {
                       <Select
                         value={currentModel?.id ?? ""}
                         onValueChange={(value) => {
-                          if (studio === "image") {
-                            const nextModel = currentImageModels.find((model) => model.id === value);
-                            if (nextModel) {
-                              setImageModelId(nextModel.id);
-                              setImageSettings({ ...nextModel.defaults });
-                            }
-                          } else if (studio === "cinema") {
+                          if (studio === "cinema") {
                             const nextModel = currentCinemaModels.find((model) => model.id === value);
                             if (nextModel) {
                               setCinemaModelId(nextModel.id);
