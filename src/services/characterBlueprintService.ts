@@ -70,7 +70,7 @@ export async function getBlueprint(id: string): Promise<CharacterBlueprint | nul
     .maybeSingle();
 
   if (error) throw error;
-  return data ? rowToBlueprint(data as Record<string, unknown>) : null;
+  return data ? rowToBlueprint(data as unknown as Record<string, unknown>) : null;
 }
 
 // ---------------------------------------------------------------------------
