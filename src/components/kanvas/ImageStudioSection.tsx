@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import {
   Check,
+  Eye,
   Film,
   Loader2,
   Plus,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { KanvasAsset, KanvasAssetType, KanvasJob, KanvasModel } from "@/features/kanvas/types";
+import { getJobPrimaryUrl } from "@/features/kanvas/helpers";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
