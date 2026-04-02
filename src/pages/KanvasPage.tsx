@@ -1341,14 +1341,11 @@ export default function KanvasPage() {
                       visible={showMentionDropdown}
                       onSelect={(mention) => {
                         const currentPrompt =
-                          studio === "image"
-                            ? imagePrompt
-                            : studio === "cinema"
+                          studio === "cinema"
                               ? cinemaPrompt
                               : lipsyncPrompt;
                         const replaced = onSelectSuggestion(mention, currentPrompt);
-                        if (studio === "image") setImagePrompt(replaced);
-                        else if (studio === "cinema") setCinemaPrompt(replaced);
+                        if (studio === "cinema") setCinemaPrompt(replaced);
                         else setLipsyncPrompt(replaced);
                       }}
                     />
