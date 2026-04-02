@@ -1357,9 +1357,7 @@ export default function KanvasPage() {
                       }
                       onChange={(event) => {
                         const nextValue = event.currentTarget.value;
-                        if (studio === "image") {
-                          setImagePrompt(nextValue);
-                        } else if (studio === "cinema") {
+                        if (studio === "cinema") {
                           setCinemaPrompt(nextValue);
                         } else {
                           setLipsyncPrompt(nextValue);
