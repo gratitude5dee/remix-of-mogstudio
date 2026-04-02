@@ -1320,6 +1320,9 @@ export default function KanvasPage() {
             ) : studio === "cinema" ? (
               <CinemaStudioSection />
             ) : null}
+          </div>
+        </div>
+
 
         {pageLoading && (
           <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
