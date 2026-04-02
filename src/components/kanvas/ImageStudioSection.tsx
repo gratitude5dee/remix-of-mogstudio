@@ -139,7 +139,7 @@ export default function ImageStudioSection({
           AI MODELS
         </p>
         <div className="space-y-1.5">
-          {models.map((m, i) => {
+          {models.map((m) => {
             const isActive = currentModel?.id === m.id;
             return (
               <button
