@@ -1228,10 +1228,10 @@ export default function KanvasPage() {
           <div className="min-w-0 flex-1">
             {studio === "image" ? (
               <ImageStudioSection
-                prompt={prompt}
-                onPromptChange={setPrompt}
-                referenceId={referenceIds.image[0] ?? null}
-                onReferenceChange={(id) => setReferenceIds((c) => ({ ...c, image: id ? [id] : [] }))}
+                prompt={imagePrompt}
+                onPromptChange={setImagePrompt}
+                referenceId={imageReferenceIds[0] ?? null}
+                onReferenceChange={(id) => setImageReferenceIds(id ? [id] : [])}
                 currentModel={currentImageModel}
                 models={currentImageModels}
                 onModelChange={(id) => {
