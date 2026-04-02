@@ -89,6 +89,7 @@ import type {
 import { WorldviewSection } from "@/components/worldview";
 import { CharacterCreationSection } from "@/components/character-creation";
 import { VideoStudioSection } from "@/components/kanvas/VideoStudioSection";
+import ImageStudioSection from "@/components/kanvas/ImageStudioSection";
 import { MentionDropdown } from "@/components/character-creation/MentionDropdown";
 import { useCharacterMention } from "@/hooks/useCharacterMention";
 import { appRoutes } from "@/lib/routes";
