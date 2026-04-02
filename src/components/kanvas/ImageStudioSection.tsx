@@ -97,7 +97,7 @@ export default function ImageStudioSection({
   submitting,
   onGenerate,
 }: ImageStudioSectionProps) {
-  const [imageCount, setImageCount] = useState(1);
+  const [imageCount, _setImageCount] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
 
   /* ---- Sidebar ---- */
