@@ -98,9 +98,11 @@ export default function ImageStudioSection({
   onModelChange,
   submitting,
   onGenerate,
+  jobs,
 }: ImageStudioSectionProps) {
   const [imageCount, _setImageCount] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const completedJobs = jobs.filter((j) => j.status === "completed").slice(0, 8);
 
   /* ---- Sidebar ---- */
   const renderSidebar = () => (
