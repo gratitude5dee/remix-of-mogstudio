@@ -7,7 +7,6 @@ import {
   Settings2,
   Sparkles,
   User,
-  Image as ImageIcon,
   Zap,
   Camera,
   Aperture,
