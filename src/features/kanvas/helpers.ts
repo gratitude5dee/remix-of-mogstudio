@@ -34,6 +34,11 @@ export const KANVAS_STUDIO_META: Record<
     headline: "Video Studio",
     description: "Turn prompts and frames into motion-first clips.",
   },
+  edit: {
+    label: "Edit",
+    headline: "Edit Studio",
+    description: "Inpaint, relight, upscale, and refine your assets.",
+  },
   cinema: {
     label: "Cinema Studio",
     headline: "Cinema Studio 2.0",
