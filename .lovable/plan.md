@@ -1,94 +1,52 @@
 
 
-# Build Cinematic "Edit" View for /kanvas
+# Redesign Edit Studio → Cinematic Inpaint Workspace
 
 ## Overview
-Add a new `"edit"` studio mode to the Kanvas page with a 4-pane layout: Tool Sidebar, Asset Library, Main Canvas with dotted grid, and Asset Detail panel. Follows the Noir Futurist design system.
+Replace the current 4-pane `EditStudioSection` with the reference "Studio/Inpaint" layout: a 260px left sidebar with nav + recent library grid, a central canvas with floating tool palette + active mask overlay + prompt bar, and a 340px right detail sidebar with properties, editor notes, and credits warning.
 
 ## Changes
 
-### 1. Add "edit" to KanvasStudio type
+### `src/components/kanvas/EditStudioSection.tsx` — Full Rewrite
 
-**`src/features/kanvas/types.ts`** — Add `"edit"` to the union:
-```ts
-export type KanvasStudio = "image" | "video" | "cinema" | "lipsync" | "worldview" | "character-creation" | "edit";
-```
+**Left Sidebar (260px):**
+- Header: "STUDIO" bold + "V1.0.4-NOIR" muted
+- "NEW ASSET" wide pill button (`bg-[#1a1919] text-[#ccff00] border border-white/5 rounded-full`)
+- Nav menu: Library (active with lime border-right), Tools, Layers, History, Assets (inactive zinc-500)
+- "RECENT LIBRARY" 2×2 grid of placeholder images below nav
+- Footer: Support + Sign Out links at `mt-auto`
 
-### 2. Register "edit" in helpers
+**Center Canvas (flex-grow, `ml-[260px] mr-[340px]`):**
+- Background: `bg-[#0e0e0e]`
+- Large image container: `aspect-[4/3] max-w-4xl rounded-3xl` with placeholder gradient
+- Vertical floating tool palette inside image (left edge): brush (active lime), wand, eraser, zoom in a backdrop-blur pill
+- Active Mask rectangle overlay: lime border box with "ACTIVE MASK" badge on top
+- Layer info bottom-left: "CURRENT LAYER" overline + "MAIN_COVER_01" title
+- Floating prompt bar at bottom center: glass pill with sparkle icon, text input, lime "Generate" button
 
-**`src/features/kanvas/helpers.ts`**:
-- Add `"edit"` to `KANVAS_STUDIO_ORDER` array (after `"video"`)
-- Add entry in `KANVAS_STUDIO_META` with label "Edit", headline "Edit Studio"
-- Add `"edit"` case in `normalizeStudioParam`
+**Right Sidebar (340px):**
+- "ASSET DETAIL" overline (zinc-500, not pink)
+- Hero image thumbnail (aspect-[21/9])
+- Title "Ancient Ledger" + rating pill (star 4.8)
+- Ref line: "#STUDIO-9921"
+- "PROPERTIES" section: Resolution, Format, Material as flex rows (not cards)
+- "EDITOR NOTES" section: paragraph text
+- "LOW CREDITS" warning: hot pink border/text, rounded-[2rem], with triangle icon
+- "MANAGE WORKFLOW" button: wide dark pill
 
-### 3. Register icon in KanvasPage
+**Bottom bar removed** — replaced by the in-canvas floating prompt bar and vertical tool palette.
 
-**`src/pages/KanvasPage.tsx`**:
-- Import `Pencil` from lucide-react
-- Add `edit: Pencil` to `STUDIO_ICONS`
-- Add `studio === "edit"` branch (after video, before worldview) rendering `<EditStudioSection>`
-- Pass relevant props: `assets`, `jobs`, `uploading`, `onUpload`, `pageLoading`
+### State
+- `activeSidebarTab`: "library" | "tools" | "layers" | "history" | "assets"
+- `activeCanvasTool`: "brush" | "wand" | "eraser" | "zoom"
+- `inpaintPrompt`: string
 
-### 4. Create EditStudioSection component (NEW)
-
-**`src/components/kanvas/EditStudioSection.tsx`**
-
-A self-contained fixed overlay (same pattern as Image/Video studios: `fixed inset-0 top-[80px] bg-[#050506] z-20`).
-
-**Internal layout — 4 panels:**
-
-```text
-┌──────┬────────────┬─────────────────────┬──────────────┐
-│ 80px │   320px    │    Flex center      │    380px     │
-│ Tool │   Asset    │    Edit Canvas      │   Asset      │
-│ Bar  │  Library   │   (dotted grid)     │   Detail     │
-└──────┴────────────┴─────────────────────┴──────────────┘
-         ← Fixed bottom toolbar spans canvas area →
-```
-
-**EditToolBar (far left, 80px):**
-- Header: lime wand icon + "TOOLS" + "V2.0.4"
-- Nav stack: Inpaint (active, lime border-right + lime text), Placement, Relight, Upscale, History (inactive zinc-600)
-- Bottom: "+" FAB with "New Asset" label
-- Internal state `activeTool` controls which tool is highlighted
-
-**AssetLibrary (next, 320px):**
-- Header: "Library" title + circular "+" button
-- 2-column grid of placeholder asset cards (atmospheric gradient backgrounds)
-- First card has lime border (selected state)
-- Internal state `selectedAssetIndex`
-
-**EditWorkspace (center, remaining width):**
-- Dotted grid background: `bg-[radial-gradient(circle,#333_1px,transparent_1px)]` with `background-size: 24px 24px`
-- Centered image container with deep shadow
-- 4 corner selection brackets (lime 2px borders on corners)
-- Floating label: lime dot + "SELECTED: ASSET_026"
-- Inpaint mask glow: absolute div with `bg-[#ccff00]/40 blur-xl mix-blend-color-dodge`
-
-**AssetDetailSidebar (right, 380px):**
-- "ASSET DETAIL" overline in hot pink (#ff3399)
-- Title "Volume 8 : WZRD.tech" in Space Grotesk
-- Rating: lime star + "4.8" + "Based on 124 curated views"
-- METADATA grid: Resolution (4096x2160), Format (PNG Alpha)
-- CTA buttons: "Add to Cart" (white solid pill), "Wishlist" (transparent bordered pill)
-- Bottom warning: "CREDITS ARE RUNNING LOW" amber alert
-
-**EditBottomBar (floating toolbar):**
-- Fixed bottom, centered between left panels and right panel
-- Glass pill with backdrop-blur
-- Active: "Brush" (lime pill), Inactive: "Selection", "Pan"
-- Separator + Undo/Redo/Download icons
-
-### 5. Edge function type (optional, no-op)
-
-**`supabase/functions/_shared/kanvas.ts`** — The backend `KanvasStudio` type doesn't include `"edit"` but this is fine since edit mode is client-only (no generation requests). No backend changes needed.
+### No other files changed
+The `KanvasPage.tsx` already renders `<EditStudioSection />` for `studio === "edit"`. No type or helper changes needed.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/features/kanvas/types.ts` | Add `"edit"` to KanvasStudio union |
-| `src/features/kanvas/helpers.ts` | Add edit to studio order, meta, and normalizer |
-| `src/components/kanvas/EditStudioSection.tsx` | **New** — Full 4-pane edit layout |
-| `src/pages/KanvasPage.tsx` | Import EditStudioSection, add icon + render branch |
+| `src/components/kanvas/EditStudioSection.tsx` | Full rewrite to match reference inpaint workspace |
 
