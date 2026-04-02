@@ -232,7 +232,7 @@ export async function addBlueprintImage(input: {
     .single();
 
   if (error) throw error;
-  return rowToImage(data as Record<string, unknown>);
+  return rowToImage(data as unknown as Record<string, unknown>);
 }
 
 // ---------------------------------------------------------------------------
