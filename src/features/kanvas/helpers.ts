@@ -148,7 +148,7 @@ export function createDefaultCinemaSettings(): KanvasCinemaSettings {
 }
 
 export function normalizeStudioParam(value: string | null | undefined): KanvasStudio {
-  if (value === "image" || value === "video" || value === "cinema" || value === "lipsync" || value === "worldview" || value === "character-creation") {
+  if (value === "image" || value === "video" || value === "edit" || value === "cinema" || value === "lipsync" || value === "worldview" || value === "character-creation") {
     return value;
   }
   return "image";
