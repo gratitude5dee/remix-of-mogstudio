@@ -1592,11 +1592,9 @@ export default function KanvasPage() {
                       settings={
                         studio === "image"
                           ? imageSettings
-                          : (studio as string) === "video"
-                            ? videoSettings
-                            : studio === "cinema"
-                              ? cinemaSettings
-                              : lipsyncSettings
+                          : studio === "cinema"
+                            ? cinemaSettings
+                            : lipsyncSettings
                       }
                       onChange={(key, value) => {
                         if (studio === "image") {
