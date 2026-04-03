@@ -96,6 +96,7 @@ import LipsyncStudioSection from "@/components/kanvas/LipsyncStudioSection";
 import CinemaStudioSection from "@/components/kanvas/CinemaStudioSection";
 import { MentionDropdown } from "@/components/character-creation/MentionDropdown";
 import { useCharacterMention } from "@/hooks/useCharacterMention";
+import { useCharacterCreationStore } from "@/lib/stores/character-creation-store";
 import { appRoutes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -1152,84 +1153,64 @@ export default function KanvasPage() {
   const videoAssets = assets.filter((asset) => asset.asset_type === "video");
   const audioAssets = assets.filter((asset) => asset.asset_type === "audio");
 
+  // Full character mention list for cinema cast (unfiltered)
+  const getMentionListFn = useCharacterCreationStore((s) => s.getMentionList);
+  const allCharacterMentions = useMemo(() => {
+    try { return getMentionListFn(); } catch { return []; }
+  }, [getMentionListFn]);
+
   return (
     <div className="min-h-screen bg-[#050506] text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,242,100,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.08),transparent_24%)]" />
       <div className="relative">
-        <header className="sticky top-0 z-40 border-b border-white/10 bg-black/70 backdrop-blur-2xl">
-          <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-4 py-4 md:px-6">
-            <div className="flex items-center gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                className="border-white/10 bg-white/[0.03] text-white"
-                onClick={() => navigate(appRoutes.home)}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Home
-              </Button>
-              <div className="hidden rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-2 md:block">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
-                  WZRD Studio
-                </p>
-                <p className="text-sm font-semibold text-white">Kanvas Multi-Studio</p>
-              </div>
+        {/* ── Premium Pill-Slider Header ── */}
+        <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+          <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-2.5 md:px-6">
+            {/* Left: WZRD wordmark */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="w-2 h-2 rounded-full bg-[#BEFF00] shadow-[0_0_8px_rgba(190,255,0,0.4)]" />
+              <span className="text-sm font-bold tracking-tight text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>WZRD</span>
             </div>
 
-            <div className="hidden items-center gap-2 lg:flex">
-              {KANVAS_STUDIO_ORDER.map((entry) => (
-                <StudioNavButton
-                  key={entry}
-                  studio={entry}
-                  active={studio === entry}
-                  onClick={setStudio}
-                />
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="text-zinc-400 hover:text-white"
-                onClick={() => navigate(appRoutes.home)}
-                aria-label="Home"
-              >
-                <Home className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          <div className="border-t border-white/5 px-4 py-3 lg:hidden">
-            <ScrollArea className="w-full whitespace-nowrap">
-              <div className="flex gap-2 pb-1">
-                {KANVAS_STUDIO_ORDER.map((entry) => (
-                  <StudioNavButton
+            {/* Center: Pill-slider nav */}
+            <div className="inline-flex bg-[#111] rounded-full p-1 border border-white/[0.06]">
+              {KANVAS_STUDIO_ORDER.filter(s => s !== 'worldview' && s !== 'character-creation').map((entry) => {
+                const Icon = STUDIO_ICONS[entry];
+                const label = KANVAS_STUDIO_META[entry].label;
+                const isActive = studio === entry;
+                return (
+                  <button
                     key={entry}
-                    studio={entry}
-                    active={studio === entry}
-                    onClick={setStudio}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
+                    onClick={() => setStudio(entry)}
+                    className={cn(
+                      'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                      isActive
+                        ? 'bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]'
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    )}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Right: Home icon */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="text-zinc-400 hover:text-white flex-shrink-0"
+              onClick={() => navigate(appRoutes.home)}
+              aria-label="Home"
+            >
+              <Home className="h-4 w-4" />
+            </Button>
           </div>
         </header>
 
         <div className="mx-auto flex max-w-[1600px] gap-6 px-4 py-6 md:px-6">
-          <aside className="hidden w-24 flex-col gap-3 xl:flex">
-            {KANVAS_STUDIO_ORDER.map((entry) => (
-              <StudioNavButton
-                key={entry}
-                studio={entry}
-                active={studio === entry}
-                onClick={setStudio}
-                compact
-              />
-            ))}
-          </aside>
-
           <div className="min-w-0 flex-1">
             {studio === "image" ? (
               <ImageStudioSection
@@ -1335,6 +1316,15 @@ export default function KanvasPage() {
                 assets={assets}
                 onUpload={handleAssetUpload}
                 uploading={uploadingByType.image}
+                mentionSuggestions={mentionSuggestions}
+                showMentionDropdown={showMentionDropdown}
+                onMentionSelect={(mention) => {
+                  const replaced = onSelectSuggestion(mention, cinemaPrompt);
+                  setCinemaPrompt(replaced);
+                }}
+                onCloseMentions={closeMentionDropdown}
+                onMentionChange={onMentionChange}
+                characterMentions={allCharacterMentions}
               />
             ) : null}
           </div>
