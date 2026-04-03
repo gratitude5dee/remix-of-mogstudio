@@ -1152,12 +1152,12 @@ export default function KanvasPage() {
   const videoAssets = assets.filter((asset) => asset.asset_type === "video");
   const audioAssets = assets.filter((asset) => asset.asset_type === "audio");
 
-  // Get character mention list for cinema
+  // Full character mention list for cinema cast (unfiltered)
+  const { useCharacterCreationStore } = require('@/lib/stores/character-creation-store');
+  const getMentionListFn = useCharacterCreationStore((s: any) => s.getMentionList);
   const allCharacterMentions = useMemo(() => {
-    try {
-      return mentionSuggestions.length > 0 ? mentionSuggestions : [];
-    } catch { return []; }
-  }, [mentionSuggestions]);
+    try { return getMentionListFn(); } catch { return []; }
+  }, [getMentionListFn]);
 
   return (
     <div className="min-h-screen bg-[#050506] text-white">
