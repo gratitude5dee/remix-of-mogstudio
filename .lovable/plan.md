@@ -1,44 +1,25 @@
 
 
-# Fix Cinema Studio: Tab-Aware Prompt Bar & Cast Polish
+# Improve Video Studio Tab Navigation
 
 ## Problem
-The bottom prompt bar is identical for Image and Video tabs, but the reference shows distinct controls per tab. The Cast tab design also needs polish to match reference image 3.
+The tab buttons ("Create Video", "Edit Video", "Motion Control") use plain underline styling and are left-aligned. They need a premium, centered pill/slider design matching the Noir Futurist system.
 
-## Changes — `src/components/kanvas/CinemaStudioSection.tsx`
+## Solution
+Replace the current `border-b-2` tab buttons with a centered, rounded pill container (`bg-[#1A1A1A]` with `border-white/[0.06]`). Active tab gets a lime-highlighted inner pill (`bg-[#ccff00]/10 text-[#ccff00]`). The entire tab group is centered using `justify-center`.
 
-### 1. Split `renderBottomBar()` into two tab-specific bars
+## Changes — `src/components/kanvas/VideoStudioSection.tsx`
 
-**Image tab bar** (ref image 1):
-- Left: Image/Video mode toggle (pill)
-- Center: `+` button + prompt input (rounded)
-- Right: `Scenes` pill, `— 1/4 +` stepper, `16:9` pill, `♡ 2K` quality pill, `Characters and Locations` button (dark card with icons), `GENERATE ✦ 2` lime button
+**Lines 178-193** — Replace the sub-nav tab row:
 
-**Video tab bar** (ref image 2):
-- Left: Image/Video mode toggle in the sidebar area (already there)
-- Center: prompt input "Describe your scene - use @ to add characters & locations"
-- Right row 1: `Single shot` pill, `16:9`, `1080p`, `General` (with color dot), `Sound On`, `— 1/4 +` stepper
-- Right row 2: `+ START FRAME` button, `+ END FRAME` button, `GENERATE ✦ 24` lime button
-
-The bottom bar becomes two separate functions: `renderImageBar()` and `renderVideoBar()`.
-
-### 2. Move Image/Video toggle to left sidebar
-In the reference, the Image/Video toggle is at the bottom-left of the sidebar (not inside the prompt bar for video tab). Add two icon buttons (Image icon + "Image" label, Video icon + "Video" label) at the bottom of the left icon rail, with active state matching the `genMode`.
-
-### 3. Polish Cast tab to match reference image 3
-- Remove the `text-[#ccff00]` from "DREAM" — reference shows all white heading: "Craft Your Dream Movie Cast" in normal case (not uppercase)
-- Add subtitle: "Select options of your cast to generate"
-- Add instruction text above carousel: "Select the genre of your movie"
-- Add `< >` arrow buttons flanking the genre carousel
-- Genre card titles should be normal case (Action, Adventure, etc.) not uppercase
-- Bottom: shuffle icon + "Generate ✦" lime button (wider, centered)
-
-### 4. Tab nav styling
-Move tab nav from current position to match reference — tabs should be in the top bar area (Image, Video, Audio, Cast, All, Liked). Currently only showing image/video/cast. Add "Audio", "All", "Liked" as additional tabs (Audio/All/Liked can be placeholder).
-
-## Files Changed
+- Wrap tabs in a centered container: `flex justify-center`
+- Inner pill group: `inline-flex bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06]`
+- Each tab button: `px-5 py-2 rounded-full text-sm font-medium transition-all duration-200`
+- Active state: `bg-white/10 text-[#ccff00] shadow-[inset_0_0_12px_rgba(204,255,0,0.06)]`
+- Inactive state: `text-zinc-500 hover:text-zinc-300`
+- Remove `border-b-2` styling entirely
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/CinemaStudioSection.tsx` | Split bottom bar per tab, move mode toggle to sidebar, polish Cast tab, update tab nav |
+| `src/components/kanvas/VideoStudioSection.tsx` | Restyle tab nav as centered rounded pill slider (lines 178-193) |
 
