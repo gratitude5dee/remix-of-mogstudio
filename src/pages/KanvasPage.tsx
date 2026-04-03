@@ -1318,7 +1318,24 @@ export default function KanvasPage() {
                 onUpload={handleAssetUpload}
               />
             ) : studio === "cinema" ? (
-              <CinemaStudioSection />
+              <CinemaStudioSection
+                prompt={cinemaPrompt}
+                onPromptChange={setCinemaPrompt}
+                cinemaSettings={cinemaSettings}
+                onCinemaSettingsChange={setCinemaSettings}
+                cinemaCameraSettings={cinemaCameraSettings}
+                onCinemaCameraSettingsChange={setCinemaCameraSettings}
+                currentModel={currentCinemaModel}
+                models={currentCinemaModels}
+                onModelChange={(id) => { setCinemaModelId(id); setCinemaSettings({}); }}
+                submitting={submitting}
+                onGenerate={() => void handleGenerate()}
+                jobs={currentStudioJobs}
+                selectedJob={selectedJob ?? null}
+                assets={assets}
+                onUpload={handleAssetUpload}
+                uploading={uploadingByType.image}
+              />
             ) : null}
           </div>
         </div>
