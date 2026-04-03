@@ -7,7 +7,8 @@ export type ImageEditTool =
   | 'inpaint'
   | 'outpaint'
   | 'removeBackground'
-  | 'splitLayers';
+  | 'splitLayers'
+  | 'productPlacement';
 
 export type ImageEditOperation = ImageEditTool;
 
