@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   Sparkles, Search, Plus, ChevronLeft, ChevronRight,
   ImageIcon, Video, Users, Shuffle, Loader2, Clapperboard,
@@ -8,6 +8,8 @@ import type {
   KanvasAsset, KanvasJob, KanvasAssetType, KanvasModel,
 } from '@/features/kanvas/types';
 import type { KanvasCinemaSettings } from '@/features/kanvas/types';
+import type { CharacterMention } from '@/types/character-creation';
+import { MentionDropdown } from '@/components/character-creation/MentionDropdown';
 
 /* ── Types ── */
 type CinemaTab = 'image' | 'video' | 'audio' | 'cast' | 'all' | 'liked';
@@ -30,6 +32,13 @@ interface CinemaStudioProps {
   assets: KanvasAsset[];
   onUpload: (file: File, type: KanvasAssetType) => void;
   uploading: boolean;
+  /* @mention integration */
+  mentionSuggestions?: CharacterMention[];
+  showMentionDropdown?: boolean;
+  onMentionSelect?: (mention: CharacterMention) => void;
+  onCloseMentions?: () => void;
+  onMentionChange?: (text: string, cursorPos?: number) => void;
+  characterMentions?: CharacterMention[];
 }
 
 /* ── Data ── */
@@ -64,7 +73,7 @@ const CAMERA_PRESETS = [
   { label: 'Pan Left', desc: 'Horizontal pan' },
 ];
 
-const CHARACTER_AVATARS = [
+const FALLBACK_AVATARS = [
   'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=128&q=80&auto=format',
   'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=128&q=80&auto=format',
   'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=128&q=80&auto=format',
@@ -85,6 +94,9 @@ export default function CinemaStudioSection({
   cinemaCameraSettings, onCinemaCameraSettingsChange,
   currentModel, models, onModelChange,
   submitting, onGenerate, jobs, selectedJob, assets, onUpload, uploading,
+  mentionSuggestions = [], showMentionDropdown = false,
+  onMentionSelect, onCloseMentions, onMentionChange,
+  characterMentions = [],
 }: CinemaStudioProps) {
   const [activeTab, setActiveTab] = useState<CinemaTab>('image');
   const [activeFilter, setActiveFilter] = useState<FilterItem>('genre');
@@ -100,6 +112,47 @@ export default function CinemaStudioSection({
 
   const creditCost = genMode === 'video' ? 24 : (currentModel?.credits ?? 2);
 
+  // Resolve character avatars — prefer real blueprints, fall back to stock
+  const avatars = characterMentions.length > 0
+    ? characterMentions.map(m => ({ src: m.imageUrl ?? '', name: m.name, slug: m.slug }))
+    : FALLBACK_AVATARS.map((src, i) => ({ src, name: `Character ${i + 1}`, slug: '' }));
+
+  // Handle prompt change + mention detection
+  const handlePromptInput = useCallback((value: string) => {
+    onPromptChange(value);
+    onMentionChange?.(value);
+  }, [onPromptChange, onMentionChange]);
+
+  // Handle mention selection
+  const handleMentionSelect = useCallback((mention: CharacterMention) => {
+    onMentionSelect?.(mention);
+  }, [onMentionSelect]);
+
+  /* ── Prompt Input with @mention ── */
+  function renderPromptInput(placeholder: string) {
+    return (
+      <div className="relative flex-1 min-w-0">
+        <MentionDropdown
+          suggestions={mentionSuggestions}
+          onSelect={handleMentionSelect}
+          visible={showMentionDropdown}
+        />
+        <div className="bg-[#1a1a1a] rounded-full px-4 py-2.5 flex items-center">
+          <input
+            type="text"
+            value={prompt}
+            onChange={(e) => handlePromptInput(e.target.value)}
+            onBlur={() => onCloseMentions?.()}
+            placeholder={placeholder}
+            className="flex-1 bg-transparent border-none text-white placeholder-zinc-600 text-sm focus:outline-none min-w-0"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+            onKeyDown={(e) => e.key === 'Enter' && !submitting && onGenerate()}
+          />
+        </div>
+      </div>
+    );
+  }
+
   /* ── IMAGE BOTTOM BAR ── */
   function renderImageBar() {
     return (
@@ -111,7 +164,7 @@ export default function CinemaStudioSection({
               <button
                 onClick={() => setGenMode('image')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all ${
-                  genMode === 'image' ? 'bg-[#ccff00] text-black' : 'text-zinc-500 hover:text-white'
+                  genMode === 'image' ? 'bg-[#BEFF00] text-black' : 'text-zinc-500 hover:text-white'
                 }`}
               >
                 <ImageIcon className="h-3 w-3" /> Image
@@ -119,7 +172,7 @@ export default function CinemaStudioSection({
               <button
                 onClick={() => setGenMode('video')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all ${
-                  genMode === 'video' ? 'bg-[#ccff00] text-black' : 'text-zinc-500 hover:text-white'
+                  genMode === 'video' ? 'bg-[#BEFF00] text-black' : 'text-zinc-500 hover:text-white'
                 }`}
               >
                 <Video className="h-3 w-3" /> Video
@@ -127,22 +180,12 @@ export default function CinemaStudioSection({
             </div>
 
             {/* + button */}
-            <button className="w-9 h-9 rounded-full bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-[#ccff00] transition-colors flex-shrink-0">
+            <button className="w-9 h-9 rounded-full bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-[#BEFF00] transition-colors flex-shrink-0">
               <Plus className="h-4 w-4" />
             </button>
 
-            {/* Prompt */}
-            <div className="flex-1 bg-[#1a1a1a] rounded-full px-4 py-2.5 flex items-center min-w-0">
-              <input
-                type="text"
-                value={prompt}
-                onChange={(e) => onPromptChange(e.target.value)}
-                placeholder="Describe your scene — use @ to add characters & locations"
-                className="flex-1 bg-transparent border-none text-white placeholder-zinc-600 text-sm focus:outline-none min-w-0"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                onKeyDown={(e) => e.key === 'Enter' && !submitting && onGenerate()}
-              />
-            </div>
+            {/* Prompt with @mention */}
+            {renderPromptInput('Describe your scene — use @ to add characters & locations')}
 
             {/* Scenes */}
             <button className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-white border border-white/[0.06] rounded-full px-3 py-2 transition-colors flex-shrink-0">
@@ -167,9 +210,15 @@ export default function CinemaStudioSection({
             {/* Characters & Locations card */}
             <button className="bg-[#1a1a1a] border border-white/[0.06] rounded-xl px-4 py-2 flex items-center gap-3 hover:border-white/10 transition-colors flex-shrink-0">
               <div className="flex -space-x-2">
-                {CHARACTER_AVATARS.slice(0, 3).map((src, i) => (
+                {avatars.slice(0, 3).map((a, i) => (
                   <div key={i} className="w-6 h-6 rounded-full overflow-hidden border border-[#1a1a1a]">
-                    <img src={src} alt="" className="w-full h-full object-cover" />
+                    {a.src ? (
+                      <img src={a.src} alt={a.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                        <Users className="h-3 w-3 text-zinc-600" />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -180,7 +229,7 @@ export default function CinemaStudioSection({
             <button
               onClick={onGenerate}
               disabled={submitting || !prompt.trim()}
-              className="bg-[#ccff00] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(204,255,0,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+              className="bg-[#BEFF00] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(190,255,0,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               GENERATE ✦ {creditCost}
@@ -197,52 +246,31 @@ export default function CinemaStudioSection({
       <div className="absolute bottom-0 left-0 right-0 z-30">
         <div className="bg-[#0e0e0e]/95 backdrop-blur-2xl border-t border-white/[0.06] px-6 py-3">
           <div className="max-w-[1400px] mx-auto space-y-2.5">
-            {/* Row 1: Prompt */}
+            {/* Row 1: Prompt with @mention */}
             <div className="flex items-center gap-2.5">
-              <div className="flex-1 bg-[#1a1a1a] rounded-full px-4 py-2.5 flex items-center min-w-0">
-                <input
-                  type="text"
-                  value={prompt}
-                  onChange={(e) => onPromptChange(e.target.value)}
-                  placeholder="Describe your scene — use @ to add characters & locations"
-                  className="flex-1 bg-transparent border-none text-white placeholder-zinc-600 text-sm focus:outline-none min-w-0"
-                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                  onKeyDown={(e) => e.key === 'Enter' && !submitting && onGenerate()}
-                />
-              </div>
+              {renderPromptInput('Describe your scene — use @ to add characters & locations')}
             </div>
 
             {/* Row 2: Controls */}
             <div className="flex items-center gap-2">
-              {/* Single shot */}
               <button className="text-[10px] uppercase tracking-widest text-zinc-400 border border-white/[0.06] rounded-full px-3 py-1.5 flex-shrink-0 hover:text-white transition-colors">
                 Single shot
               </button>
-
-              {/* Aspect */}
               <button className="text-[10px] uppercase tracking-widest text-zinc-400 border border-white/[0.06] rounded-full px-3 py-1.5 flex-shrink-0 hover:text-white transition-colors">{aspectRatio}</button>
-
-              {/* Resolution */}
               <button className="text-[10px] uppercase tracking-widest text-zinc-400 border border-white/[0.06] rounded-full px-3 py-1.5 flex-shrink-0 hover:text-white transition-colors">{resolution}</button>
-
-              {/* Style */}
               <button className="text-[10px] uppercase tracking-widest text-zinc-400 border border-white/[0.06] rounded-full px-3 py-1.5 flex-shrink-0 flex items-center gap-1.5 hover:text-white transition-colors">
                 <div className="w-2 h-2 rounded-full bg-purple-400" />
                 General
               </button>
-
-              {/* Sound */}
               <button
                 onClick={() => setSoundOn(!soundOn)}
                 className={`text-[10px] uppercase tracking-widest border border-white/[0.06] rounded-full px-3 py-1.5 flex-shrink-0 flex items-center gap-1.5 transition-colors ${
-                  soundOn ? 'text-[#ccff00]' : 'text-zinc-500'
+                  soundOn ? 'text-[#BEFF00]' : 'text-zinc-500'
                 }`}
               >
                 {soundOn ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
                 Sound {soundOn ? 'On' : 'Off'}
               </button>
-
-              {/* Counter */}
               <div className="flex items-center gap-1 text-zinc-500 flex-shrink-0 bg-[#1a1a1a] rounded-full px-2 py-1">
                 <button onClick={() => setScenes(Math.max(1, scenes - 1))} className="hover:text-white p-0.5"><ChevronLeft className="h-3 w-3" /></button>
                 <span className="text-[10px] font-bold text-white min-w-[24px] text-center">{scenes}/4</span>
@@ -251,7 +279,6 @@ export default function CinemaStudioSection({
 
               <div className="flex-1" />
 
-              {/* Frame buttons */}
               <button className="text-[10px] uppercase tracking-widest text-zinc-400 border border-dashed border-white/10 rounded-full px-4 py-1.5 flex items-center gap-1.5 hover:text-white hover:border-white/20 transition-colors flex-shrink-0">
                 <Plus className="h-3 w-3" /> Start Frame
               </button>
@@ -259,11 +286,10 @@ export default function CinemaStudioSection({
                 <Plus className="h-3 w-3" /> End Frame
               </button>
 
-              {/* Generate */}
               <button
                 onClick={onGenerate}
                 disabled={submitting || !prompt.trim()}
-                className="bg-[#ccff00] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(204,255,0,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+                className="bg-[#BEFF00] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(190,255,0,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 GENERATE ✦ {creditCost}
@@ -293,14 +319,20 @@ export default function CinemaStudioSection({
             Describe any scene from any era, genre, or universe. Our AI cinematographer will bring it to life.
           </p>
 
-          {/* Character Avatars */}
+          {/* Character Avatars — real blueprints or fallback */}
           <div className="flex justify-center gap-3 mb-8">
-            {CHARACTER_AVATARS.map((src, i) => (
-              <div key={i} className="w-14 h-14 rounded-full border-2 border-white/10 overflow-hidden hover:border-[#ccff00]/40 transition-colors cursor-pointer">
-                <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+            {avatars.slice(0, 4).map((a, i) => (
+              <div key={i} className="w-14 h-14 rounded-full border-2 border-white/10 overflow-hidden hover:border-[#BEFF00]/40 transition-colors cursor-pointer" title={a.name}>
+                {a.src ? (
+                  <img src={a.src} alt={a.name} className="w-full h-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                    <Users className="h-5 w-5 text-zinc-600" />
+                  </div>
+                )}
               </div>
             ))}
-            <button className="w-14 h-14 rounded-full border-2 border-dashed border-white/10 flex items-center justify-center text-zinc-500 hover:border-[#ccff00]/30 hover:text-[#ccff00] transition-colors">
+            <button className="w-14 h-14 rounded-full border-2 border-dashed border-white/10 flex items-center justify-center text-zinc-500 hover:border-[#BEFF00]/30 hover:text-[#BEFF00] transition-colors">
               <Plus className="h-5 w-5" />
             </button>
           </div>
@@ -308,16 +340,16 @@ export default function CinemaStudioSection({
           {/* Quick action cards */}
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
             <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-2xl p-5 text-left hover:border-white/10 transition-colors cursor-pointer">
-              <Users className="h-5 w-5 text-[#ccff00] mb-3" />
+              <Users className="h-5 w-5 text-[#BEFF00] mb-3" />
               <p className="text-xs font-bold text-white mb-1">Characters</p>
               <p className="text-[10px] text-zinc-500 leading-relaxed">Reuse characters across scenes</p>
-              <button className="mt-3 text-[9px] uppercase tracking-widest text-[#ccff00] font-bold">+ Create Character</button>
+              <button className="mt-3 text-[9px] uppercase tracking-widest text-[#BEFF00] font-bold">+ Create Character</button>
             </div>
             <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-2xl p-5 text-left hover:border-white/10 transition-colors cursor-pointer">
-              <Film className="h-5 w-5 text-[#ccff00] mb-3" />
+              <Film className="h-5 w-5 text-[#BEFF00] mb-3" />
               <p className="text-xs font-bold text-white mb-1">Locations</p>
               <p className="text-[10px] text-zinc-500 leading-relaxed">Keep every scene in the same world</p>
-              <button className="mt-3 text-[9px] uppercase tracking-widest text-[#ccff00] font-bold">+ Create Location</button>
+              <button className="mt-3 text-[9px] uppercase tracking-widest text-[#BEFF00] font-bold">+ Create Location</button>
             </div>
           </div>
         </div>
@@ -340,11 +372,11 @@ export default function CinemaStudioSection({
                   key={preset.label}
                   onClick={() => setCameraPreset(preset.label)}
                   className={`rounded-2xl overflow-hidden border transition-all ${
-                    isActive ? 'border-[#ccff00]/40 shadow-[0_0_20px_rgba(204,255,0,0.1)]' : 'border-white/[0.06] hover:border-white/10'
+                    isActive ? 'border-[#BEFF00]/40 shadow-[0_0_20px_rgba(190,255,0,0.1)]' : 'border-white/[0.06] hover:border-white/10'
                   }`}
                 >
                   <div className="aspect-video bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                    <Camera className={`h-6 w-6 ${isActive ? 'text-[#ccff00]' : 'text-zinc-600'}`} />
+                    <Camera className={`h-6 w-6 ${isActive ? 'text-[#BEFF00]' : 'text-zinc-600'}`} />
                   </div>
                   <div className="bg-[#131313] px-3 py-2">
                     <p className={`text-[10px] font-bold ${isActive ? 'text-white' : 'text-zinc-400'}`}>{preset.label}</p>
@@ -362,9 +394,15 @@ export default function CinemaStudioSection({
               <div>
                 <p className="text-[9px] uppercase tracking-widest text-zinc-500 mb-3">Characters</p>
                 <div className="flex gap-2">
-                  {CHARACTER_AVATARS.slice(0, 2).map((src, i) => (
+                  {avatars.slice(0, 2).map((a, i) => (
                     <div key={i} className="w-10 h-10 rounded-full overflow-hidden border border-white/10">
-                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      {a.src ? (
+                        <img src={a.src} alt={a.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                          <Users className="h-4 w-4 text-zinc-600" />
+                        </div>
+                      )}
                     </div>
                   ))}
                   <button className="w-10 h-10 rounded-full border border-dashed border-white/10 flex items-center justify-center text-zinc-600">
@@ -407,15 +445,22 @@ export default function CinemaStudioSection({
     return (
       <div className="flex-1 overflow-y-auto pb-28" style={{ scrollbarWidth: 'none' }}>
         <div className="pt-16 pb-12 flex flex-col items-center relative z-10 px-8">
-          {/* Floating avatars */}
+          {/* Floating avatars — real character blueprints */}
           <div className="flex justify-center gap-4 mb-8">
-            {CHARACTER_AVATARS.map((src, i) => (
+            {avatars.slice(0, 4).map((a, i) => (
               <div
                 key={i}
                 className="w-20 h-20 rounded-full border-2 border-white/10 overflow-hidden shadow-[0_0_30px_rgba(255,51,153,0.1)]"
                 style={{ transform: `translateY(${i % 2 === 0 ? -10 : 10}px)` }}
+                title={a.name}
               >
-                <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                {a.src ? (
+                  <img src={a.src} alt={a.name} className="w-full h-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-zinc-600" />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -438,7 +483,7 @@ export default function CinemaStudioSection({
                   onClick={() => setActiveFilter(pill.id)}
                   className={`px-6 py-2.5 rounded-full text-[10px] uppercase tracking-[0.15em] font-bold transition-all ${
                     isActive
-                      ? 'bg-[#ccff00] text-black'
+                      ? 'bg-[#BEFF00] text-black'
                       : 'border border-white/10 text-zinc-400 hover:bg-white/[0.03] hover:text-white'
                   }`}
                 >
@@ -448,12 +493,11 @@ export default function CinemaStudioSection({
             })}
           </div>
 
-          {/* Genre Carousel with arrows */}
+          {/* Genre Carousel */}
           <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold mb-4 self-start max-w-[1400px] w-full mx-auto">
             Select the genre of your movie
           </p>
           <div className="w-full max-w-[1400px] relative">
-            {/* Left arrow */}
             <button
               onClick={() => scrollCarousel('left')}
               className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 rounded-full bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
@@ -491,7 +535,6 @@ export default function CinemaStudioSection({
               </div>
             </div>
 
-            {/* Right arrow */}
             <button
               onClick={() => scrollCarousel('right')}
               className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 rounded-full bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
@@ -508,7 +551,7 @@ export default function CinemaStudioSection({
             <button
               onClick={onGenerate}
               disabled={submitting}
-              className="bg-[#ccff00] text-black font-bold uppercase tracking-widest text-[11px] px-10 py-3.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(204,255,0,0.3)] transition-all disabled:opacity-40"
+              className="bg-[#BEFF00] text-black font-bold uppercase tracking-widest text-[11px] px-10 py-3.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(190,255,0,0.3)] transition-all disabled:opacity-40"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               Generate ✦
@@ -531,7 +574,7 @@ export default function CinemaStudioSection({
   }
 
   return (
-    <div className="fixed inset-0 top-[80px] bg-[#090909] z-20 overflow-hidden flex" style={{ scrollbarWidth: 'none' }}>
+    <div className="fixed inset-0 top-[57px] bg-[#090909] z-20 overflow-hidden flex" style={{ scrollbarWidth: 'none' }}>
       <style>{`::-webkit-scrollbar { display: none; }`}</style>
 
       {/* Left Icon Rail */}
@@ -540,24 +583,29 @@ export default function CinemaStudioSection({
           <Search className="h-4 w-4" />
         </button>
         <div className="h-px w-6 bg-white/[0.06]" />
-        {CHARACTER_AVATARS.slice(0, 3).map((src, i) => (
-          <div key={i} className="w-9 h-9 rounded-full overflow-hidden border border-white/10 hover:border-[#ccff00]/40 transition-colors cursor-pointer">
-            <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+        {avatars.slice(0, 3).map((a, i) => (
+          <div key={i} className="w-9 h-9 rounded-full overflow-hidden border border-white/10 hover:border-[#BEFF00]/40 transition-colors cursor-pointer" title={a.name}>
+            {a.src ? (
+              <img src={a.src} alt={a.name} className="w-full h-full object-cover" loading="lazy" />
+            ) : (
+              <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                <Users className="h-3.5 w-3.5 text-zinc-600" />
+              </div>
+            )}
           </div>
         ))}
-        <button className="w-9 h-9 rounded-full border border-dashed border-white/10 flex items-center justify-center text-zinc-600 hover:border-[#ccff00]/30 transition-colors">
+        <button className="w-9 h-9 rounded-full border border-dashed border-white/10 flex items-center justify-center text-zinc-600 hover:border-[#BEFF00]/30 transition-colors">
           <Plus className="h-3 w-3" />
         </button>
 
-        {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Image/Video mode toggle at bottom of sidebar */}
+        {/* Image/Video mode toggle */}
         <div className="flex flex-col items-center gap-1.5 mb-2">
           <button
             onClick={() => setGenMode('image')}
             className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all ${
-              genMode === 'image' ? 'bg-[#ccff00] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
+              genMode === 'image' ? 'bg-[#BEFF00] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
             }`}
           >
             <ImageIcon className="h-3.5 w-3.5" />
@@ -566,7 +614,7 @@ export default function CinemaStudioSection({
           <button
             onClick={() => setGenMode('video')}
             className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all ${
-              genMode === 'video' ? 'bg-[#ccff00] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
+              genMode === 'video' ? 'bg-[#BEFF00] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
             }`}
           >
             <Video className="h-3.5 w-3.5" />
@@ -577,31 +625,35 @@ export default function CinemaStudioSection({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full relative">
-        {/* Tab Nav */}
-        <div className="flex items-center gap-1 px-6 pt-4 pb-2 flex-shrink-0">
-          {TAB_LIST.map(({ id, label, Icon }) => {
-            const isActive = activeTab === id;
-            return (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] uppercase tracking-[0.15em] font-bold transition-all ${
-                  isActive ? 'bg-[#ccff00] text-black' : 'text-zinc-500 hover:text-white hover:bg-white/[0.03]'
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {label}
-              </button>
-            );
-          })}
+        {/* Tab Nav — Centered Pill Slider */}
+        <div className="flex items-center justify-center px-6 pt-4 pb-2 flex-shrink-0">
+          <div className="inline-flex bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06]">
+            {TAB_LIST.map(({ id, label, Icon }) => {
+              const isActive = activeTab === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]'
+                      : 'text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {label}
+                </button>
+              );
+            })}
+          </div>
 
           {/* Model selector */}
           {models.length > 0 && (
-            <div className="ml-auto flex items-center gap-2">
+            <div className="absolute right-6 flex items-center gap-2">
               <select
                 value={currentModel?.id ?? ''}
                 onChange={(e) => onModelChange(e.target.value)}
-                className="bg-[#1a1a1a] border border-white/[0.06] rounded-lg px-3 py-1.5 text-[10px] text-white focus:outline-none appearance-none cursor-pointer"
+                className="bg-[#1a1a1a] border border-white/[0.06] rounded-full px-3 py-1.5 text-[10px] text-white focus:outline-none appearance-none cursor-pointer"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               >
                 {models.map((m) => (
@@ -624,15 +676,6 @@ export default function CinemaStudioSection({
         {activeTab === 'image' && renderImageBar()}
         {activeTab === 'video' && renderVideoBar()}
       </div>
-
-      {/* Floating FAB */}
-      <button
-        onClick={onGenerate}
-        disabled={submitting}
-        className="fixed bottom-28 right-8 w-16 h-16 bg-[#ccff00] rounded-full flex items-center justify-center text-black shadow-[0_0_40px_rgba(204,255,0,0.3)] hover:scale-110 active:scale-95 transition-all z-50 cursor-pointer disabled:opacity-50"
-      >
-        <Clapperboard className="h-6 w-6" />
-      </button>
     </div>
   );
 }
