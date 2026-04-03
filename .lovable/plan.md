@@ -1,67 +1,82 @@
 
 
-# Redesign Edit Studio UI — Award-Winning Canvas Workspace
+# Cinema Studio + @Mention Integration + Kanvas Header Redesign
 
-## Current Issues
-- **Landing state**: Two narrow 280px columns (Features + Models) feel cramped and dated — not matching the full-width, hero-driven layouts used in Image and Video studios
-- **Workspace state**: Floating tool/feature palettes are functional but visually sparse — the canvas area lacks hierarchy, status indicators, and the premium polish of the other studios
-- **No sub-nav tabs**: Unlike Image (History/Community) and Video (Create/Edit/Motion) studios, Edit has no centered pill tab navigation
-- **Bottom prompt bar**: Plain and thin — missing model selector, credit cost display, and the visual weight of the Image/Video prompt bars
-- **Thumbnail rail**: Bare 72px column with no labels or context
+## Problems Identified
 
-## Design Overhaul
+1. **Cinema Studio lacks @mention integration**: The prompt inputs in `CinemaStudioSection` call `onPromptChange` directly but never trigger `onMentionChange` from `useCharacterMention`. The `MentionDropdown` component is imported in `KanvasPage.tsx` but never rendered for Cinema. Characters in the prompt bar are hardcoded stock photos instead of real character blueprints.
 
-### 1. Landing State — Full-Width Hero Layout
-Replace the dual-column browser with a hero-driven layout matching the Image studio pattern:
-- **Centered hero**: Large "TRANSFORM YOUR IMAGES" heading in Space Grotesk, uppercase, tight tracking
-- **Feature carousel**: 3-4 tilted perspective cards (like Image studio's use-case cards) showing Inpaint, Remove BG, Upscale, Relight — each with a preview image, gradient overlay, and label
-- **Below hero**: Horizontal scrollable feature pills/cards showing all 8 features with icons, descriptions, and badges (TOP/NEW/SOON)
-- **Full-width upload CTA**: Centered lime button "Upload to Start Editing"
-- **Background**: Massive faded "EDIT" watermark text (already exists, keep it)
+2. **Header is generic and cluttered**: The current header uses rounded-2xl bordered buttons for 7+ studios, a plain "Back to Home" button, and a redundant sidebar + mobile scroll area. It doesn't match the premium pill-slider pattern used inside studios.
 
-### 2. Workspace State — Premium Canvas Chrome
+3. **Runtime error**: Stale HMR cache — will be resolved by the file changes.
 
-**Top bar** (new):
-- Centered pill tab nav: `Inpaint | Remove BG | Upscale | Relight` — matching the Video studio's `bg-[#1A1A1A]` rounded-full pill slider with lime active state
-- Right side: Model dropdown (compact, showing current model name + credit cost) + Close button
+## Phase 1: Wire @Mention into Cinema Studio
 
-**Left tool palette** (refined):
-- Wider pills (48px), with tiny labels below each icon
-- Active tool gets lime bg with ambient glow
-- Divider between canvas tools (Select/Draw/Eraser/Hand) and actions (Undo/Redo/Download)
-- Add brush size slider (small vertical range input) below Draw tool when active
+### `src/components/kanvas/CinemaStudioSection.tsx`
 
-**Canvas area**:
-- Subtle crosshatch grid pattern on the `#0e0e0e` background (like a cutting mat)
-- When no strokes drawn: centered ghost text "Draw on the image to create a mask" with a dotted outline animation
+**New props** added to `CinemaStudioProps`:
+- `mentionSuggestions: CharacterMention[]`
+- `showMentionDropdown: boolean`
+- `onMentionSelect: (mention: CharacterMention) => void`
+- `onCloseMentions: () => void`
 
-**Right panel** — Replace floating feature icons with a collapsible settings panel (240px):
-- Feature-specific controls: brush opacity slider, mask color toggle, strength slider for upscale
-- Model selector dropdown with badge and credit cost
-- Recent results thumbnails (2-column grid)
+**Prompt input changes** (both Image and Video bars):
+- Wrap prompt input in a `relative` container
+- Render `<MentionDropdown>` positioned above the input
+- On input change: call both `onPromptChange(value)` and trigger mention detection
+- On selecting a mention: replace the @query in the prompt string
 
-**Bottom prompt bar** (upgraded):
-- Wider max-width (4xl instead of 3xl)
-- Left: Active feature icon + label pill
-- Center: Prompt input (taller, 48px)
-- Right section: Model name chip (clickable to change) → Credit cost badge → Lime "Edit" button with glow
-- Processing state: Progress bar animation across the full bar width
+**Character avatars**: Replace hardcoded `CHARACTER_AVATARS` array with a new prop `characterMentions: CharacterMention[]` from the store's `getMentionList()`. Fall back to placeholder avatars when no characters exist. The left icon rail and Cast tab will show real character blueprint images.
 
-### 3. Thumbnail Rail (refined)
-- Width increased to 80px
-- Add "Assets" label at top (9px uppercase tracking)
-- Upload button styled as dashed-border card with "+" and "Upload" micro-label
-- Active thumbnail: thicker lime ring + subtle scale-105 transform
-- Result thumbnails section: "Results" divider label, then result thumbs with a small sparkle icon overlay
+### `src/pages/KanvasPage.tsx`
 
-### 4. Film Grain + Polish
-- SVG noise overlay on the entire workspace (mix-blend-overlay, 4% opacity)
-- Smooth transitions between landing and workspace states (opacity + scale)
-- All interactive elements get `transition-all duration-200`
+- Pass `mentionSuggestions`, `showMentionDropdown`, `onMentionSelect`, `onCloseMentions` to `CinemaStudioSection`
+- Wire `onPromptChange` to also call `onMentionChange` for cinema prompt (same pattern used for image/video)
+
+## Phase 2: Redesign Kanvas Header
+
+### `src/pages/KanvasPage.tsx` — Header section (lines 1159-1218)
+
+Replace the current header with a premium, award-winning design:
+
+**Structure**:
+```text
+┌──────────────────────────────────────────────────────────────┐
+│  WZRD logo    │  ● Image  Video  Edit  Lipsync  Cinema ...  │  ⌂  │
+│  (glow mark)  │  (centered pill-slider nav)                  │     │
+└──────────────────────────────────────────────────────────────┘
+```
+
+- **Left**: Small WZRD wordmark with lime dot indicator, no "Back to Home" button (home icon on right suffices)
+- **Center**: Pill-slider nav matching the Video/Edit studio pattern — `inline-flex bg-[#111] rounded-full p-1 border border-white/[0.06]`. Active tab: `bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]`. Icons + labels.
+- **Right**: Home icon button only
+- **Remove**: Redundant `xl:flex` sidebar of studio buttons (lines 1221-1231) — the header nav is sufficient
+- **Remove**: Mobile scroll area duplicate — the pill slider is already responsive
+- **Height**: Reduce from py-4 to py-2.5 for a sleeker bar
+- **Background**: `bg-[#0A0A0A]/80 backdrop-blur-xl` with no visible border — use a subtle `shadow-[0_1px_0_rgba(255,255,255,0.04)]` instead
+
+### `StudioNavButton` component
+Replace entirely — no longer needed as separate component. The header renders tabs inline using the pill-slider pattern.
+
+## Phase 3: Cinema Studio UI Polish
+
+### Tab navigation (lines 581-613)
+- Move from left-aligned pills to centered pill-slider matching the Video studio pattern
+- `bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06]` container
+- Active: `bg-white/10 text-[#BEFF00]` with inset glow
+
+### Cast tab improvements
+- Wire "Create Character" button to navigate to `?studio=character-creation`
+- Wire "Create Location" similarly
+- Show real character blueprints from the mention list instead of stock photos
+
+### Remove floating FAB
+The FAB duplicates the generate button in the bottom bar — remove it to reduce clutter.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/EditStudioSection.tsx` | Complete UI redesign: hero landing, pill tab nav, upgraded prompt bar, refined palettes, settings panel |
+| `src/components/kanvas/CinemaStudioSection.tsx` | Add @mention props, wire MentionDropdown to prompt inputs, replace hardcoded avatars with character data, redesign tab nav as centered pill slider, remove FAB |
+| `src/pages/KanvasPage.tsx` | Redesign header as centered pill-slider nav, remove redundant sidebar, pass mention props to CinemaStudioSection, wire cinema prompt to onMentionChange |
 
