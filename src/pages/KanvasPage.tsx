@@ -1154,8 +1154,7 @@ export default function KanvasPage() {
   const audioAssets = assets.filter((asset) => asset.asset_type === "audio");
 
   // Full character mention list for cinema cast (unfiltered)
-  const { useCharacterCreationStore } = require('@/lib/stores/character-creation-store');
-  const getMentionListFn = useCharacterCreationStore((s: any) => s.getMentionList);
+  const getMentionListFn = useCharacterCreationStore((s) => s.getMentionList);
   const allCharacterMentions = useMemo(() => {
     try { return getMentionListFn(); } catch { return []; }
   }, [getMentionListFn]);
