@@ -136,12 +136,7 @@ const EditCanvas = forwardRef<EditCanvasHandle, EditCanvasProps>(({ imageUrl, cl
 
       // Export mask shapes as SVG, then rasterize to black/white
       const svg = await editor.getSvgString(maskShapes.map((s) => s.id), {
-        bounds: {
-          x: bounds.x,
-          y: bounds.y,
-          w: bounds.w,
-          h: bounds.h,
-        },
+        bounds: new Box(bounds.x, bounds.y, bounds.w, bounds.h),
         background: false,
         padding: 0,
       });
