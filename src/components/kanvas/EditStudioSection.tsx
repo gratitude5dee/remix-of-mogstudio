@@ -1,13 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import {
   Paintbrush, Wand2, Eraser, ZoomIn, Plus, Sparkles, Loader2, Upload,
   Video, Sun, Palette, ArrowUpCircle, ScanFace, RotateCcw, Hand, Undo2, Redo2,
-  Download, MoreHorizontal, ChevronLeft, ChevronRight, X,
+  Download, MoreHorizontal, ChevronLeft, ChevronRight, X, MousePointer2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { imageEditService } from '@/services/imageEditService';
 import type { ImageEditOperation } from '@/types/imageEdit';
 import type { KanvasAsset, KanvasJob, KanvasAssetType } from '@/features/kanvas/types';
+import EditCanvas, { type EditCanvasHandle } from './EditCanvas';
 
 /* ── Types ── */
 type EditFeature = 'inpaint' | 'removeBackground' | 'upscale' | 'relight' | 'stylize' | 'skinEnhance' | 'angles' | 'productPlacement';
@@ -79,17 +80,17 @@ interface EditStudioProps {
   onUpload: (file: File, assetType: KanvasAssetType) => void;
 }
 
-type CanvasTool = 'brush' | 'eraser' | 'hand' | 'undo' | 'redo';
+type CanvasTool = 'select' | 'draw' | 'eraser' | 'hand';
 
 export default function EditStudioSection({ assets, jobs, selectedJob, uploading, onUpload }: EditStudioProps) {
   const [selectedFeature, setSelectedFeature] = useState<EditFeature>('inpaint');
   const [selectedModelId, setSelectedModelId] = useState(EDIT_MODELS[0].id);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
-  const [activeTool, setActiveTool] = useState<CanvasTool>('brush');
+  const [activeTool, setActiveTool] = useState<CanvasTool>('draw');
   const [inpaintPrompt, setInpaintPrompt] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [resultImages, setResultImages] = useState<string[]>([]);
-  const [resultIndex, setResultIndex] = useState(0);
+
+  const canvasRef = useRef<EditCanvasHandle>(null);
 
   const selectedAsset = useMemo(
     () => assets.find((a) => a.id === selectedAssetId) ?? null,
@@ -98,7 +99,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
 
   const activeFeature = FEATURES.find((f) => f.id === selectedFeature)!;
   const hasWorkspace = selectedAsset !== null;
-  const canvasImageUrl = resultImages[resultIndex] ?? (selectedAsset ? resolveAssetUrl(selectedAsset) : null);
+  const canvasImageUrl = selectedAsset ? resolveAssetUrl(selectedAsset) : null;
 
   const completedJobs = useMemo(
     () => jobs.filter((j) => j.status === 'completed' && j.resultUrl),
@@ -116,6 +117,11 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
     input.click();
   }
 
+  function handleToolChange(tool: CanvasTool) {
+    setActiveTool(tool);
+    canvasRef.current?.setTool(tool);
+  }
+
   async function handleGenerate() {
     if (!selectedAsset) {
       toast.error('Select an asset first');
@@ -131,30 +137,43 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
       toast.info(`${activeFeature.label} coming soon`);
       return;
     }
-    if (operation === 'inpaint' && !inpaintPrompt.trim()) {
-      toast.error('Enter a prompt for inpainting');
-      return;
-    }
 
     setIsProcessing(true);
     try {
+      let maskDataUrl: string | undefined;
+
+      if (operation === 'inpaint') {
+        if (!inpaintPrompt.trim()) {
+          toast.error('Enter a prompt for inpainting');
+          setIsProcessing(false);
+          return;
+        }
+        // Export mask from tldraw canvas
+        maskDataUrl = (await canvasRef.current?.getMaskDataUrl()) ?? undefined;
+        if (!maskDataUrl) {
+          toast.error('Draw a mask on the image first');
+          setIsProcessing(false);
+          return;
+        }
+      }
+
       const result = await imageEditService.executeOperation({
         projectId: selectedAsset.project_id ?? selectedAsset.id,
         nodeId: selectedAsset.id,
         operation,
         prompt: operation === 'inpaint' ? inpaintPrompt : undefined,
         imageUrl,
+        maskDataUrl,
         modelId: selectedModelId,
       });
 
       if (result.asset?.url) {
-        setResultImages((prev) => [...prev, result.asset!.url]);
-        setResultIndex(resultImages.length);
+        canvasRef.current?.addResultImage(result.asset.url);
         toast.success(`${activeFeature.label} complete`);
       } else if (result.layers && result.layers.length > 0) {
-        const urls = result.layers.map((l: { url: string }) => l.url);
-        setResultImages((prev) => [...prev, ...urls]);
-        setResultIndex(resultImages.length);
+        result.layers.forEach((l: { url: string }) => {
+          canvasRef.current?.addResultImage(l.url);
+        });
         toast.success(`Split into ${result.layers.length} layers`);
       } else {
         toast.error('No result returned');
@@ -245,7 +264,6 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
 
         {/* Right: Feature Preview */}
         <div className="flex-1 h-full flex items-center justify-center bg-[#090909] relative overflow-hidden">
-          {/* Faint watermark */}
           <span className="absolute -top-10 left-10 text-[180px] font-black text-white/[0.015] pointer-events-none select-none uppercase leading-none" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             EDIT
           </span>
@@ -280,13 +298,12 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
     );
   }
 
-  /* ── ACTIVE WORKSPACE ── */
+  /* ── ACTIVE WORKSPACE (tldraw canvas) ── */
   const TOOLS: { id: CanvasTool; icon: React.ElementType; label: string }[] = [
-    { id: 'brush', icon: Paintbrush, label: 'Brush' },
+    { id: 'select', icon: MousePointer2, label: 'Select' },
+    { id: 'draw', icon: Paintbrush, label: 'Draw Mask' },
     { id: 'eraser', icon: Eraser, label: 'Eraser' },
     { id: 'hand', icon: Hand, label: 'Hand' },
-    { id: 'undo', icon: Undo2, label: 'Undo' },
-    { id: 'redo', icon: Redo2, label: 'Redo' },
   ];
 
   return (
@@ -309,7 +326,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
           return (
             <button
               key={asset.id}
-              onClick={() => { setSelectedAssetId(asset.id); setResultImages([]); setResultIndex(0); }}
+              onClick={() => setSelectedAssetId(asset.id)}
               className={`w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 transition-all ${
                 isActive ? 'ring-2 ring-[#ccff00] ring-offset-1 ring-offset-[#090909]' : 'opacity-60 hover:opacity-100'
               }`}
@@ -326,7 +343,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
         {completedJobs.slice(0, 4).map((job) => (
           <button
             key={job.id}
-            onClick={() => job.resultUrl && setResultImages([job.resultUrl])}
+            onClick={() => job.resultUrl && canvasRef.current?.addResultImage(job.resultUrl)}
             className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity border border-white/[0.06]"
           >
             {job.resultUrl ? (
@@ -338,56 +355,29 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
         ))}
       </div>
 
-      {/* Center Canvas */}
-      <main className="flex-1 h-full bg-[#0e0e0e] relative flex items-center justify-center overflow-hidden">
+      {/* Center: tldraw Canvas */}
+      <main className="flex-1 h-full bg-[#0e0e0e] relative overflow-hidden">
         {/* Clear all */}
         <button
-          onClick={() => { setSelectedAssetId(null); setResultImages([]); setResultIndex(0); }}
-          className="absolute top-4 right-4 z-20 text-zinc-500 hover:text-white text-[10px] uppercase tracking-widest flex items-center gap-1.5 transition-colors"
+          onClick={() => setSelectedAssetId(null)}
+          className="absolute top-4 right-4 z-30 text-zinc-500 hover:text-white text-[10px] uppercase tracking-widest flex items-center gap-1.5 transition-colors"
         >
           <X className="h-3 w-3" />
-          Clear all
+          Close
         </button>
 
-        {/* Canvas Image */}
-        <div className="relative w-full max-w-4xl aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.5)]">
-          {canvasImageUrl ? (
-            <img src={canvasImageUrl} alt="Canvas" className="absolute inset-0 w-full h-full object-contain bg-black" />
-          ) : (
-            <div className="absolute inset-0 bg-[#0a0a0a] flex items-center justify-center">
-              <Paintbrush className="h-12 w-12 text-zinc-700" />
-            </div>
-          )}
-
-          {/* Carousel dots */}
-          {resultImages.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-              <button onClick={() => setResultIndex(Math.max(0, resultIndex - 1))} className="text-white/60 hover:text-white">
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              {resultImages.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setResultIndex(i)}
-                  className={`w-2 h-2 rounded-full transition-colors ${i === resultIndex ? 'bg-[#ccff00]' : 'bg-white/30'}`}
-                />
-              ))}
-              <button onClick={() => setResultIndex(Math.min(resultImages.length - 1, resultIndex + 1))} className="text-white/60 hover:text-white">
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </div>
-          )}
-        </div>
+        {/* tldraw Canvas */}
+        <EditCanvas ref={canvasRef} imageUrl={canvasImageUrl} />
 
         {/* Floating Tool Palette */}
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-[#131313]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl flex flex-col p-2 gap-1 z-10">
+        <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-[#131313]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl flex flex-col p-2 gap-1 z-20">
           {TOOLS.map((tool) => {
             const Icon = tool.icon;
             const isActive = activeTool === tool.id;
             return (
               <button
                 key={tool.id}
-                onClick={() => setActiveTool(tool.id)}
+                onClick={() => handleToolChange(tool.id)}
                 title={tool.label}
                 className={`rounded-xl p-3 transition-all ${
                   isActive ? 'bg-[#ccff00] text-black shadow-[0_0_15px_rgba(204,255,0,0.2)]' : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
@@ -398,12 +388,44 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
             );
           })}
           <div className="h-px bg-white/[0.06] my-1" />
+          <button
+            onClick={() => canvasRef.current?.undo()}
+            className="rounded-xl p-3 text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all"
+            title="Undo"
+          >
+            <Undo2 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => canvasRef.current?.redo()}
+            className="rounded-xl p-3 text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all"
+            title="Redo"
+          >
+            <Redo2 className="h-4 w-4" />
+          </button>
+          <div className="h-px bg-white/[0.06] my-1" />
           <button className="rounded-xl p-3 text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" title="Download">
             <Download className="h-4 w-4" />
           </button>
-          <button className="rounded-xl p-3 text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" title="More">
-            <MoreHorizontal className="h-4 w-4" />
-          </button>
+        </div>
+
+        {/* Feature quick-switch (floating right) */}
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 bg-[#131313]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl flex flex-col p-2 gap-1 z-20">
+          {FEATURES.filter((f) => f.operation).map((feature) => {
+            const Icon = feature.icon;
+            const isActive = selectedFeature === feature.id;
+            return (
+              <button
+                key={feature.id}
+                onClick={() => setSelectedFeature(feature.id)}
+                title={feature.label}
+                className={`rounded-xl p-3 transition-all ${
+                  isActive ? 'bg-[#ccff00]/20 text-[#ccff00]' : 'text-zinc-500 hover:text-white hover:bg-white/[0.05]'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            );
+          })}
         </div>
 
         {/* Bottom Prompt Bar */}
@@ -417,19 +439,19 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
               type="text"
               value={inpaintPrompt}
               onChange={(e) => setInpaintPrompt(e.target.value)}
-              placeholder="Draw a mask, upload an image, and optionally enter a prompt..."
+              placeholder={
+                selectedFeature === 'inpaint'
+                  ? 'Draw a mask on the image, then describe what to fill…'
+                  : `Describe your ${activeFeature.label.toLowerCase()} edit…`
+              }
               className="flex-1 bg-transparent border-none text-white placeholder-zinc-600 text-sm focus:outline-none focus:ring-0"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             />
 
-            <button className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-white border border-white/[0.06] rounded-full px-3 py-1.5 transition-colors flex-shrink-0">
-              + Add Product
-            </button>
-
-            <button className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-white border border-white/[0.06] rounded-full px-3 py-1.5 transition-colors flex-shrink-0">
-              Quality
-            </button>
+            <span className="text-[10px] text-zinc-600 flex-shrink-0 uppercase tracking-widest">
+              {activeFeature.label}
+            </span>
 
             <button
               onClick={handleGenerate}
