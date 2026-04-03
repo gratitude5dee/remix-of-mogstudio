@@ -15,7 +15,8 @@ type ImageEditOperation =
   | 'inpaint'
   | 'outpaint'
   | 'removeBackground'
-  | 'splitLayers';
+  | 'splitLayers'
+  | 'productPlacement';
 
 interface ImageEditOperationRequest {
   projectId?: string;
@@ -24,6 +25,8 @@ interface ImageEditOperationRequest {
   prompt?: string;
   imageUrl?: string;
   maskDataUrl?: string;
+  modelId?: string;
+  productImageUrl?: string;
 }
 
 const SUPPORTED_OPERATIONS = new Set<ImageEditOperation>([
@@ -31,11 +34,15 @@ const SUPPORTED_OPERATIONS = new Set<ImageEditOperation>([
   'inpaint',
   'removeBackground',
   'splitLayers',
+  'upscale',
+  'productPlacement',
 ]);
 
-const INPAINT_MODEL_ID = 'fal-ai/stable-diffusion-inpainting';
+const DEFAULT_INPAINT_MODEL = 'fal-ai/flux-pro/v1/fill';
 const REMOVE_BACKGROUND_MODEL_ID = 'fal-ai/imageutils/rembg';
 const SPLIT_LAYERS_MODEL_ID = 'fal-ai/qwen-image-layered';
+const DEFAULT_UPSCALE_MODEL = 'fal-ai/seedvr/upscale/image/seamless';
+const DEFAULT_PRODUCT_PLACEMENT_MODEL = 'bria/embed-product';
 
 let falConfigured = false;
 
@@ -82,6 +89,8 @@ Deno.serve(async (req) => {
     const prompt = normalizeString(body.prompt);
     const imageUrl = normalizeString(body.imageUrl);
     const maskDataUrl = normalizeString(body.maskDataUrl);
+    const modelId = normalizeString(body.modelId);
+    const productImageUrl = normalizeString(body.productImageUrl);
 
     if (!projectId) {
       return errorResponse('projectId is required', 400);
@@ -105,6 +114,7 @@ Deno.serve(async (req) => {
       projectId,
       nodeId,
       operation,
+      modelId: modelId || 'default',
       userId: user.id,
     });
 
@@ -127,7 +137,8 @@ Deno.serve(async (req) => {
         return errorResponse('maskDataUrl is required for inpaint', 400);
       }
 
-      const result = await runFalModel(INPAINT_MODEL_ID, {
+      const inpaintModel = modelId || DEFAULT_INPAINT_MODEL;
+      const result = await runFalModel(inpaintModel, {
         image_url: imageUrl,
         mask_url: maskDataUrl,
         mask_image_url: maskDataUrl,
@@ -159,6 +170,42 @@ Deno.serve(async (req) => {
       return successResponse({ asset });
     }
 
+    if (operation === 'upscale') {
+      const upscaleModel = modelId || DEFAULT_UPSCALE_MODEL;
+      const result = await runFalModel(upscaleModel, {
+        image_url: imageUrl,
+        scale: 2,
+      });
+
+      const asset = extractSingleImageArtifact(result, 'Upscaled');
+      if (!asset) {
+        throw new Error('No asset returned from upscale operation');
+      }
+
+      return successResponse({ asset });
+    }
+
+    if (operation === 'productPlacement') {
+      if (!productImageUrl) {
+        return errorResponse('productImageUrl is required for productPlacement', 400);
+      }
+
+      const placementModel = modelId || DEFAULT_PRODUCT_PLACEMENT_MODEL;
+      const result = await runFalModel(placementModel, {
+        image_url: imageUrl,
+        product_image_url: productImageUrl,
+        prompt: prompt || 'Place the product naturally in the scene',
+      });
+
+      const asset = extractSingleImageArtifact(result, 'Product Placement');
+      if (!asset) {
+        throw new Error('No asset returned from product placement operation');
+      }
+
+      return successResponse({ asset });
+    }
+
+    // splitLayers (default fallthrough)
     const result = await runFalModel(SPLIT_LAYERS_MODEL_ID, {
       image_url: imageUrl,
     });

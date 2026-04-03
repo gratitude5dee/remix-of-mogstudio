@@ -1,30 +1,76 @@
 import { useState, useMemo } from 'react';
 import {
-  Paintbrush,
-  Wand2,
-  Eraser,
-  ZoomIn,
-  Plus,
-  Library,
-  Wrench,
-  Layers,
-  Clock,
-  Box,
-  Sparkles,
-  AlertTriangle,
-  HelpCircle,
-  LogOut,
-  Loader2,
-  Upload,
+  Paintbrush, Wand2, Eraser, ZoomIn, Plus, Sparkles, Loader2, Upload,
+  Video, Sun, Palette, ArrowUpCircle, ScanFace, RotateCcw, Hand, Undo2, Redo2,
+  Download, MoreHorizontal, ChevronLeft, ChevronRight, X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { imageEditService } from '@/services/imageEditService';
 import type { ImageEditOperation } from '@/types/imageEdit';
 import type { KanvasAsset, KanvasJob, KanvasAssetType } from '@/features/kanvas/types';
 
-type SidebarTab = 'library' | 'tools' | 'layers' | 'history' | 'assets';
-type CanvasTool = 'brush' | 'wand' | 'eraser' | 'zoom';
+/* ── Types ── */
+type EditFeature = 'inpaint' | 'removeBackground' | 'upscale' | 'relight' | 'stylize' | 'skinEnhance' | 'angles' | 'productPlacement';
 
+interface FeatureItem {
+  id: EditFeature;
+  label: string;
+  description: string;
+  icon: React.ElementType;
+  operation: ImageEditOperation | null;
+  badge?: 'TOP' | 'NEW' | 'SOON';
+}
+
+interface EditModelItem {
+  id: string;
+  name: string;
+  badge?: 'TOP' | 'NEW';
+  credits: number;
+}
+
+/* ── Data ── */
+const FEATURES: FeatureItem[] = [
+  { id: 'inpaint', label: 'Inpaint', description: 'Fill, replace, or extend regions with AI.', icon: Paintbrush, operation: 'inpaint', badge: 'TOP' },
+  { id: 'removeBackground', label: 'Remove BG', description: 'Isolate subjects with precision cutouts.', icon: Wand2, operation: 'removeBackground' },
+  { id: 'upscale', label: 'Upscale', description: 'Enhance resolution up to 4x with AI.', icon: ArrowUpCircle, operation: 'upscale' as ImageEditOperation },
+  { id: 'relight', label: 'Relight', description: 'Change lighting direction and mood.', icon: Sun, operation: null, badge: 'NEW' },
+  { id: 'stylize', label: 'AI Stylist', description: 'Apply artistic styles and transformations.', icon: Palette, operation: null, badge: 'SOON' },
+  { id: 'skinEnhance', label: 'Skin Enhancer', description: 'Professional skin retouching.', icon: ScanFace, operation: null, badge: 'SOON' },
+  { id: 'angles', label: 'Angles', description: 'Generate alternate viewpoints.', icon: RotateCcw, operation: null, badge: 'SOON' },
+  { id: 'productPlacement', label: 'Product Placement', description: 'Embed products into scenes naturally.', icon: Video, operation: 'productPlacement' as ImageEditOperation },
+];
+
+const EDIT_MODELS: EditModelItem[] = [
+  { id: 'fal-ai/nano-banana-pro/edit', name: 'Nano Banana Pro Inpaint', badge: 'TOP', credits: 8 },
+  { id: 'fal-ai/nano-banana-2/edit', name: 'Nano Banana Inpaint', credits: 5 },
+  { id: 'fal-ai/flux-pro/v1/fill', name: 'FLUX Pro Fill', badge: 'TOP', credits: 7 },
+  { id: 'fal-ai/gpt-image-1-5/edit', name: 'GPT Image 1.5 Edit', credits: 4 },
+  { id: 'fal-ai/grok-imagine/edit', name: 'Grok Imagine Edit', credits: 5 },
+  { id: 'fal-ai/seedream-5-lite/edit', name: 'Seedream 5 Edit', badge: 'NEW', credits: 6 },
+  { id: 'fal-ai/seedvr/upscale/image/seamless', name: 'Topaz Upscale', credits: 3 },
+  { id: 'bria/embed-product', name: 'Product Placement', credits: 6 },
+];
+
+const FEATURE_IMAGES: Record<string, string> = {
+  inpaint: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80&auto=format',
+  removeBackground: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80&auto=format',
+  upscale: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80&auto=format',
+  relight: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80&auto=format',
+  stylize: 'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=800&q=80&auto=format',
+  skinEnhance: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80&auto=format',
+  angles: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80&auto=format',
+  productPlacement: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80&auto=format',
+};
+
+/* ── Helpers ── */
+function resolveAssetUrl(asset: KanvasAsset): string | null {
+  return asset.cdn_url ?? asset.preview_url ?? asset.thumbnail_url;
+}
+function resolveAssetThumb(asset: KanvasAsset): string | null {
+  return asset.thumbnail_url ?? asset.preview_url ?? asset.cdn_url;
+}
+
+/* ── Props ── */
 interface EditStudioProps {
   assets: KanvasAsset[];
   jobs: KanvasJob[];
@@ -33,87 +79,58 @@ interface EditStudioProps {
   onUpload: (file: File, assetType: KanvasAssetType) => void;
 }
 
-const SIDEBAR_TABS: { id: SidebarTab; label: string; icon: typeof Library }[] = [
-  { id: 'library', label: 'Library', icon: Library },
-  { id: 'tools', label: 'Tools', icon: Wrench },
-  { id: 'layers', label: 'Layers', icon: Layers },
-  { id: 'history', label: 'History', icon: Clock },
-  { id: 'assets', label: 'Assets', icon: Box },
-];
-
-const CANVAS_TOOLS: { id: CanvasTool; icon: typeof Paintbrush; label: string; operation: ImageEditOperation | null }[] = [
-  { id: 'brush', icon: Paintbrush, label: 'Inpaint', operation: 'inpaint' },
-  { id: 'wand', icon: Wand2, label: 'Remove BG', operation: 'removeBackground' },
-  { id: 'eraser', icon: Eraser, label: 'Split Layers', operation: 'splitLayers' },
-  { id: 'zoom', icon: ZoomIn, label: 'Zoom', operation: null },
-];
-
-function resolveAssetUrl(asset: KanvasAsset): string | null {
-  return asset.cdn_url ?? asset.preview_url ?? asset.thumbnail_url;
-}
-
-function resolveAssetThumb(asset: KanvasAsset): string | null {
-  return asset.thumbnail_url ?? asset.preview_url ?? asset.cdn_url;
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
+type CanvasTool = 'brush' | 'eraser' | 'hand' | 'undo' | 'redo';
 
 export default function EditStudioSection({ assets, jobs, selectedJob, uploading, onUpload }: EditStudioProps) {
-  const [activeSidebarTab, setActiveSidebarTab] = useState<SidebarTab>('library');
-  const [activeCanvasTool, setActiveCanvasTool] = useState<CanvasTool>('brush');
-  const [inpaintPrompt, setInpaintPrompt] = useState('');
+  const [selectedFeature, setSelectedFeature] = useState<EditFeature>('inpaint');
+  const [selectedModelId, setSelectedModelId] = useState(EDIT_MODELS[0].id);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<CanvasTool>('brush');
+  const [inpaintPrompt, setInpaintPrompt] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
+  const [resultImages, setResultImages] = useState<string[]>([]);
+  const [resultIndex, setResultIndex] = useState(0);
 
   const selectedAsset = useMemo(
     () => assets.find((a) => a.id === selectedAssetId) ?? null,
     [assets, selectedAssetId]
   );
 
-  const activeToolConfig = CANVAS_TOOLS.find((t) => t.id === activeCanvasTool)!;
-  const showPromptBar = activeCanvasTool === 'brush';
-  const showMask = activeCanvasTool === 'brush' && selectedAsset !== null;
-
-  const canvasImageUrl = resultImageUrl ?? (selectedAsset ? resolveAssetUrl(selectedAsset) : null);
+  const activeFeature = FEATURES.find((f) => f.id === selectedFeature)!;
+  const hasWorkspace = selectedAsset !== null;
+  const canvasImageUrl = resultImages[resultIndex] ?? (selectedAsset ? resolveAssetUrl(selectedAsset) : null);
 
   const completedJobs = useMemo(
     () => jobs.filter((j) => j.status === 'completed' && j.resultUrl),
     [jobs]
   );
 
-  const assetProperties = useMemo(() => {
-    if (!selectedAsset) return [];
-    const meta = selectedAsset.media_metadata as Record<string, unknown> | null;
-    const w = meta?.width as number | undefined;
-    const h = meta?.height as number | undefined;
-    return [
-      { label: 'Resolution', value: w && h ? `${w} × ${h}` : 'Unknown' },
-      { label: 'Format', value: selectedAsset.mime_type.split('/')[1]?.toUpperCase() ?? 'Unknown' },
-      { label: 'Size', value: formatFileSize(selectedAsset.file_size_bytes) },
-      { label: 'Status', value: selectedAsset.processing_status },
-    ];
-  }, [selectedAsset]);
+  function handleUploadClick() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) onUpload(file, 'image');
+    };
+    input.click();
+  }
 
   async function handleGenerate() {
     if (!selectedAsset) {
       toast.error('Select an asset first');
       return;
     }
-
     const imageUrl = resolveAssetUrl(selectedAsset);
     if (!imageUrl) {
       toast.error('Asset has no accessible URL');
       return;
     }
-
-    const operation = activeToolConfig.operation;
-    if (!operation) return;
-
+    const operation = activeFeature.operation;
+    if (!operation) {
+      toast.info(`${activeFeature.label} coming soon`);
+      return;
+    }
     if (operation === 'inpaint' && !inpaintPrompt.trim()) {
       toast.error('Enter a prompt for inpainting');
       return;
@@ -127,13 +144,17 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
         operation,
         prompt: operation === 'inpaint' ? inpaintPrompt : undefined,
         imageUrl,
+        modelId: selectedModelId,
       });
 
       if (result.asset?.url) {
-        setResultImageUrl(result.asset.url);
-        toast.success(`${activeToolConfig.label} complete`);
+        setResultImages((prev) => [...prev, result.asset!.url]);
+        setResultIndex(resultImages.length);
+        toast.success(`${activeFeature.label} complete`);
       } else if (result.layers && result.layers.length > 0) {
-        setResultImageUrl(result.layers[0].url);
+        const urls = result.layers.map((l: { url: string }) => l.url);
+        setResultImages((prev) => [...prev, ...urls]);
+        setResultIndex(resultImages.length);
         toast.success(`Split into ${result.layers.length} layers`);
       } else {
         toast.error('No result returned');
@@ -145,287 +166,282 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
     }
   }
 
-  function handleUploadClick() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) onUpload(file, 'image');
-    };
-    input.click();
+  /* ── LANDING STATE ── */
+  if (!hasWorkspace) {
+    return (
+      <div className="fixed inset-0 top-[80px] bg-[#090909] z-20 overflow-hidden flex" style={{ scrollbarWidth: 'none' }}>
+        <style>{`::-webkit-scrollbar { display: none; }`}</style>
+
+        {/* Left: Feature + Model Browser */}
+        <div className="flex w-[560px] flex-shrink-0 h-full">
+          {/* Features Column */}
+          <div className="w-[280px] h-full bg-[#0e0e0e] border-r border-white/[0.06] overflow-y-auto p-6" style={{ scrollbarWidth: 'none' }}>
+            <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-bold mb-4">Features</p>
+            <div className="flex flex-col gap-1">
+              {FEATURES.map((feature) => {
+                const Icon = feature.icon;
+                const isActive = selectedFeature === feature.id;
+                return (
+                  <button
+                    key={feature.id}
+                    onClick={() => setSelectedFeature(feature.id)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                      isActive
+                        ? 'bg-[#1a1a1a] border border-[#ccff00]/20 shadow-[0_0_20px_rgba(204,255,0,0.05)]'
+                        : 'hover:bg-white/[0.03] border border-transparent'
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? 'text-[#ccff00]' : 'text-zinc-500'}`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-semibold ${isActive ? 'text-white' : 'text-zinc-400'}`}>{feature.label}</span>
+                        {feature.badge && (
+                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${
+                            feature.badge === 'TOP' ? 'bg-red-500/20 text-red-400' :
+                            feature.badge === 'NEW' ? 'bg-[#ccff00]/20 text-[#ccff00]' :
+                            'bg-zinc-700/50 text-zinc-500'
+                          }`}>{feature.badge}</span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-zinc-600 mt-0.5 leading-tight">{feature.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Models Column */}
+          <div className="w-[280px] h-full bg-[#0b0b0b] border-r border-white/[0.06] overflow-y-auto p-6" style={{ scrollbarWidth: 'none' }}>
+            <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-bold mb-4">Models</p>
+            <div className="flex flex-col gap-1">
+              {EDIT_MODELS.map((model) => {
+                const isActive = selectedModelId === model.id;
+                return (
+                  <button
+                    key={model.id}
+                    onClick={() => setSelectedModelId(model.id)}
+                    className={`flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all ${
+                      isActive
+                        ? 'bg-[#1a1a1a] border border-[#ccff00]/20'
+                        : 'hover:bg-white/[0.03] border border-transparent'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={`text-xs font-medium truncate ${isActive ? 'text-white' : 'text-zinc-400'}`}>{model.name}</span>
+                      {model.badge && (
+                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                          model.badge === 'TOP' ? 'bg-red-500/20 text-red-400' : 'bg-[#ccff00]/20 text-[#ccff00]'
+                        }`}>{model.badge}</span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-zinc-600 flex-shrink-0">{model.credits}cr</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Feature Preview */}
+        <div className="flex-1 h-full flex items-center justify-center bg-[#090909] relative overflow-hidden">
+          {/* Faint watermark */}
+          <span className="absolute -top-10 left-10 text-[180px] font-black text-white/[0.015] pointer-events-none select-none uppercase leading-none" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            EDIT
+          </span>
+
+          <div className="relative z-10 flex flex-col items-center max-w-lg text-center">
+            <div className="w-[400px] h-[260px] rounded-2xl overflow-hidden mb-8 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+              <img
+                src={FEATURE_IMAGES[selectedFeature] || FEATURE_IMAGES.inpaint}
+                alt={activeFeature.label}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+
+            <p className="text-[10px] uppercase tracking-[0.2em] text-[#ccff00] font-bold mb-2">{activeFeature.badge || 'FEATURE'}</p>
+            <h2 className="text-4xl font-black text-white uppercase tracking-tight mb-3" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              {activeFeature.label}
+            </h2>
+            <p className="text-sm text-zinc-500 mb-8 max-w-sm">{activeFeature.description}</p>
+
+            <button
+              onClick={handleUploadClick}
+              disabled={uploading}
+              className="bg-[#ccff00] text-black font-bold uppercase tracking-widest text-[11px] px-8 py-3.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_30px_rgba(204,255,0,0.3)] transition-all disabled:opacity-50"
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              {uploading ? 'Uploading…' : 'Upload media'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
+  /* ── ACTIVE WORKSPACE ── */
+  const TOOLS: { id: CanvasTool; icon: React.ElementType; label: string }[] = [
+    { id: 'brush', icon: Paintbrush, label: 'Brush' },
+    { id: 'eraser', icon: Eraser, label: 'Eraser' },
+    { id: 'hand', icon: Hand, label: 'Hand' },
+    { id: 'undo', icon: Undo2, label: 'Undo' },
+    { id: 'redo', icon: Redo2, label: 'Redo' },
+  ];
+
   return (
-    <div className="fixed inset-0 top-[80px] bg-[#000000] z-20 overflow-hidden flex" style={{ scrollbarWidth: 'none' }}>
+    <div className="fixed inset-0 top-[80px] bg-[#090909] z-20 overflow-hidden flex" style={{ scrollbarWidth: 'none' }}>
       <style>{`::-webkit-scrollbar { display: none; }`}</style>
 
-      {/* ── Left Sidebar ── */}
-      <aside className="w-[260px] flex-none h-full bg-[#090909] border-r border-white/5 flex flex-col overflow-hidden">
-        <div className="px-6 pt-8 pb-4">
-          <div className="flex items-baseline gap-3">
-            <span className="text-white font-bold text-sm" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>STUDIO</span>
-            <span className="text-zinc-600 text-[8px] font-medium">V1.0.4-NOIR</span>
-          </div>
-        </div>
+      {/* Left: Thumbnail Rail */}
+      <div className="w-[72px] flex-shrink-0 h-full bg-[#0a0a0a] border-r border-white/[0.06] flex flex-col items-center py-4 gap-2 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+        <button
+          onClick={handleUploadClick}
+          disabled={uploading}
+          className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-dashed border-[#ccff00]/30 flex items-center justify-center text-[#ccff00] hover:bg-[#1f1f1f] transition-colors flex-shrink-0"
+        >
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        </button>
 
-        <div className="px-6 mb-4">
+        {assets.map((asset) => {
+          const thumb = resolveAssetThumb(asset);
+          const isActive = selectedAssetId === asset.id;
+          return (
+            <button
+              key={asset.id}
+              onClick={() => { setSelectedAssetId(asset.id); setResultImages([]); setResultIndex(0); }}
+              className={`w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 transition-all ${
+                isActive ? 'ring-2 ring-[#ccff00] ring-offset-1 ring-offset-[#090909]' : 'opacity-60 hover:opacity-100'
+              }`}
+            >
+              {thumb ? (
+                <img src={thumb} alt="" className="w-full h-full object-cover" loading="lazy" />
+              ) : (
+                <div className="w-full h-full bg-[#1a1a1a]" />
+              )}
+            </button>
+          );
+        })}
+
+        {completedJobs.slice(0, 4).map((job) => (
           <button
-            onClick={handleUploadClick}
-            disabled={uploading}
-            className="w-full bg-[#1a1919] text-[#ccff00] border border-white/5 rounded-full py-3 text-[10px] font-bold uppercase tracking-widest flex justify-center items-center gap-2 hover:bg-[#222] transition-colors disabled:opacity-50"
+            key={job.id}
+            onClick={() => job.resultUrl && setResultImages([job.resultUrl])}
+            className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity border border-white/[0.06]"
           >
-            {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3 w-3" />}
-            {uploading ? 'Uploading…' : 'New Asset'}
-          </button>
-        </div>
-
-        <nav className="flex flex-col">
-          {SIDEBAR_TABS.map((tab) => {
-            const Icon = tab.icon;
-            const active = activeSidebarTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveSidebarTab(tab.id)}
-                className={`flex items-center gap-4 px-6 py-4 text-[10px] uppercase tracking-widest transition-colors ${
-                  active
-                    ? 'bg-[#1a1919]/50 border-r-2 border-[#ccff00] text-[#ccff00] font-bold'
-                    : 'text-zinc-500 hover:text-white font-medium'
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="mt-6 flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-          <p className="px-6 mb-4 text-[9px] uppercase tracking-widest text-zinc-600 font-bold">
-            {assets.length > 0 ? `Library (${assets.length})` : 'Library'}
-          </p>
-          <div className="px-6 grid grid-cols-2 gap-2">
-            {assets.length === 0 && (
-              <div className="col-span-2 flex flex-col items-center justify-center py-8 text-zinc-600">
-                <Upload className="h-6 w-6 mb-2" />
-                <p className="text-[10px] uppercase tracking-widest">Upload assets</p>
-              </div>
+            {job.resultUrl ? (
+              <img src={job.resultUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+            ) : (
+              <div className="w-full h-full bg-[#1a1a1a]" />
             )}
-            {assets.map((asset) => {
-              const thumb = resolveAssetThumb(asset);
-              const isSelected = selectedAssetId === asset.id;
-              return (
-                <button
-                  key={asset.id}
-                  onClick={() => {
-                    setSelectedAssetId(asset.id);
-                    setResultImageUrl(null);
-                  }}
-                  className={`aspect-square rounded-md cursor-pointer transition-all overflow-hidden relative ${
-                    isSelected ? 'ring-2 ring-[#ccff00] ring-offset-1 ring-offset-[#090909]' : 'hover:opacity-80'
-                  }`}
-                >
-                  {thumb ? (
-                    <img src={thumb} alt={asset.original_file_name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#1a1a2e] to-[#0d1117]" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="mt-auto p-6 flex flex-col gap-3">
-          <button className="flex items-center gap-3 text-zinc-600 hover:text-zinc-400 text-[10px] uppercase tracking-widest transition-colors">
-            <HelpCircle className="h-3.5 w-3.5" />
-            Support
           </button>
-          <button className="flex items-center gap-3 text-zinc-600 hover:text-zinc-400 text-[10px] uppercase tracking-widest transition-colors">
-            <LogOut className="h-3.5 w-3.5" />
-            Sign Out
-          </button>
-        </div>
-      </aside>
+        ))}
+      </div>
 
-      {/* ── Center Canvas ── */}
+      {/* Center Canvas */}
       <main className="flex-1 h-full bg-[#0e0e0e] relative flex items-center justify-center overflow-hidden">
-        <div className="aspect-[4/3] w-full max-w-4xl relative rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+        {/* Clear all */}
+        <button
+          onClick={() => { setSelectedAssetId(null); setResultImages([]); setResultIndex(0); }}
+          className="absolute top-4 right-4 z-20 text-zinc-500 hover:text-white text-[10px] uppercase tracking-widest flex items-center gap-1.5 transition-colors"
+        >
+          <X className="h-3 w-3" />
+          Clear all
+        </button>
+
+        {/* Canvas Image */}
+        <div className="relative w-full max-w-4xl aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.5)]">
           {canvasImageUrl ? (
             <img src={canvasImageUrl} alt="Canvas" className="absolute inset-0 w-full h-full object-contain bg-black" />
           ) : (
             <div className="absolute inset-0 bg-[#0a0a0a] flex items-center justify-center">
-              <div className="text-center">
-                <Paintbrush className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-                <p className="text-zinc-600 text-sm" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  Select an asset from the library
-                </p>
-              </div>
+              <Paintbrush className="h-12 w-12 text-zinc-700" />
             </div>
           )}
 
-          {/* Tool palette */}
-          <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-[#090909]/80 backdrop-blur-xl border border-white/10 rounded-full flex flex-col p-2 gap-2 z-10">
-            {CANVAS_TOOLS.map((tool) => {
-              const Icon = tool.icon;
-              const active = activeCanvasTool === tool.id;
-              return (
+          {/* Carousel dots */}
+          {resultImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+              <button onClick={() => setResultIndex(Math.max(0, resultIndex - 1))} className="text-white/60 hover:text-white">
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              {resultImages.map((_, i) => (
                 <button
-                  key={tool.id}
-                  onClick={() => setActiveCanvasTool(tool.id)}
-                  title={tool.label}
-                  className={`rounded-full p-3 transition-colors ${
-                    active ? 'bg-[#ccff00] text-black' : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Active Mask overlay – only for inpaint tool with an asset selected */}
-          {showMask && (
-            <div className="absolute top-[20%] left-[30%] w-64 h-80 border-[1.5px] border-[#ccff00] pointer-events-none z-10">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ccff00] text-black text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter whitespace-nowrap">
-                Active Mask
-              </div>
-            </div>
-          )}
-
-          {/* Layer info */}
-          {selectedAsset && (
-            <div className="absolute bottom-8 left-8 z-10">
-              <p className="text-[9px] uppercase tracking-widest text-[#ccff00] font-bold mb-1">Current Layer</p>
-              <p className="text-2xl font-black text-white tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                {selectedAsset.original_file_name?.replace(/\.[^.]+$/, '').toUpperCase() ?? 'UNTITLED'}
-              </p>
+                  key={i}
+                  onClick={() => setResultIndex(i)}
+                  className={`w-2 h-2 rounded-full transition-colors ${i === resultIndex ? 'bg-[#ccff00]' : 'bg-white/30'}`}
+                />
+              ))}
+              <button onClick={() => setResultIndex(Math.min(resultImages.length - 1, resultIndex + 1))} className="text-white/60 hover:text-white">
+                <ChevronRight className="h-5 w-5" />
+              </button>
             </div>
           )}
         </div>
 
-        {/* Floating Prompt / Action Bar */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-3xl z-30">
-          <div className="bg-[#131313]/90 backdrop-blur-2xl border border-white/5 rounded-full p-2 flex items-center gap-4 shadow-2xl">
-            <div className="flex-none w-10 h-10 rounded-full bg-[#1a1919] flex items-center justify-center ml-1">
+        {/* Floating Tool Palette */}
+        <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-[#131313]/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl flex flex-col p-2 gap-1 z-10">
+          {TOOLS.map((tool) => {
+            const Icon = tool.icon;
+            const isActive = activeTool === tool.id;
+            return (
+              <button
+                key={tool.id}
+                onClick={() => setActiveTool(tool.id)}
+                title={tool.label}
+                className={`rounded-xl p-3 transition-all ${
+                  isActive ? 'bg-[#ccff00] text-black shadow-[0_0_15px_rgba(204,255,0,0.2)]' : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            );
+          })}
+          <div className="h-px bg-white/[0.06] my-1" />
+          <button className="rounded-xl p-3 text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" title="Download">
+            <Download className="h-4 w-4" />
+          </button>
+          <button className="rounded-xl p-3 text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" title="More">
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Bottom Prompt Bar */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-3xl z-30">
+          <div className="bg-[#131313]/95 backdrop-blur-2xl border border-white/[0.06] rounded-2xl p-3 flex items-center gap-3 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+            <div className="flex-none w-9 h-9 rounded-full bg-[#1a1a1a] flex items-center justify-center">
               <Sparkles className="h-4 w-4 text-[#ccff00]" />
             </div>
 
-            {showPromptBar ? (
-              <input
-                type="text"
-                value={inpaintPrompt}
-                onChange={(e) => setInpaintPrompt(e.target.value)}
-                placeholder="Describe how to fill the masked area…"
-                className="flex-1 bg-transparent border-none text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-0"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
-              />
-            ) : (
-              <span className="flex-1 text-zinc-400 text-sm" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                {activeToolConfig.label} — {selectedAsset ? 'Ready' : 'Select an asset'}
-              </span>
-            )}
+            <input
+              type="text"
+              value={inpaintPrompt}
+              onChange={(e) => setInpaintPrompt(e.target.value)}
+              placeholder="Draw a mask, upload an image, and optionally enter a prompt..."
+              className="flex-1 bg-transparent border-none text-white placeholder-zinc-600 text-sm focus:outline-none focus:ring-0"
+              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+            />
+
+            <button className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-white border border-white/[0.06] rounded-full px-3 py-1.5 transition-colors flex-shrink-0">
+              + Add Product
+            </button>
+
+            <button className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-white border border-white/[0.06] rounded-full px-3 py-1.5 transition-colors flex-shrink-0">
+              Quality
+            </button>
 
             <button
               onClick={handleGenerate}
-              disabled={isProcessing || !selectedAsset || !activeToolConfig.operation}
-              className="flex-none bg-[#ccff00] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-3 rounded-full flex items-center gap-2 hover:shadow-[0_0_20px_rgba(204,255,0,0.4)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={isProcessing || !activeFeature.operation}
+              className="flex-none bg-[#ccff00] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_20px_rgba(204,255,0,0.4)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {isProcessing ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Sparkles className="h-3.5 w-3.5" />
-              )}
-              {isProcessing ? 'Processing…' : activeToolConfig.label}
+              {isProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+              {isProcessing ? 'Processing…' : 'Edit'}
             </button>
           </div>
         </div>
       </main>
-
-      {/* ── Right Sidebar ── */}
-      <aside className="w-[340px] flex-none h-full bg-[#090909] border-l border-white/5 p-8 flex flex-col overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-        <p className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold mb-4">Asset Detail</p>
-
-        {selectedAsset ? (
-          <>
-            <div className="w-full aspect-[21/9] rounded-2xl overflow-hidden mb-6 bg-black">
-              {resolveAssetUrl(selectedAsset) ? (
-                <img src={resolveAssetUrl(selectedAsset)!} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#1a1a2e] to-[#0f3460]" />
-              )}
-            </div>
-
-            <h2 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              {selectedAsset.original_file_name?.replace(/\.[^.]+$/, '') ?? 'Untitled'}
-            </h2>
-            <p className="text-xs text-zinc-500 mb-8">Ref: #{selectedAsset.id.slice(0, 8).toUpperCase()}</p>
-
-            <p className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold mb-4">Properties</p>
-            <div className="flex flex-col gap-3 mb-8">
-              {assetProperties.map((prop) => (
-                <div key={prop.label} className="flex items-center justify-between">
-                  <span className="text-zinc-500 text-xs">{prop.label}</span>
-                  <span className="text-white font-mono text-xs">{prop.value}</span>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold mb-3">Active Tool</p>
-            <p className="text-xs text-zinc-400 leading-relaxed mb-8">
-              <span className="text-[#ccff00] font-bold">{activeToolConfig.label}</span>
-              {activeCanvasTool === 'brush' && ' — Draw a mask region and describe the replacement content.'}
-              {activeCanvasTool === 'wand' && ' — Removes the background, isolating the subject.'}
-              {activeCanvasTool === 'eraser' && ' — Splits the image into distinct visual layers.'}
-              {activeCanvasTool === 'zoom' && ' — Client-side zoom for inspection (no backend call).'}
-            </p>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <p className="text-zinc-600 text-xs text-center uppercase tracking-widest">
-              Select an asset<br />to view details
-            </p>
-          </div>
-        )}
-
-        {/* Recent Results */}
-        {completedJobs.length > 0 && (
-          <div className="mb-6">
-            <p className="text-[9px] uppercase tracking-widest text-zinc-500 font-bold mb-3">Recent Results</p>
-            <div className="grid grid-cols-3 gap-2">
-              {completedJobs.slice(0, 6).map((job) => (
-                <button
-                  key={job.id}
-                  onClick={() => job.resultUrl && setResultImageUrl(job.resultUrl)}
-                  className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
-                >
-                  {job.resultUrl ? (
-                    <img src={job.resultUrl} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-[#1a1919]" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="mt-auto bg-[#ff3399]/5 border border-[#ff3399]/30 rounded-[2rem] p-6 relative">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="h-4 w-4 text-[#ff3399]" />
-            <span className="text-[10px] text-[#ff3399] uppercase tracking-widest font-bold">Low Credits</span>
-          </div>
-          <p className="text-xs text-zinc-300 leading-relaxed">
-            Your credits are running low. <span className="text-white underline cursor-pointer">Top up now</span> for uninterrupted generation.
-          </p>
-        </div>
-
-        <button className="w-full mt-4 py-4 bg-[#1a1919] text-white text-[10px] uppercase font-bold tracking-widest rounded-full hover:bg-white/10 transition-colors">
-          Manage Workflow
-        </button>
-      </aside>
     </div>
   );
 }
