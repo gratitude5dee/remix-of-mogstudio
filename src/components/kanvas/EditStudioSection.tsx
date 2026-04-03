@@ -91,6 +91,15 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
   const [isProcessing, setIsProcessing] = useState(false);
 
   const canvasRef = useRef<EditCanvasHandle>(null);
+  const prevAssetsLenRef = useRef(assets.length);
+
+  useEffect(() => {
+    if (assets.length > prevAssetsLenRef.current && !selectedAssetId) {
+      const newest = assets[assets.length - 1];
+      if (newest) setSelectedAssetId(newest.id);
+    }
+    prevAssetsLenRef.current = assets.length;
+  }, [assets, selectedAssetId]);
 
   const selectedAsset = useMemo(
     () => assets.find((a) => a.id === selectedAssetId) ?? null,
