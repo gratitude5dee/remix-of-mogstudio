@@ -177,19 +177,23 @@ export function VideoStudioSection({
   /* ── Sub-nav ── */
   const subNav = (
     <div className="space-y-3">
-      <div className="flex gap-2">
-        {(["create", "edit", "motion"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={cn(
-              "px-5 py-2 text-sm font-semibold transition-all border-b-2",
-              activeTab === tab ? "text-white border-[#ccff00]" : "text-zinc-500 border-transparent hover:text-zinc-300"
-            )}
-          >
-            {tab === "create" ? "Create Video" : tab === "edit" ? "Edit Video" : "Motion Control"}
-          </button>
-        ))}
+      <div className="flex justify-center">
+        <div className="inline-flex items-center bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06]">
+          {(["create", "edit", "motion"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "px-5 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                activeTab === tab
+                  ? "bg-white/10 text-[#ccff00] shadow-[inset_0_0_12px_rgba(204,255,0,0.06)]"
+                  : "text-zinc-500 hover:text-zinc-300"
+              )}
+            >
+              {tab === "create" ? "Create Video" : tab === "edit" ? "Edit Video" : "Motion Control"}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="flex items-center gap-4 text-[11px] text-zinc-600">
         <button className="flex items-center gap-1.5 hover:text-zinc-400 transition-colors">
