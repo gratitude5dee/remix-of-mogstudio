@@ -1174,7 +1174,7 @@ export default function KanvasPage() {
 
             {/* Center: Pill-slider nav */}
             <div className="inline-flex bg-[#111] rounded-full p-1 border border-white/[0.06]">
-              {KANVAS_STUDIO_ORDER.filter(s => s !== 'worldview' && s !== 'character-creation').map((entry) => {
+              {KANVAS_STUDIO_ORDER.map((entry) => {
                 const Icon = STUDIO_ICONS[entry];
                 const label = KANVAS_STUDIO_META[entry].label;
                 const isActive = studio === entry;
