@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { Tldraw, Editor, TLShapeId, createShapeId, DefaultColorStyle } from 'tldraw';
+import { Tldraw, Editor, createShapeId, DefaultColorStyle, Box } from 'tldraw';
 import 'tldraw/tldraw.css';
 
 export interface EditCanvasHandle {
