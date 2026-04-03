@@ -96,6 +96,7 @@ import LipsyncStudioSection from "@/components/kanvas/LipsyncStudioSection";
 import CinemaStudioSection from "@/components/kanvas/CinemaStudioSection";
 import { MentionDropdown } from "@/components/character-creation/MentionDropdown";
 import { useCharacterMention } from "@/hooks/useCharacterMention";
+import { useCharacterCreationStore } from "@/lib/stores/character-creation-store";
 import { appRoutes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
