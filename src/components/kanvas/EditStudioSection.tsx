@@ -1,3 +1,4 @@
+/* Edit Studio — redesigned */
 import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Paintbrush, Wand2, Eraser, Plus, Sparkles, Loader2, Upload,
