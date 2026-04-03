@@ -76,7 +76,8 @@ const PROVIDER_GROUPS: { provider: string; icon: string; label: string }[] = [
   { provider: "xai", icon: "X", label: "xAI" },
 ];
 
-function getModelProvider(model: KanvasModel): string {
+function getModelProvider(model: KanvasModel | undefined | null): string {
+  if (!model) return "other";
   const id = model.id.toLowerCase();
   if (id.includes("nano-banana") || id.includes("gpt-image")) return id.includes("gpt") ? "openai" : "google";
   if (id.includes("flux")) return "black_forest_labs";
