@@ -1,8 +1,8 @@
 import { useState, useMemo, useRef } from 'react';
 import {
-  Paintbrush, Wand2, Eraser, ZoomIn, Plus, Sparkles, Loader2, Upload,
+  Paintbrush, Wand2, Eraser, Plus, Sparkles, Loader2, Upload,
   Video, Sun, Palette, ArrowUpCircle, ScanFace, RotateCcw, Hand, Undo2, Redo2,
-  Download, MoreHorizontal, ChevronLeft, ChevronRight, X, MousePointer2,
+  Download, X, MousePointer2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { imageEditService } from '@/services/imageEditService';

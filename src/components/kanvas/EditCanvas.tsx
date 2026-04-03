@@ -192,7 +192,7 @@ const EditCanvas = forwardRef<EditCanvasHandle, EditCanvasProps>(({ imageUrl, cl
 
       const bounds = editor.getShapeGeometry(baseShape).bounds;
       const result = await editor.getSvgString([IMAGE_SHAPE_ID], {
-        bounds: { x: bounds.x, y: bounds.y, w: bounds.w, h: bounds.h },
+        bounds: new Box(bounds.x, bounds.y, bounds.w, bounds.h),
         background: false,
         padding: 0,
       });
