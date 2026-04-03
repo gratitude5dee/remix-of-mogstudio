@@ -60,6 +60,8 @@ export interface ImageEditOperationRequest {
   prompt?: string;
   imageUrl?: string;
   maskDataUrl?: string;
+  modelId?: string;
+  productImageUrl?: string;
 }
 
 export interface ImageEditOperationResponse {
