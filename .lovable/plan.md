@@ -1,35 +1,45 @@
 
 
-# Kanvas Header: Double Logo + Settings & Theme Controls
+# Kanvas Page UI Polish — Tooltips, Settings, and Refinements
+
+## Problems
+
+1. **Sidebar tooltips invisible**: `KanvasSidebar` has `overflow-hidden` on the aside always, clipping tooltip triggers. Same bug fixed on Home sidebar but never applied here.
+2. **Settings dropdown is barebones**: Only 3 placeholder items vs. Home page's richer pattern with icons, badges, separators.
+3. **Sidebar lacks visual polish**: No glow border (Home sidebar has `ShineBorder`), no gradient highlight, no brand dot.
+4. **Header logo oversized at `h-20`**: Creates awkward vertical padding in the slim header bar. Should be `h-10` to fit the compact header while the sidebar carries the larger branding.
 
 ## Changes
 
-### 1. `src/pages/KanvasPage.tsx` — Header redesign
+### 1. `src/components/kanvas/KanvasSidebar.tsx` — Tooltip fix + visual polish
 
-**Left section** (lines 1175-1178):
-- Double the logo size: `h-10` → `h-20`
-- Add `ALPHA` badge (matching Home page style)
+- Move `overflow-hidden` to collapsed-only state (same fix as Home sidebar)
+- Add `sideOffset={8}` and `className="z-[60]"` to all `TooltipContent`
+- Add `ShineBorder` with lime-green glow `["#BEFF00", "#86efac"]`
+- Add faint lime gradient top-highlight overlay
+- Add brand dot below logo (lime version of Home's orange dot)
 
-**Right section** (lines 1212-1213): Replace empty spacer with action buttons:
-- **Home button**: icon button navigating to `appRoutes.home`
-- **Theme toggle**: import and render `ThemeToggle` component
-- **Settings dropdown**: `DropdownMenu` with items for "Preferences", "Keyboard Shortcuts", "About" (visual placeholders for now) — uses `Settings` icon from lucide
+### 2. `src/pages/KanvasPage.tsx` — Header + Settings refinement
 
-All buttons styled as `h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06]` with hover states, matching the Noir Futurist aesthetic.
+**Logo**: Scale down from `h-20` to `h-10` for a compact, professional header bar.
 
-### 2. `src/components/kanvas/KanvasSidebar.tsx` — Double logo
+**Settings dropdown upgrade**:
+- Add icons to each menu item (lucide: `SlidersHorizontal`, `Keyboard`, `Info`)
+- Add "Home" item with `Home` icon at top
+- Add "Logout" item with `LogOut` icon at bottom with rose hover
+- Add separators between groups
+- Add `sideOffset={8}` for breathing room
 
-- Line 122: Change bottom logo from `h-6 w-6` → `h-10 w-10` (container `h-8 w-8` → `h-12 w-12`)
+**Home button**: Add tooltip on hover (wrap in `Tooltip`).
 
-### 3. `src/components/ui/theme-toggle.tsx` — Dark-mode safe styling
+**Settings button**: Add tooltip on hover.
 
-- Update button classes to work on the dark Kanvas background (currently uses `bg-muted/50` which may not contrast well)
+### 3. `src/components/ui/theme-toggle.tsx` — Already updated, no change needed
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/pages/KanvasPage.tsx` | Double logo, add Home/ThemeToggle/Settings dropdown to right side of header |
-| `src/components/kanvas/KanvasSidebar.tsx` | Double bottom logo size |
-| `src/components/ui/theme-toggle.tsx` | Ensure dark-bg compatibility |
+| `src/components/kanvas/KanvasSidebar.tsx` | Fix tooltip visibility (overflow-hidden conditional), add ShineBorder glow, gradient overlay, sideOffset + z-index on tooltips |
+| `src/pages/KanvasPage.tsx` | Shrink header logo to h-10, upgrade settings dropdown with icons and more items, add tooltips to action buttons |
 
