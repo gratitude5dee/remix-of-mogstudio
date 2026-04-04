@@ -66,7 +66,7 @@ export const StatCard = ({
       
       <div className="relative z-10">
         {/* Label */}
-        <p className="text-[10px] text-muted-foreground/70 mb-1 font-semibold uppercase tracking-[0.15em]">
+        <p className="text-[10px] text-zinc-500 dark:text-muted-foreground/70 mb-1 font-semibold uppercase tracking-[0.15em]">
           {label}
         </p>
         
