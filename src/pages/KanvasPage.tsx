@@ -1219,8 +1219,35 @@ export default function KanvasPage() {
                 })}
               </div>
 
-              {/* Right: spacer for symmetry */}
-              <div className="min-w-[80px]" />
+              {/* Right: action buttons */}
+              <div className="flex items-center gap-2 min-w-[140px] justify-end">
+                <button
+                  type="button"
+                  onClick={() => navigate(appRoutes.home)}
+                  className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
+                  aria-label="Home"
+                >
+                  <Home className="h-4 w-4" />
+                </button>
+                <ThemeToggle />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
+                      aria-label="Settings"
+                    >
+                      <Settings className="h-4 w-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-[#141414] border-white/[0.08] text-zinc-300">
+                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">Preferences</DropdownMenuItem>
+                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">Keyboard Shortcuts</DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-white/[0.06]" />
+                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">About</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </header>
 
