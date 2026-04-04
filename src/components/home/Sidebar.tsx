@@ -332,7 +332,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
                 <LogOut className="h-[18px] w-[18px]" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right">Logout</TooltipContent>
+            <TooltipContent side="right" sideOffset={8} className="z-[60]">Logout</TooltipContent>
           </Tooltip>
 
           {/* Brand dot */}
