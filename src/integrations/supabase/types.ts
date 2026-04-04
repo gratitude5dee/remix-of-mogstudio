@@ -9635,6 +9635,7 @@ export type Database = {
           signup_time: string
         }[]
       }
+      get_user_email: { Args: { p_user_id: string }; Returns: string }
       get_waitlist_activity: {
         Args: never
         Returns: {
