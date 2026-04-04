@@ -241,13 +241,32 @@ export default function Home() {
 
           {/* Desktop Header - hidden on mobile */}
           <header data-tour="dashboard-title" className={cn(
-            "border-b border-[rgba(249,115,22,0.1)]",
-            "bg-[#0a0a0f]/90 backdrop-blur-xl",
+            "border-b border-orange-100 dark:border-[rgba(249,115,22,0.1)]",
+            "bg-white/90 dark:bg-[#0a0a0f]/90 backdrop-blur-xl",
             "hidden md:block"
           )}>
             {/* Row 1: Title + Project Count + Actions */}
             <div className="h-16 flex items-center justify-between px-6">
               <div className="flex items-center gap-4">
+                <AnimatePresence>
+                  {isCollapsed && (
+                    <motion.button
+                      initial={{ opacity: 0, x: -10, scale: 0.8 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: -10, scale: 0.8 }}
+                      transition={{ duration: 0.2 }}
+                      onClick={() => setIsCollapsed(false)}
+                      className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200",
+                        "bg-zinc-100 dark:bg-white/[0.06] border border-zinc-200 dark:border-white/[0.1]",
+                        "hover:border-orange-300 dark:hover:border-orange-500/40 hover:shadow-[0_0_12px_rgba(249,115,22,0.15)]",
+                        "text-zinc-500 dark:text-zinc-400 hover:text-orange-500"
+                      )}
+                    >
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
                 <img 
                   src={wzrdLogo} 
                   alt="WZRD STUDIO Logo" 
