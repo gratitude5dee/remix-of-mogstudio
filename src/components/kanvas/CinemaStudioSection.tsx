@@ -1008,8 +1008,8 @@ export default function CinemaStudioSection({
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full relative">
         {/* Tab Nav — Centered Pill Slider */}
-        <div className="flex items-center justify-center px-6 pt-4 pb-2 flex-shrink-0">
-          <div className="inline-flex bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06]">
+        <div className="flex items-center justify-center px-4 md:px-6 pt-3 md:pt-4 pb-2 flex-shrink-0">
+          <div className="inline-flex bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06] overflow-x-auto scrollbar-hide">
             {TAB_LIST.map(({ id, label, Icon }) => {
               const isActive = activeTab === id;
               return (
