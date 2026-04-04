@@ -109,7 +109,7 @@ function Particles({ phase }: { phase: number }) {
   const ref = useRef<THREE.Points>(null);
   const count = 200;
 
-  const [positions, velocities, seeds] = useMemo(() => {
+  const [positions, velocities, _seeds] = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const vel = new Float32Array(count * 3);
     const sd = new Float32Array(count);
