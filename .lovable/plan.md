@@ -1,62 +1,60 @@
-# Transform Left Sidebar into Floating Hover Menu
+
+
+# Apply Floating Hover Menu to Home Sidebar (Collapsed Mode)
 
 ## Problem
+The home page sidebar in collapsed mode is a static 64px docked column. The user wants the same floating, hover-reveal pill design from the Kanvas sidebar (`KanvasSidebar.tsx`) applied when the sidebar is collapsed.
 
-The left sidebar (`KanvasSidebar`) is currently a static, full-height docked column (`w-14`, `h-screen`) that permanently consumes horizontal space. The user wants it converted to a floating, rounded-edge overlay that hovers above the content across all `/kanvas` sections.
-
-## Design Approach
-
-A vertically-centered floating pill on the left edge that auto-hides and reveals on hover — think macOS Dock behavior but vertical that disappears when mouse isn't near the left nav area and appears when mouse moves within 100px range of the left nav bar
+## Design
+When `isCollapsed` is true, the sidebar transforms from a static full-height column into a floating vertically-centered pill that auto-hides and reveals on mouse proximity — identical behavior to the Kanvas floating nav.
 
 ```text
-                ┌─────────────────────────────────┐
-                │                                  │
-   ┌────┐       │                                  │
-   │ 🏠 │       │       Canvas / Studio Content    │
-   │ 🖼 │       │                                  │
-   │ 🎬 │       │       (full width, no sidebar    │
-   │ ✏️ │       │        column eating space)       │
-   │ 🎤 │       │                                  │
-   │ 🎬 │       │                                  │
-   │ 🌍 │       │                                  │
-   │ 👤 │       │                                  │
-   │ ● │       │                                  │
-   └────┘       └─────────────────────────────────┘
-   floating     
-   pill         
+Expanded (unchanged)          Collapsed (new floating pill)
+┌────────────┐                         
+│ Workspace  │                ┌────┐   
+│ ─────────  │                │ WS │   
+│ All Proj   │    ←→          │ ── │   
+│ Kanvas     │                │ 📁 │   
+│ Aura       │                │ 🎨 │   
+│ ─────────  │                │ ✨ │   
+│ Shared     │                │ ── │   
+│ Community  │                │ 👥 │   
+│            │                │ 🌐 │   
+│ ─────────  │                │ ── │   
+│ Credits    │                │ 🚪 │   
+│ Logout     │                └────┘   
+└────────────┘                floating 
 ```
 
-## Changes
+## Changes — `src/components/home/Sidebar.tsx`
 
-### 1. `src/components/kanvas/KanvasSidebar.tsx`
+### 1. Add hover-reveal state (collapsed only)
+- Add `isVisible` state + `mousemove` listener (same as `KanvasSidebar`)
+- Only active when `isCollapsed === true`
+- Trigger zone: `e.clientX <= 80`
 
-- **Remove** `h-screen`, `border-r`, `flex-shrink-0` static layout styles
-- **Add** floating positioning: `fixed left-3 top-1/2 -translate-y-1/2 z-50`
-- **Add** rounded pill container: `rounded-2xl bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/[0.06] shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.03)]`
-- **Add** hover reveal behavior: sidebar starts as a narrow semi-transparent sliver (`w-3 opacity-40`) and expands to full width (`w-14 opacity-100`) on hover with `transition-all duration-300`
-- **Add** `group` class on the outer container so child elements can react to hover state
-- **Adjust** padding: `py-3 px-1.5` for compact floating feel
-- Active indicator remains the lime left accent bar
-- WZRD dot stays at the bottom
+### 2. Swap container styles when collapsed
+- **Remove**: `h-screen fixed left-0 top-0 border-r` (full-height docked)
+- **Add**: `fixed left-3 top-1/2 -translate-y-1/2 rounded-2xl` (centered floating pill)
+- **Add**: `bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/[0.06]` (frosted glass)
+- **Add**: `shadow-[0_8px_32px_rgba(0,0,0,0.5)]` (depth shadow)
+- **Add**: Hover transition: `w-14 opacity-100 translate-x-0` ↔ `w-3 opacity-0 -translate-x-2`
+- **Add**: `onMouseEnter`/`onMouseLeave` handlers on the `<aside>`
+- Add invisible 80px trigger zone div (same as Kanvas)
 
-### 2. `src/pages/KanvasPage.tsx`
+### 3. Simplify collapsed content
+When collapsed + floating:
+- Remove section headers ("Main Menu", "Collaborate" text)
+- Remove credits card, favorites expand
+- Keep: icon buttons with tooltips, dividers between sections, logout at bottom
+- Keep the collapse toggle button (repositioned to work with floating pill)
 
-- **Remove** `<KanvasSidebar />` from the flex layout flow (it's now `fixed`, so it doesn't need to be a flex child — but can stay in the tree)
-- **Remove** the `flex` layout dependency — the main content area becomes full-width: `<div className="w-full h-screen overflow-auto">` instead of `flex-1`
-- The sidebar renders as a fixed overlay on top of everything
-
-## Technical Details
-
-- `fixed` positioning ensures visibility across all studio sections regardless of scroll
-- `z-50` keeps it above content but below modals
-- `backdrop-blur-xl` gives frosted glass depth
-- Hover transition: `w-3 → w-14` with `overflow-hidden` so icons clip gracefully during collapse
-- `group-hover` on icon labels can optionally show text labels on wider hover (stretch goal)
+### 4. Expanded mode — unchanged
+When `isCollapsed === false`, everything stays exactly as it is today (full-height docked sidebar with all sections).
 
 ## Files Changed
 
+| File | Change |
+|------|--------|
+| `src/components/home/Sidebar.tsx` | Add hover-reveal logic for collapsed state, swap to floating pill container styles, add trigger zone |
 
-| File                                      | Change                                                                                             |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `src/components/kanvas/KanvasSidebar.tsx` | Convert from static sidebar to floating hover pill with rounded edges, backdrop blur, hover expand |
-| `src/pages/KanvasPage.tsx`                | Remove sidebar from flex layout flow, make content full-width                                      |
