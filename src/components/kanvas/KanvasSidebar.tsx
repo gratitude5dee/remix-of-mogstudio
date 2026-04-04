@@ -119,7 +119,7 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
         {/* Bottom WZRD mark */}
         <div className="mt-auto pt-3">
           <div className="flex h-8 w-8 items-center justify-center">
-            <div className="h-2 w-2 rounded-full bg-[#BEFF00]/60 shadow-[0_0_6px_rgba(190,255,0,0.3)]" />
+            <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD" className="h-6 w-6 object-contain" />
           </div>
         </div>
       </aside>
