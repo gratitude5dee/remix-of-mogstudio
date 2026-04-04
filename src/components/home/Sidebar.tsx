@@ -230,7 +230,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
 
         <aside
           className={cn(
-            'fixed left-3 top-[calc(50%+25px)] -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
+            'fixed left-3 top-[calc(50%+62px)] -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
             'bg-[#0A0A0A]/90 backdrop-blur-xl',
             'shadow-[0_0_15px_rgba(249,115,22,0.15),0_0_30px_rgba(249,115,22,0.05),0_8px_32px_rgba(0,0,0,0.5)]',
             'transition-all duration-300 ease-out',
