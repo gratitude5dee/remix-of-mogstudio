@@ -26,7 +26,7 @@ const ArenaZeroHero = () => {
             className="text-7xl md:text-8xl font-black leading-[0.9] tracking-tighter text-white mb-6"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
-            ARENA<br />ZERO
+            EARTONE
           </h2>
           <button className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white border border-white/10 px-6 py-3 rounded-full text-sm font-semibold hover:bg-white/20 transition-colors">
             <Play className="w-4 h-4 fill-white" />
