@@ -1181,9 +1181,10 @@ export default function KanvasPage() {
           {/* Slim status header */}
           <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)]">
             <div className="flex items-center justify-between px-5 py-2">
-              {/* Left: WZRD wordmark */}
-              <div className="flex items-center gap-2.5 min-w-[80px]">
-                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-10 object-contain" />
+              {/* Left: WZRD logo + badge */}
+              <div className="flex items-center gap-3 min-w-[140px]">
+                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-20 object-contain" />
+                <span className="text-[10px] text-[#BEFF00] bg-[#BEFF00]/10 px-2 py-0.5 rounded-full border border-[#BEFF00]/20 font-medium">ALPHA</span>
               </div>
 
               {/* Center: Pill-slider studio nav */}
