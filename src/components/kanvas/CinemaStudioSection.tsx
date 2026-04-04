@@ -701,26 +701,114 @@ export default function CinemaStudioSection({
       { id: 'voiceover', label: 'Voiceover', Icon: Mic },
       { id: 'change-voice', label: 'Change Voice', Icon: RefreshCw },
       { id: 'translate', label: 'Translate', Icon: Languages },
+      { id: 'music-sfx', label: 'Music / SFX', Icon: Music },
     ];
+
+    const activeIndex = AUDIO_MODES.findIndex(m => m.id === audioMode);
+    const dialRotation = activeIndex * 72; // 72° per mode
+
+    const isMusicMode = audioMode === 'music-sfx';
+    const relevantCategories: AudioModelCategory[] = isMusicMode
+      ? ['music', 'sfx', 'video-sfx']
+      : ['voiceover', 'voice-clone', 'multi-speaker'];
+
+    const filteredModels = AUDIO_MODELS.filter(m => relevantCategories.includes(m.category));
+
+    // Group models by category for the popup
+    const groupedModels = filteredModels.reduce<Record<string, AudioModel[]>>((acc, m) => {
+      const key = m.category;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(m);
+      return acc;
+    }, {});
+
+    const categoryLabels: Record<string, string> = {
+      'voiceover': 'Voiceover',
+      'voice-clone': 'Voice Clone',
+      'multi-speaker': 'Multi-Speaker',
+      'music': 'Music',
+      'sfx': 'Sound Effects',
+      'video-sfx': 'Video SFX',
+    };
+
+    const promptPlaceholder =
+      audioMode === 'voiceover' ? 'Describe the sound you imagine...' :
+      audioMode === 'change-voice' ? 'Drop a reference video or audio...' :
+      audioMode === 'translate' ? 'Enter text to translate...' :
+      'Describe the music or sound effect...';
 
     return (
       <div className="absolute bottom-8 left-0 right-0 z-30">
         <div className="bg-[#0e0e0e]/95 backdrop-blur-2xl border-t border-white/[0.06] px-6 py-3">
-          <div className="max-w-[1400px] mx-auto flex items-center gap-2.5">
-            {/* Mode selector */}
-            <div className="flex bg-[#1a1a1a] rounded-full p-0.5 flex-shrink-0">
-              {AUDIO_MODES.map(({ id, label, Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => setAudioMode(id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all ${
-                    audioMode === id ? 'bg-[#f97316] text-black' : 'text-zinc-500 hover:text-white'
-                  }`}
+          <div className="max-w-[1400px] mx-auto flex items-center gap-3">
+
+            {/* ── Turnable Dial ── */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="relative w-[72px] h-[72px]">
+                {/* Dial body */}
+                <div
+                  className="absolute inset-0 rounded-full border border-white/[0.08]"
+                  style={{
+                    background: 'radial-gradient(circle at 40% 35%, #2a2a2a 0%, #111 60%, #0a0a0a 100%)',
+                    boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4)',
+                  }}
+                />
+                {/* Tick marks */}
+                {AUDIO_MODES.map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-1 h-1 rounded-full"
+                    style={{
+                      top: '50%',
+                      left: '50%',
+                      transform: `rotate(${i * 72}deg) translateY(-28px) translate(-50%, -50%)`,
+                      backgroundColor: i === activeIndex ? '#f97316' : 'rgba(255,255,255,0.15)',
+                    }}
+                  />
+                ))}
+                {/* Indicator dot */}
+                <div
+                  className="absolute top-1/2 left-1/2 transition-transform duration-300 ease-out"
+                  style={{
+                    transform: `rotate(${dialRotation}deg) translateY(-22px) translate(-50%, -50%)`,
+                  }}
                 >
-                  <Icon className="h-3 w-3" /> {label}
-                </button>
-              ))}
+                  <div
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{
+                      background: '#f97316',
+                      boxShadow: '0 0 10px rgba(249,115,22,0.6), 0 0 20px rgba(249,115,22,0.3)',
+                    }}
+                  />
+                </div>
+                {/* Center cap */}
+                <div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full border border-white/[0.06]"
+                  style={{ background: 'radial-gradient(circle, #222 0%, #111 100%)' }}
+                />
+              </div>
+
+              {/* Mode labels */}
+              <div className="flex flex-col gap-0.5">
+                {AUDIO_MODES.map(({ id, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => setAudioMode(id)}
+                    className={`text-left text-[9px] uppercase tracking-[0.15em] font-bold px-2 py-0.5 rounded transition-all ${
+                      audioMode === id
+                        ? 'text-[#f97316]'
+                        : 'text-zinc-600 hover:text-zinc-400'
+                    }`}
+                  >
+                    {audioMode === id && <span className="mr-1">›</span>}
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Divider */}
+            <div className="w-px h-10 bg-white/[0.06] flex-shrink-0" />
 
             {/* Prompt input */}
             <div className="flex-1 min-w-0">
@@ -729,39 +817,81 @@ export default function CinemaStudioSection({
                   type="text"
                   value={audioPrompt}
                   onChange={(e) => setAudioPrompt(e.target.value)}
-                  placeholder={
-                    audioMode === 'voiceover' ? 'Describe the sound you imagine...' :
-                    audioMode === 'change-voice' ? 'Drop a reference video or audio...' :
-                    'Enter text to translate...'
-                  }
+                  placeholder={promptPlaceholder}
                   className="flex-1 bg-transparent border-none text-white placeholder-zinc-600 text-sm focus:outline-none min-w-0"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 />
               </div>
             </div>
 
-            {/* Model badge */}
-            <button
-              className="bg-[#1a1a1a] border border-white/[0.06] rounded-full px-3 py-2 text-[10px] text-zinc-400 flex items-center gap-1.5 hover:border-white/10 transition-colors flex-shrink-0"
-              onClick={() => {
-                const idx = AUDIO_MODELS.findIndex(m => m.id === selectedAudioModel.id);
-                setSelectedAudioModel(AUDIO_MODELS[(idx + 1) % AUDIO_MODELS.length]);
-              }}
-            >
-              <Coins className="h-3 w-3 text-[#f97316]" />
-              {selectedAudioModel.name} · {selectedAudioModel.credits}cr
-            </button>
+            {/* Model badge + popup */}
+            <div className="relative flex-shrink-0">
+              <button
+                className={`bg-[#1a1a1a] border rounded-full px-3 py-2 text-[10px] text-zinc-400 flex items-center gap-1.5 transition-colors flex-shrink-0 ${
+                  showAudioModelPicker ? 'border-[#f97316]/40' : 'border-white/[0.06] hover:border-white/10'
+                }`}
+                onClick={() => setShowAudioModelPicker(!showAudioModelPicker)}
+              >
+                <Coins className="h-3 w-3 text-[#f97316]" />
+                {selectedAudioModel.name} · {selectedAudioModel.credits}cr
+              </button>
 
-            {/* Choose Voice */}
-            <button
-              onClick={() => setShowVoicePicker(true)}
-              className="bg-[#1a1a1a] border border-white/[0.06] rounded-xl px-4 py-2 flex items-center gap-2 hover:border-white/10 transition-colors flex-shrink-0"
-            >
-              <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center">
-                <Users className="h-3 w-3 text-zinc-500" />
-              </div>
-              <span className="text-[10px] text-zinc-400 whitespace-nowrap uppercase tracking-widest font-bold">Choose Voice</span>
-            </button>
+              {/* Model Picker Popup */}
+              {showAudioModelPicker && (
+                <>
+                  {/* Backdrop */}
+                  <div className="fixed inset-0 z-40" onClick={() => setShowAudioModelPicker(false)} />
+                  <div
+                    className="absolute bottom-full mb-2 right-0 z-50 w-[280px] max-h-[360px] overflow-y-auto rounded-xl border border-white/[0.08] bg-[#111]/95 backdrop-blur-xl shadow-2xl"
+                    style={{ scrollbarWidth: 'thin' }}
+                  >
+                    <div className="p-3 border-b border-white/[0.06]">
+                      <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Select Model</p>
+                    </div>
+                    {Object.entries(groupedModels).map(([cat, models]) => (
+                      <div key={cat}>
+                        <div className="px-3 py-1.5 bg-white/[0.02]">
+                          <p className="text-[9px] uppercase tracking-widest text-zinc-600 font-bold">
+                            {categoryLabels[cat] || cat}
+                          </p>
+                        </div>
+                        {models.map((model) => (
+                          <button
+                            key={model.id}
+                            onClick={() => {
+                              setSelectedAudioModel(model);
+                              setShowAudioModelPicker(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-white/[0.04] transition-colors ${
+                              selectedAudioModel.id === model.id ? 'border-l-2 border-l-[#f97316] bg-white/[0.03]' : 'border-l-2 border-l-transparent'
+                            }`}
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-white font-medium truncate">{model.name}</p>
+                              <p className="text-[9px] text-zinc-600 truncate">{model.endpoint.split('/').slice(-1)[0]}</p>
+                            </div>
+                            <span className="text-[10px] text-[#f97316] font-bold flex-shrink-0">{model.credits}cr</span>
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Choose Voice — hidden in music/sfx mode */}
+            {!isMusicMode && (
+              <button
+                onClick={() => setShowVoicePicker(true)}
+                className="bg-[#1a1a1a] border border-white/[0.06] rounded-xl px-4 py-2 flex items-center gap-2 hover:border-white/10 transition-colors flex-shrink-0"
+              >
+                <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center">
+                  <Users className="h-3 w-3 text-zinc-500" />
+                </div>
+                <span className="text-[10px] text-zinc-400 whitespace-nowrap uppercase tracking-widest font-bold">Choose Voice</span>
+              </button>
+            )}
 
             {/* Generate */}
             <button
