@@ -352,8 +352,8 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
           "dark:glass-sidebar dark:border-white/[0.04]"
         )}
       >
-        {/* Shine border on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500 pointer-events-none rounded-r-xl overflow-hidden">
+        {/* Persistent animated orange glow border */}
+        <div className="absolute inset-0 opacity-60 group-hover/sidebar:opacity-100 transition-opacity duration-500 pointer-events-none rounded-r-xl overflow-hidden">
           <ShineBorder
             shineColor={["#f97316", "#d4a574"]}
             borderWidth={1}
