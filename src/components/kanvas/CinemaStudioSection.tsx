@@ -13,7 +13,7 @@ import type { CharacterMention } from '@/types/character-creation';
 import { MentionDropdown } from '@/components/character-creation/MentionDropdown';
 
 import { AUDIO_MODELS as CENTRAL_AUDIO_MODELS } from '@/lib/studio-model-constants';
-import type { StudioModel } from '@/lib/studio-model-constants';
+
 
 /* ── Audio Models Registry (derived from central catalog) ── */
 type AudioModelCategory = 'voiceover' | 'voice-clone' | 'multi-speaker' | 'music' | 'sfx' | 'video-sfx';

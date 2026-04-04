@@ -8,7 +8,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea';
 import { getModelsByTypeAndGroup } from '@/lib/studio-model-constants';
 import { formatModelLabel, STORYLINE_MODEL_OPTIONS, formatStorylineModelLabel } from '@/lib/constants/credits';
-import type { StudioModel } from '@/lib/studio-model-constants';
+
 
 const TabNavigation = () => {
   const { activeTab, setActiveTab, getVisibleTabs, projectData, updateProjectData } = useProjectContext();
