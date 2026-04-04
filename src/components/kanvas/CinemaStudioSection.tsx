@@ -891,7 +891,7 @@ export default function CinemaStudioSection({
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowAudioModelPicker(false)} />
                   <div
-                    className="absolute bottom-full mb-2 right-0 z-50 w-[340px] max-h-[400px] flex flex-col rounded-xl border border-white/[0.08] bg-[#0e0e0e]/95 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-2 fade-in duration-200"
+                    className="absolute bottom-full mb-2 right-0 z-50 w-[calc(100vw-2rem)] sm:w-[340px] max-h-[400px] flex flex-col rounded-xl border border-white/[0.08] bg-[#0e0e0e]/95 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-2 fade-in duration-200"
                   >
                     {/* Header with search */}
                     <div className="p-3 border-b border-white/[0.06] flex-shrink-0">
