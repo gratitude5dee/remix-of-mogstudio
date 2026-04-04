@@ -1298,19 +1298,19 @@ export default function KanvasPage() {
                 characterMentions={allCharacterMentions}
               />
             ) : null}
-          </div>
-        </div>
-
-
-        {pageLoading && (
-          <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
-            <div className="rounded-[32px] border border-white/10 bg-[#09090b]/90 px-8 py-6 text-center text-white shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
-              <Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin text-lime-300" />
-              <p className="text-sm font-semibold text-white">Loading Kanvas shell</p>
-              <p className="mt-1 text-xs text-zinc-500">Fetching models, assets, and history.</p>
             </div>
           </div>
-        )}
+
+          {pageLoading && (
+            <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
+              <div className="rounded-[32px] border border-white/10 bg-[#09090b]/90 px-8 py-6 text-center text-white shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+                <Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin text-lime-300" />
+                <p className="text-sm font-semibold text-white">Loading Kanvas shell</p>
+                <p className="mt-1 text-xs text-zinc-500">Fetching models, assets, and history.</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <AlertDialog open={creditsDialogOpen} onOpenChange={setCreditsDialogOpen}>
