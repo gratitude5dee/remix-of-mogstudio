@@ -302,7 +302,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
                       <Icon className="h-[18px] w-[18px]" />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">
+                  <TooltipContent side="right" sideOffset={8} className="z-[60]">
                     <span className="flex items-center gap-2">
                       {item.label}
                       {'showBadge' in item && item.showBadge && (
