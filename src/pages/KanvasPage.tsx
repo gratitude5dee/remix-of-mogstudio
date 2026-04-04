@@ -20,10 +20,19 @@ import {
   Mic2,
   Pencil,
   Sparkles,
+  Settings,
   Upload,
   Video,
   Wand2,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
