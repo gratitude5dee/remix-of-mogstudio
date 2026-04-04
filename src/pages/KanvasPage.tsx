@@ -1468,7 +1468,7 @@ export default function KanvasPage() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-lime-400 text-black hover:bg-lime-300"
+              className="bg-[#f97316] text-black hover:bg-[#fb923c]"
               onClick={() => navigate(appRoutes.settings.billing)}
             >
               Get More Credits
