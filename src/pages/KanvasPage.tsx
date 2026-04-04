@@ -1434,6 +1434,27 @@ export default function KanvasPage() {
         </div>
       </div>
 
+      {/* Film grain overlay */}
+      <svg className="pointer-events-none fixed inset-0 z-[1] w-full h-full mix-blend-overlay opacity-[0.03]" aria-hidden="true">
+        <filter id="kanvasNoise">
+          <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#kanvasNoise)" />
+      </svg>
+
+      {/* Bottom status bar */}
+      <div className="fixed bottom-0 left-0 right-0 h-8 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/[0.04] flex items-center justify-between px-4">
+        <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-medium">WZRD Studio</span>
+        <div className="flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-[#BEFF00] shadow-[0_0_6px_rgba(190,255,0,0.5)] animate-pulse" />
+          <span className="text-[10px] text-zinc-400 font-medium capitalize">{KANVAS_STUDIO_META[studio].label}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <CreditsDisplay showTooltip={false} />
+          <kbd className="text-[9px] text-zinc-500 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-0.5 font-mono">⌘K</kbd>
+        </div>
+      </div>
+
       <AlertDialog open={creditsDialogOpen} onOpenChange={setCreditsDialogOpen}>
         <AlertDialogContent className="border-white/10 bg-[#0c0c0f] text-white">
           <AlertDialogHeader>
