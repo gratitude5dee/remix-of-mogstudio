@@ -101,6 +101,7 @@ function WizardSidebar({
   activeStep: WizardStep;
   onStepChange: (step: WizardStep) => void;
 }) {
+  return (
     <div className="hidden md:fixed md:left-0 md:top-[68px] md:bottom-0 md:w-[260px] md:bg-[#090909] md:z-40 md:flex md:flex-col md:overflow-hidden">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
