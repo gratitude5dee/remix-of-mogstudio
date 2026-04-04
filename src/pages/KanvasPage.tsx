@@ -1191,11 +1191,11 @@ export default function KanvasPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,242,100,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.08),transparent_24%)] pointer-events-none" />
         <div className="relative">
           {/* Slim status header */}
-          <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)]">
-            <div className="flex items-center justify-between px-5 py-2">
+           <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-transparent" style={{ borderImage: 'linear-gradient(to right, rgba(190,255,0,0.15), transparent 60%) 1' }}>
+            <div className="flex items-center justify-between px-5 py-1.5">
               {/* Left: WZRD logo + badge */}
               <div className="flex items-center gap-3 min-w-[140px]">
-                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-10 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
+                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-7 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
                 <span className="text-[10px] text-[#BEFF00] bg-[#BEFF00]/10 px-2 py-0.5 rounded-full border border-[#BEFF00]/20 font-medium">ALPHA</span>
               </div>
 
