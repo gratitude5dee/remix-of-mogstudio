@@ -222,9 +222,9 @@ export function VideoStudioSection({
   /*  CREATE TAB                                                       */
   /* ================================================================ */
   const renderCreateTab = () => (
-    <div className="flex gap-8">
+    <div className="flex flex-col md:flex-row gap-6 md:gap-8">
       {/* Left Sidebar ~280px */}
-      <div className="w-[280px] shrink-0 space-y-5">
+      <div className="w-full md:w-[280px] md:shrink-0 space-y-5">
         {/* Preset thumbnail */}
         <div className="relative rounded-2xl overflow-hidden bg-[#1a1919] aspect-video">
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
