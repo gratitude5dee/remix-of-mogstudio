@@ -1,45 +1,47 @@
 
 
-# Kanvas Page UI Polish — Tooltips, Settings, and Refinements
+# Kanvas Page — Award-Winning Layout Polish + New Design Features
 
-## Problems
-
-1. **Sidebar tooltips invisible**: `KanvasSidebar` has `overflow-hidden` on the aside always, clipping tooltip triggers. Same bug fixed on Home sidebar but never applied here.
-2. **Settings dropdown is barebones**: Only 3 placeholder items vs. Home page's richer pattern with icons, badges, separators.
-3. **Sidebar lacks visual polish**: No glow border (Home sidebar has `ShineBorder`), no gradient highlight, no brand dot.
-4. **Header logo oversized at `h-20`**: Creates awkward vertical padding in the slim header bar. Should be `h-10` to fit the compact header while the sidebar carries the larger branding.
+## Current Issues
+- `py-6` on content area (line 1303) creates excessive dead space below header
+- Header logo `h-10` is fine but `py-2` padding adds bulk
+- No bottom status bar — page floats in void, feels unfinished for a PWA shell
+- No film grain texture — missing the Noir Futurist cinematic quality from landing page
+- No credits indicator visible on Kanvas page
+- Sidebar vertical position doesn't account for potential bottom bar
 
 ## Changes
 
-### 1. `src/components/kanvas/KanvasSidebar.tsx` — Tooltip fix + visual polish
+### 1. `src/pages/KanvasPage.tsx` — Layout tightening + bottom status bar + film grain
 
-- Move `overflow-hidden` to collapsed-only state (same fix as Home sidebar)
-- Add `sideOffset={8}` and `className="z-[60]"` to all `TooltipContent`
-- Add `ShineBorder` with lime-green glow `["#BEFF00", "#86efac"]`
-- Add faint lime gradient top-highlight overlay
-- Add brand dot below logo (lime version of Home's orange dot)
+**Header slim-down**:
+- Reduce logo from `h-10` to `h-7`
+- Tighten padding from `py-2` to `py-1.5`
+- Replace box-shadow with a 1px lime-to-transparent gradient bottom border
 
-### 2. `src/pages/KanvasPage.tsx` — Header + Settings refinement
+**Content area**:
+- Reduce `py-6` to `py-2` and `px-4 md:px-6` to `px-3 md:px-4` — kills the dead space gap
+- Add `pb-12` to account for the new bottom bar
 
-**Logo**: Scale down from `h-20` to `h-10` for a compact, professional header bar.
+**Film grain overlay** (new, after line 1189):
+- Full-page SVG noise overlay: `mix-blend-overlay opacity-[0.03]` using an inline SVG `feTurbulence` filter — adds cinematic texture across all studios
 
-**Settings dropdown upgrade**:
-- Add icons to each menu item (lucide: `SlidersHorizontal`, `Keyboard`, `Info`)
-- Add "Home" item with `Home` icon at top
-- Add "Logout" item with `LogOut` icon at bottom with rose hover
-- Add separators between groups
-- Add `sideOffset={8}` for breathing room
+**Bottom status bar** (new, fixed at bottom):
+- `fixed bottom-0 left-0 right-0 h-8 z-40`
+- `bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/[0.04]`
+- Left: "WZRD Studio" wordmark in zinc-600 uppercase tracking-widest
+- Center: lime pulse dot + active studio name
+- Right: credits display (reuse `CreditsDisplay` component) + `⌘K` keyboard shortcut hint badge
 
-**Home button**: Add tooltip on hover (wrap in `Tooltip`).
+### 2. `src/components/kanvas/KanvasSidebar.tsx` — Position adjustment
 
-**Settings button**: Add tooltip on hover.
-
-### 3. `src/components/ui/theme-toggle.tsx` — Already updated, no change needed
+- Shift vertical center from `top-1/2` to `top-[calc(50%-1rem)]` to account for bottom bar height
+- Ensures sidebar pill doesn't visually overlap the footer
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/KanvasSidebar.tsx` | Fix tooltip visibility (overflow-hidden conditional), add ShineBorder glow, gradient overlay, sideOffset + z-index on tooltips |
-| `src/pages/KanvasPage.tsx` | Shrink header logo to h-10, upgrade settings dropdown with icons and more items, add tooltips to action buttons |
+| `src/pages/KanvasPage.tsx` | Slim header (h-7 logo, py-1.5), reduce content gap (py-2, pb-12), add film grain overlay, add fixed bottom status bar with credits + studio indicator |
+| `src/components/kanvas/KanvasSidebar.tsx` | Adjust vertical centering for bottom bar |
 
