@@ -758,7 +758,7 @@ export default function CinemaStudioSection({
             {/* ── Premium Turnable Dial ── */}
             <div className="flex items-center gap-4 flex-shrink-0">
               <div
-                className="relative w-[88px] h-[88px] cursor-grab"
+                className="relative w-[64px] h-[64px] md:w-[88px] md:h-[88px] cursor-grab"
                 style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}
               >
                 {/* Outer ring — knurled edge */}
