@@ -96,6 +96,7 @@ export interface ProjectData {
   baseImageModel?: string;
   baseVideoModel?: string;
   evaluationMode?: EvaluationMode;
+  baseAudioModel?: string;
   evaluationThresholds?: EvaluationThresholds;
   canonFacts?: string[];
   creativeConstraints?: string[];

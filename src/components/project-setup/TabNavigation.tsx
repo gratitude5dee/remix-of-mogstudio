@@ -9,12 +9,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { getModelsByTypeAndGroup } from '@/lib/studio-model-constants';
 import { formatModelLabel, STORYLINE_MODEL_OPTIONS, formatStorylineModelLabel } from '@/lib/constants/credits';
 
+
 const TabNavigation = () => {
   const { activeTab, setActiveTab, getVisibleTabs, projectData, updateProjectData } = useProjectContext();
   const visibleTabs = getVisibleTabs();
 
   const imageGenerationModels = useMemo(() => getModelsByTypeAndGroup('image', 'generation'), []);
   const videoGenerationModels = useMemo(() => getModelsByTypeAndGroup('video', 'generation'), []);
+  const audioGenerationModels = useMemo(() => getModelsByTypeAndGroup('audio', 'generation'), []);
   const storylineModelOptions = STORYLINE_MODEL_OPTIONS;
 
   const [storylineSettingsText, setStorylineSettingsText] = useState(
@@ -159,7 +161,7 @@ const TabNavigation = () => {
                 align="end"
                 sideOffset={12}
                 className={cn(
-                  "w-[420px] p-0 rounded-xl",
+                  "w-[calc(100vw-2rem)] sm:w-[420px] p-0 rounded-xl",
                   "bg-[#0f0f13] border-[rgba(249,115,22,0.15)]",
                   "shadow-[0_8px_40px_rgba(0,0,0,0.5),0_0_0_1px_rgba(249,115,22,0.08)]"
                 )}
@@ -234,6 +236,29 @@ const TabNavigation = () => {
                       onChange={(e) => updateProjectData({ baseVideoModel: e.target.value })}
                     >
                       {videoGenerationModels.map((model) => (
+                        <option key={model.id} value={model.id}>
+                          {formatModelLabel(model)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {/* Audio model */}
+                  <label className="block space-y-1.5">
+                    <span className="text-[11px] uppercase tracking-widest text-zinc-500 font-medium">
+                      Default audio model
+                    </span>
+                    <select
+                      className={cn(
+                        "w-full rounded-lg px-3 py-2.5 text-sm text-zinc-200",
+                        "bg-[rgba(255,255,255,0.03)] border border-[rgba(249,115,22,0.15)]",
+                        "focus:border-[rgba(249,115,22,0.4)] focus:outline-none focus:ring-1 focus:ring-[rgba(249,115,22,0.2)]",
+                        "transition-all duration-200"
+                      )}
+                      value={projectData.baseAudioModel || audioGenerationModels[0]?.id || 'fal-ai/elevenlabs/tts/turbo-v2.5'}
+                      onChange={(e) => updateProjectData({ baseAudioModel: e.target.value })}
+                    >
+                      {audioGenerationModels.map((model) => (
                         <option key={model.id} value={model.id}>
                           {formatModelLabel(model)}
                         </option>
