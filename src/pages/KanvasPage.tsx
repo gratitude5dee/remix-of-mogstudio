@@ -20,10 +20,19 @@ import {
   Mic2,
   Pencil,
   Sparkles,
+  Settings,
   Upload,
   Video,
   Wand2,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -1172,9 +1181,10 @@ export default function KanvasPage() {
           {/* Slim status header */}
           <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)]">
             <div className="flex items-center justify-between px-5 py-2">
-              {/* Left: WZRD wordmark */}
-              <div className="flex items-center gap-2.5 min-w-[80px]">
-                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-10 object-contain" />
+              {/* Left: WZRD logo + badge */}
+              <div className="flex items-center gap-3 min-w-[140px]">
+                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-20 object-contain" />
+                <span className="text-[10px] text-[#BEFF00] bg-[#BEFF00]/10 px-2 py-0.5 rounded-full border border-[#BEFF00]/20 font-medium">ALPHA</span>
               </div>
 
               {/* Center: Pill-slider studio nav */}
@@ -1209,8 +1219,35 @@ export default function KanvasPage() {
                 })}
               </div>
 
-              {/* Right: spacer for symmetry */}
-              <div className="min-w-[80px]" />
+              {/* Right: action buttons */}
+              <div className="flex items-center gap-2 min-w-[140px] justify-end">
+                <button
+                  type="button"
+                  onClick={() => navigate(appRoutes.home)}
+                  className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
+                  aria-label="Home"
+                >
+                  <Home className="h-4 w-4" />
+                </button>
+                <ThemeToggle />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
+                      aria-label="Settings"
+                    >
+                      <Settings className="h-4 w-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-[#141414] border-white/[0.08] text-zinc-300">
+                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">Preferences</DropdownMenuItem>
+                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">Keyboard Shortcuts</DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-white/[0.06]" />
+                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">About</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </header>
 
