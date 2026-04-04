@@ -1194,7 +1194,7 @@ export default function KanvasPage() {
             <div className="flex items-center justify-between px-5 py-1.5">
               {/* Left: WZRD logo + badge */}
               <div className="flex items-center gap-3 min-w-[140px]">
-                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-7 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
+                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-14 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
                 <span className="text-[10px] text-[#BEFF00] bg-[#BEFF00]/10 px-2 py-0.5 rounded-full border border-[#BEFF00]/20 font-medium">ALPHA</span>
               </div>
 
