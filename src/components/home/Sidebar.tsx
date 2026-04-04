@@ -213,11 +213,129 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
     return content;
   };
 
+  // ── Floating pill (collapsed mode) ──
+  if (isCollapsed) {
+    const allItems = [
+      ...mainNavItems.map(i => ({ ...i, group: 'main' as const })),
+      { id: '_divider1', label: '', icon: null, group: 'divider' as const },
+      ...secondaryNavItems.map(i => ({ ...i, group: 'secondary' as const })),
+      { id: '_divider2', label: '', icon: null, group: 'divider' as const },
+      { id: '_favorites', label: 'Favorites', icon: Star, group: 'extra' as const },
+    ];
+
+    return (
+      <TooltipProvider delayDuration={200}>
+        {/* Invisible hover trigger zone */}
+        <div className="fixed left-0 top-0 h-screen w-[80px] z-[49]" />
+
+        <aside
+          className={cn(
+            'fixed left-3 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
+            'bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/[0.06]',
+            'shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.03)]',
+            'transition-all duration-300 ease-out overflow-hidden',
+            isFloatingVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none',
+          )}
+          onMouseEnter={() => setIsFloatingVisible(true)}
+          onMouseLeave={() => setIsFloatingVisible(false)}
+        >
+          {/* Expand button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={() => setIsCollapsed(false)}
+                aria-label="Expand sidebar"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-500 transition-all duration-200 hover:bg-white/[0.04] hover:text-zinc-300"
+              >
+                <ChevronLeft className="h-[18px] w-[18px] rotate-180" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Expand sidebar</TooltipContent>
+          </Tooltip>
+
+          {/* Divider */}
+          <div className="mx-auto my-2 h-px w-6 bg-white/[0.06]" />
+
+          {/* Nav items */}
+          <nav className="flex flex-1 flex-col items-center gap-1">
+            {allItems.map((item) => {
+              if (item.group === 'divider') {
+                return <div key={item.id} className="mx-auto my-2 h-px w-6 bg-white/[0.06]" />;
+              }
+              const Icon = item.icon!;
+              const isActive = activeView === item.id;
+              return (
+                <Tooltip key={item.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if ('isRoute' in item && item.isRoute) {
+                          navigate(appRoutes.kanvas);
+                        } else if (item.id === '_favorites') {
+                          setFavoritesOpen(!favoritesOpen);
+                        } else {
+                          onViewChange(item.id);
+                        }
+                      }}
+                      aria-label={item.label}
+                      className={cn(
+                        'relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-200',
+                        isActive
+                          ? 'bg-white/10 text-[#f97316]'
+                          : 'text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300',
+                      )}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[2px] rounded-r-full bg-[#f97316] shadow-[0_0_6px_rgba(249,115,22,0.4)]" />
+                      )}
+                      <Icon className="h-[18px] w-[18px]" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <span className="flex items-center gap-2">
+                      {item.label}
+                      {'showBadge' in item && item.showBadge && (
+                        <Badge variant="secondary" className="text-[9px] bg-[rgba(249,115,22,0.15)] text-[#f97316] border-[rgba(249,115,22,0.2)] px-1.5 py-0.5">
+                          New
+                        </Badge>
+                      )}
+                    </span>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </nav>
+
+          {/* Divider */}
+          <div className="mx-auto my-2 h-px w-6 bg-white/[0.06]" />
+
+          {/* Logout */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={handleLogout}
+                aria-label="Logout"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-500 transition-all duration-200 hover:bg-rose-500/10 hover:text-rose-400"
+              >
+                <LogOut className="h-[18px] w-[18px]" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Logout</TooltipContent>
+          </Tooltip>
+        </aside>
+      </TooltipProvider>
+    );
+  }
+
+  // ── Expanded mode (unchanged) ──
   return (
     <TooltipProvider>
       <motion.aside
         variants={sidebarVariants}
-        animate={isCollapsed ? "collapsed" : "expanded"}
+        animate="expanded"
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className={cn(
           "h-screen flex flex-col fixed left-0 top-0 z-50 border-r group/sidebar",
@@ -236,17 +354,12 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
 
         {/* Collapse Toggle Button */}
         <motion.button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => setIsCollapsed(true)}
           className="absolute -right-3 top-6 z-50 h-6 w-6 rounded-full bg-surface-1 dark:bg-zinc-800 border border-border-default dark:border-zinc-700 shadow-md flex items-center justify-center hover:bg-surface-2 dark:hover:bg-zinc-700 transition-colors"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          <motion.div
-            animate={{ rotate: isCollapsed ? 180 : 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          >
-            <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground" />
-          </motion.div>
+          <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground" />
         </motion.button>
 
         {/* Subtle gradient overlay for depth */}
@@ -256,35 +369,20 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
         <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
         
         {/* Workspace Switcher */}
-        <div className={cn("relative z-10 border-b border-border-default dark:border-white/[0.05]", isCollapsed ? "p-2" : "p-4")}>
-          <WorkspaceSwitcher isCollapsed={isCollapsed} />
+        <div className="relative z-10 border-b border-border-default dark:border-white/[0.05] p-4">
+          <WorkspaceSwitcher isCollapsed={false} />
         </div>
 
         {/* Main Navigation */}
-        <nav data-tour="sidebar-nav" className={cn("relative z-10 flex-1 space-y-6 overflow-y-auto", isCollapsed ? "p-2" : "p-4")}>
+        <nav data-tour="sidebar-nav" className="relative z-10 flex-1 space-y-6 overflow-y-auto p-4">
           {/* Main Menu Section */}
           <div>
-            <AnimatePresence mode="wait">
-              {!isCollapsed && (
-                <motion.div 
-                  variants={textVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  className="flex items-center gap-2 px-3 mb-3"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#f97316]" />
-                  <TextAnimate animation="fadeIn" by="character" delay={0.1} className="text-[10px] font-semibold text-text-tertiary uppercase tracking-[0.15em]">
-                    Main Menu
-                  </TextAnimate>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            {isCollapsed && (
-              <div className="flex justify-center mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-[#f97316]" />
-              </div>
-            )}
+            <div className="flex items-center gap-2 px-3 mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-[#f97316]" />
+              <TextAnimate animation="fadeIn" by="character" delay={0.1} className="text-[10px] font-semibold text-text-tertiary uppercase tracking-[0.15em]">
+                Main Menu
+              </TextAnimate>
+            </div>
             <div className="space-y-1">
               {mainNavItems.map((item, index) => (
                 <NavItem key={item.id} item={item} index={index} />
@@ -294,27 +392,12 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
 
           {/* Secondary Navigation */}
           <div>
-            <AnimatePresence mode="wait">
-              {!isCollapsed && (
-                <motion.div 
-                  variants={textVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  className="flex items-center gap-2 px-3 mb-3"
-                >
-                  <Users className="w-3.5 h-3.5 text-text-tertiary" />
-                  <TextAnimate animation="fadeIn" by="character" delay={0.2} className="text-[10px] font-semibold text-text-tertiary uppercase tracking-[0.15em]">
-                    Collaborate
-                  </TextAnimate>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            {isCollapsed && (
-              <div className="flex justify-center mb-3">
-                <Users className="w-3.5 h-3.5 text-text-tertiary" />
-              </div>
-            )}
+            <div className="flex items-center gap-2 px-3 mb-3">
+              <Users className="w-3.5 h-3.5 text-text-tertiary" />
+              <TextAnimate animation="fadeIn" by="character" delay={0.2} className="text-[10px] font-semibold text-text-tertiary uppercase tracking-[0.15em]">
+                Collaborate
+              </TextAnimate>
+            </div>
             <div className="space-y-1">
               {secondaryNavItems.map((item) => (
                 <SecondaryNavItem key={item.id} item={item} />
@@ -324,51 +407,22 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
 
           {/* Favorites Section */}
           <div>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setFavoritesOpen(!favoritesOpen)}
-                  className={cn(
-                    "w-full flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors dark:text-muted-foreground dark:hover:text-foreground",
-                    isCollapsed && "justify-center px-2"
-                  )}
-                >
-                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center dark:bg-amber/10 flex-shrink-0">
-                    <Star className="w-4 h-4 text-amber-500" />
-                  </div>
-                  <AnimatePresence mode="wait">
-                    {!isCollapsed && (
-                      <>
-                        <motion.span 
-                          variants={textVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="hidden"
-                          className="flex-1 text-left font-medium whitespace-nowrap"
-                        >
-                          Favorites
-                        </motion.span>
-                        <motion.div
-                          animate={{ rotate: favoritesOpen ? 0 : -90 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ChevronLeft className={cn(
-                            "w-4 h-4 transition-transform duration-200",
-                            favoritesOpen ? "-rotate-90" : "rotate-0"
-                          )} />
-                        </motion.div>
-                      </>
-                    )}
-                  </AnimatePresence>
-                </button>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right" className="font-medium">Favorites</TooltipContent>
-              )}
-            </Tooltip>
+            <button
+              onClick={() => setFavoritesOpen(!favoritesOpen)}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors dark:text-muted-foreground dark:hover:text-foreground"
+            >
+              <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center dark:bg-amber/10 flex-shrink-0">
+                <Star className="w-4 h-4 text-amber-500" />
+              </div>
+              <span className="flex-1 text-left font-medium whitespace-nowrap">Favorites</span>
+              <ChevronLeft className={cn(
+                "w-4 h-4 transition-transform duration-200",
+                favoritesOpen ? "-rotate-90" : "rotate-0"
+              )} />
+            </button>
             
             <AnimatePresence>
-              {favoritesOpen && !isCollapsed && (
+              {favoritesOpen && (
                 <motion.div 
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -384,60 +438,27 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
         </nav>
 
         {/* Bottom Section */}
-        <div className={cn("relative z-10 border-t border-border-default space-y-4 dark:border-white/[0.05]", isCollapsed ? "p-2" : "p-4")}>
+        <div className="relative z-10 border-t border-border-default space-y-4 dark:border-white/[0.05] p-4">
           {/* Credits Display */}
-          <AnimatePresence mode="wait">
-            {!isCollapsed && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-                className="p-3 rounded-xl bg-gradient-to-br from-orange-500/10 to-amber-200/30 border border-orange-500/15 backdrop-blur-sm dark:from-[rgba(255,107,74,0.1)] dark:to-[rgba(245,158,11,0.05)] dark:border-[rgba(255,107,74,0.2)]"
-              >
-                <CreditsDisplay showTooltip={false} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500/10 to-amber-200/30 border border-orange-500/15 backdrop-blur-sm dark:from-[rgba(255,107,74,0.1)] dark:to-[rgba(245,158,11,0.05)] dark:border-[rgba(255,107,74,0.2)]">
+            <CreditsDisplay showTooltip={false} />
+          </div>
           
           {/* Action Buttons */}
-          <div className={cn(
-            "flex items-center",
-            isCollapsed ? "flex-col gap-2" : "justify-center"
-          )}>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <button 
-                  onClick={handleLogout}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all duration-200",
-                    "text-text-secondary hover:text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/20",
-                    "border border-transparent",
-                    "dark:text-muted-foreground dark:hover:text-rose-400",
-                    isCollapsed && "p-2"
-                  )}
-                  title="Log out"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <AnimatePresence mode="wait">
-                    {!isCollapsed && (
-                      <motion.span
-                        variants={textVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="hidden"
-                        className="whitespace-nowrap"
-                      >
-                        Logout
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </button>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">Logout</TooltipContent>
+          <div className="flex items-center justify-center">
+            <button 
+              onClick={handleLogout}
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all duration-200",
+                "text-text-secondary hover:text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/20",
+                "border border-transparent",
+                "dark:text-muted-foreground dark:hover:text-rose-400"
               )}
-            </Tooltip>
+              title="Log out"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="whitespace-nowrap">Logout</span>
+            </button>
           </div>
         </div>
       </motion.aside>
