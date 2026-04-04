@@ -33,8 +33,9 @@ export const StatCard = ({
       transition={{ duration: 0.4, delay: index * 0.1 }}
       className={cn(
         "relative group p-5 rounded-2xl overflow-hidden transition-all duration-300",
-        "glass-stat border border-[rgba(249,115,22,0.1)]",
-        "hover:border-[rgba(249,115,22,0.3)] hover:shadow-[0_0_35px_rgba(249,115,22,0.12)]",
+        "bg-white dark:bg-white/[0.03] border border-orange-100 dark:border-[rgba(249,115,22,0.1)]",
+        "shadow-sm dark:shadow-none",
+        "hover:border-orange-200 dark:hover:border-[rgba(249,115,22,0.3)] hover:shadow-lg dark:hover:shadow-[0_0_35px_rgba(249,115,22,0.12)]",
         "hover:-translate-y-0.5",
         className
       )}
