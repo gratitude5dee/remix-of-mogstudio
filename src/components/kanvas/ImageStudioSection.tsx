@@ -164,9 +164,9 @@ export default function ImageStudioSection({
 
   /* ---- Hero Section ---- */
   const renderHero = () => (
-    <div className="text-center pt-16 pb-8">
+    <div className="text-center pt-8 md:pt-16 pb-6 md:pb-8 px-4 md:px-0">
       <h1
-        className="text-6xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase"
+        className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase"
         style={{ fontFamily: "'Space Grotesk', sans-serif" }}
       >
         <span className="text-white">TURN IDEAS</span>
