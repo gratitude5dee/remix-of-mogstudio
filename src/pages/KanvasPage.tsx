@@ -1161,58 +1161,28 @@ export default function KanvasPage() {
   }, [getMentionListFn]);
 
   return (
-    <div className="min-h-screen bg-[#050506] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,242,100,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.08),transparent_24%)]" />
-      <div className="relative">
-        {/* ── Premium Pill-Slider Header ── */}
-        <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)]">
-          <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-2.5 md:px-6">
-            {/* Left: WZRD wordmark */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-2 h-2 rounded-full bg-[#BEFF00] shadow-[0_0_8px_rgba(190,255,0,0.4)]" />
-              <span className="text-sm font-bold tracking-tight text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>WZRD</span>
+    <div className="flex h-screen bg-[#050506] text-white overflow-hidden">
+      {/* Left sidebar nav */}
+      <KanvasSidebar activeStudio={studio} onStudioChange={setStudio} />
+
+      {/* Main content area */}
+      <div className="relative flex-1 overflow-auto">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,242,100,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.08),transparent_24%)] pointer-events-none" />
+        <div className="relative">
+          {/* Slim status header */}
+          <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)]">
+            <div className="flex items-center justify-between px-5 py-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-2 h-2 rounded-full bg-[#BEFF00] shadow-[0_0_8px_rgba(190,255,0,0.4)]" />
+                <span className="text-sm font-bold tracking-tight text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>WZRD</span>
+                <span className="text-zinc-600 text-sm">/</span>
+                <span className="text-sm font-medium text-zinc-400">{KANVAS_STUDIO_META[studio].label}</span>
+              </div>
             </div>
+          </header>
 
-            {/* Center: Pill-slider nav */}
-            <div className="inline-flex bg-[#111] rounded-full p-1 border border-white/[0.06]">
-              {KANVAS_STUDIO_ORDER.map((entry) => {
-                const Icon = STUDIO_ICONS[entry];
-                const label = KANVAS_STUDIO_META[entry].label;
-                const isActive = studio === entry;
-                return (
-                  <button
-                    key={entry}
-                    onClick={() => setStudio(entry)}
-                    className={cn(
-                      'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
-                      isActive
-                        ? 'bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]'
-                        : 'text-zinc-500 hover:text-zinc-300'
-                    )}
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">{label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Right: Home icon */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="text-zinc-400 hover:text-white flex-shrink-0"
-              onClick={() => navigate(appRoutes.home)}
-              aria-label="Home"
-            >
-              <Home className="h-4 w-4" />
-            </Button>
-          </div>
-        </header>
-
-        <div className="mx-auto flex max-w-[1600px] gap-6 px-4 py-6 md:px-6">
-          <div className="min-w-0 flex-1">
+          <div className="mx-auto max-w-[1600px] px-4 py-6 md:px-6">
+            <div className="min-w-0">
             {studio === "image" ? (
               <ImageStudioSection
                 prompt={imagePrompt}
