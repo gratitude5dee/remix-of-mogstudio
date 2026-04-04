@@ -1442,7 +1442,7 @@ export default function KanvasPage() {
       </svg>
 
       {/* Bottom status bar */}
-      <div className="fixed bottom-0 left-0 right-0 h-8 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/[0.04] flex items-center justify-between px-4">
+      <div className="fixed bottom-0 left-0 right-0 h-8 z-[55] bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/[0.04] flex items-center justify-between px-4">
         <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-medium">WZRD Studio</span>
         <div className="flex items-center gap-2">
           <div className="h-1.5 w-1.5 rounded-full bg-[#BEFF00] shadow-[0_0_6px_rgba(190,255,0,0.5)] animate-pulse" />
