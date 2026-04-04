@@ -233,8 +233,8 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
             'fixed left-3 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
             'bg-[#0A0A0A]/90 backdrop-blur-xl',
             'shadow-[0_0_15px_rgba(249,115,22,0.15),0_0_30px_rgba(249,115,22,0.05),0_8px_32px_rgba(0,0,0,0.5)]',
-            'transition-all duration-300 ease-out overflow-hidden',
-            isFloatingVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none',
+            'transition-all duration-300 ease-out',
+            isFloatingVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none overflow-hidden',
           )}
           onMouseEnter={() => setIsFloatingVisible(true)}
           onMouseLeave={() => setIsFloatingVisible(false)}
@@ -260,7 +260,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
                 <ChevronLeft className="h-[18px] w-[18px] rotate-180" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right">Expand sidebar</TooltipContent>
+            <TooltipContent side="right" sideOffset={8} className="z-[60]">Expand sidebar</TooltipContent>
           </Tooltip>
 
           {/* Divider */}
@@ -302,7 +302,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
                       <Icon className="h-[18px] w-[18px]" />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">
+                  <TooltipContent side="right" sideOffset={8} className="z-[60]">
                     <span className="flex items-center gap-2">
                       {item.label}
                       {'showBadge' in item && item.showBadge && (
@@ -332,7 +332,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
                 <LogOut className="h-[18px] w-[18px]" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right">Logout</TooltipContent>
+            <TooltipContent side="right" sideOffset={8} className="z-[60]">Logout</TooltipContent>
           </Tooltip>
 
           {/* Brand dot */}
