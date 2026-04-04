@@ -1,43 +1,35 @@
 
 
-# Fix Missing Hover Tooltips on Floating Sidebar
+# Kanvas Header: Double Logo + Settings & Theme Controls
 
-## Problem
-The floating sidebar has `overflow-hidden` in its className (line 236), which clips content during the width transition. While Radix tooltips portal to `<body>`, the `overflow-hidden` combined with the narrow `w-3` collapsed state and `pointer-events-none` prevents tooltip triggers from receiving hover events properly. The tooltips ARE in the code but never visually appear.
+## Changes
 
-## Root Cause
-Line 236-237 in `Sidebar.tsx`:
-```
-'transition-all duration-300 ease-out overflow-hidden',
-isFloatingVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none',
-```
+### 1. `src/pages/KanvasPage.tsx` — Header redesign
 
-The `overflow-hidden` is needed for the width collapse animation (so icons don't leak out during the `w-14 → w-3` transition), but it can interfere with tooltip positioning. More critically, the tooltip content needs explicit `z-50` or higher to appear above other elements.
+**Left section** (lines 1175-1178):
+- Double the logo size: `h-10` → `h-20`
+- Add `ALPHA` badge (matching Home page style)
 
-## Fix — `src/components/home/Sidebar.tsx`
+**Right section** (lines 1212-1213): Replace empty spacer with action buttons:
+- **Home button**: icon button navigating to `appRoutes.home`
+- **Theme toggle**: import and render `ThemeToggle` component
+- **Settings dropdown**: `DropdownMenu` with items for "Preferences", "Keyboard Shortcuts", "About" (visual placeholders for now) — uses `Settings` icon from lucide
 
-1. **Keep `overflow-hidden` only during transition, remove when fully visible**: Change the aside className so `overflow-hidden` is only applied when NOT visible. When `isFloatingVisible` is true, remove it so tooltips can render properly.
+All buttons styled as `h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06]` with hover states, matching the Noir Futurist aesthetic.
 
-2. **Add explicit `sideOffset` to all `TooltipContent`**: Add `sideOffset={8}` to give tooltips breathing room from the pill edge.
+### 2. `src/components/kanvas/KanvasSidebar.tsx` — Double logo
 
-3. **Ensure `TooltipContent` has high z-index**: Add `className="z-[60]"` to all `TooltipContent` instances in the floating section to guarantee they render above the `z-50` sidebar.
+- Line 122: Change bottom logo from `h-6 w-6` → `h-10 w-10` (container `h-8 w-8` → `h-12 w-12`)
 
-### Specific line changes:
+### 3. `src/components/ui/theme-toggle.tsx` — Dark-mode safe styling
 
-**Line 236-237** — swap `overflow-hidden` to be conditional:
-```tsx
-'transition-all duration-300 ease-out',
-isFloatingVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none overflow-hidden',
-```
-
-**Lines 263, 305, 330** (all `TooltipContent` in floating section) — add sideOffset and z-index:
-```tsx
-<TooltipContent side="right" sideOffset={8} className="z-[60]">
-```
+- Update button classes to work on the dark Kanvas background (currently uses `bg-muted/50` which may not contrast well)
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/home/Sidebar.tsx` | Move `overflow-hidden` to collapsed-only state, add `sideOffset={8}` and `z-[60]` to all floating tooltip contents |
+| `src/pages/KanvasPage.tsx` | Double logo, add Home/ThemeToggle/Settings dropdown to right side of header |
+| `src/components/kanvas/KanvasSidebar.tsx` | Double bottom logo size |
+| `src/components/ui/theme-toggle.tsx` | Ensure dark-bg compatibility |
 
