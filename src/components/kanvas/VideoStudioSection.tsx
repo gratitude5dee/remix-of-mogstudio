@@ -69,16 +69,16 @@ function Dropzone({
         className={cn(
           "group relative flex w-full flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed transition-colors",
           aspectClass ?? "aspect-square",
-          previewUrl ? "border-[#ccff00]/30 bg-black/40" : "border-zinc-800 bg-black/30 hover:border-[#ccff00]/50"
+          previewUrl ? "border-[#f97316]/30 bg-black/40" : "border-zinc-800 bg-black/30 hover:border-[#f97316]/50"
         )}
       >
         {previewUrl ? (
           <img src={previewUrl} alt={label} className="absolute inset-0 h-full w-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" />
         ) : uploading ? (
-          <Loader2 className="h-6 w-6 animate-spin text-[#ccff00]" />
+          <Loader2 className="h-6 w-6 animate-spin text-[#f97316]" />
         ) : (
           <>
-            <Icon className="mb-2 h-6 w-6 text-zinc-600 group-hover:text-[#ccff00] transition-colors" />
+            <Icon className="mb-2 h-6 w-6 text-zinc-600 group-hover:text-[#f97316] transition-colors" />
             <span className="text-[10px] uppercase tracking-widest text-zinc-600 group-hover:text-zinc-400 transition-colors">{hint}</span>
           </>
         )}
@@ -95,7 +95,7 @@ function Pill({ value, active, onClick }: { value: string; active: boolean; onCl
       onClick={onClick}
       className={cn(
         "rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-all",
-        active ? "bg-[#ccff00] text-black shadow-[0_0_20px_rgba(204,255,0,0.2)]" : "bg-zinc-800/80 text-zinc-500 hover:bg-zinc-700/80 hover:text-zinc-300"
+        active ? "bg-[#f97316] text-black shadow-[0_0_20px_rgba(249,115,22,0.2)]" : "bg-zinc-800/80 text-zinc-500 hover:bg-zinc-700/80 hover:text-zinc-300"
       )}
     >
       {value}
@@ -104,8 +104,8 @@ function Pill({ value, active, onClick }: { value: string; active: boolean; onCl
 }
 
 function FeatureCard({ title, description, icon: Icon, accent = "lime" }: { title: string; description: string; icon: typeof ImagePlus; accent?: "lime" | "pink" | "white" }) {
-  const color = accent === "lime" ? "text-[#ccff00]" : accent === "pink" ? "text-[#ff3399]" : "text-white";
-  const bg = accent === "lime" ? "bg-[#ccff00]/10 border-[#ccff00]/20" : accent === "pink" ? "bg-[#ff3399]/10 border-[#ff3399]/20" : "bg-white/10 border-white/20";
+  const color = accent === "lime" ? "text-[#f97316]" : accent === "pink" ? "text-[#ff3399]" : "text-white";
+  const bg = accent === "lime" ? "bg-[#f97316]/10 border-[#f97316]/20" : accent === "pink" ? "bg-[#ff3399]/10 border-[#ff3399]/20" : "bg-white/10 border-white/20";
   return (
     <div className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-2xl bg-[#1a1919] p-6 transition-all hover:bg-[#222]">
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -186,7 +186,7 @@ export function VideoStudioSection({
               className={cn(
                 "px-5 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 activeTab === tab
-                  ? "bg-white/10 text-[#ccff00] shadow-[inset_0_0_12px_rgba(204,255,0,0.06)]"
+                  ? "bg-white/10 text-[#f97316] shadow-[inset_0_0_12px_rgba(249,115,22,0.06)]"
                   : "text-zinc-500 hover:text-zinc-300"
               )}
             >
@@ -207,11 +207,11 @@ export function VideoStudioSection({
   );
 
   const wzrdTip = (tip: string) => (
-    <div className="rounded-xl border-l-2 border-l-[#ccff00] bg-[#1a1919] p-5">
+    <div className="rounded-xl border-l-2 border-l-[#f97316] bg-[#1a1919] p-5">
       <div className="flex items-start gap-3">
-        <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-[#ccff00]" />
+        <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-[#f97316]" />
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-[#ccff00]">WZRD Tip</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#f97316]">WZRD Tip</p>
           <p className="mt-1 text-xs leading-relaxed text-zinc-500">{tip}</p>
         </div>
       </div>
@@ -246,7 +246,7 @@ export function VideoStudioSection({
             <span className="text-xs font-semibold text-zinc-400">Multi-shot</span>
             <Info className="h-3 w-3 text-zinc-600" />
           </div>
-          <Switch checked={multiShot} onCheckedChange={setMultiShot} className="data-[state=checked]:bg-[#ccff00]" />
+          <Switch checked={multiShot} onCheckedChange={setMultiShot} className="data-[state=checked]:bg-[#f97316]" />
         </div>
 
         {/* Prompt */}
@@ -254,7 +254,7 @@ export function VideoStudioSection({
           value={prompt}
           onChange={(e) => onPromptChange(e.currentTarget.value)}
           placeholder="Describe the motion, camera movement, or scene..."
-          className="min-h-[100px] resize-none rounded-xl border-white/10 bg-[#1a1919] px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus-visible:ring-[#ccff00]/30"
+          className="min-h-[100px] resize-none rounded-xl border-white/10 bg-[#1a1919] px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus-visible:ring-[#f97316]/30"
         />
 
         {/* Enhancement row */}
@@ -274,7 +274,7 @@ export function VideoStudioSection({
           >
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Model</span>
             <span className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[#ccff00]">{currentModel?.name ?? "Loading…"}</span>
+              <span className="text-xs font-bold text-[#f97316]">{currentModel?.name ?? "Loading…"}</span>
               <ChevronDown className="h-3 w-3 text-zinc-500" />
             </span>
           </button>
@@ -286,7 +286,7 @@ export function VideoStudioSection({
                   onClick={() => { onModelChange(m.id); setModelDropdownOpen(false); }}
                   className={cn(
                     "w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors",
-                    m.id === currentModel?.id ? "bg-[#ccff00]/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                    m.id === currentModel?.id ? "bg-[#f97316]/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-white"
                   )}
                 >
                   <span className="font-medium">{m.name}</span>
@@ -312,7 +312,7 @@ export function VideoStudioSection({
         <Button
           onClick={onGenerate}
           disabled={submitting}
-          className="w-full rounded-full bg-[#ccff00] py-5 text-sm font-extrabold uppercase tracking-widest text-black shadow-[0_0_30px_rgba(204,255,0,0.3)] hover:bg-[#d4ff33] hover:shadow-[0_0_40px_rgba(204,255,0,0.4)] disabled:opacity-50"
+          className="w-full rounded-full bg-[#f97316] py-5 text-sm font-extrabold uppercase tracking-widest text-black shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:bg-[#fb923c] hover:shadow-[0_0_40px_rgba(249,115,22,0.4)] disabled:opacity-50"
         >
           {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
           {submitting ? "Generating…" : `Generate ✦ ${currentModel?.credits ?? 20}`}
@@ -323,7 +323,7 @@ export function VideoStudioSection({
       <div className="min-w-0 flex-1 space-y-10">
         <div>
           <h1 className="text-5xl font-bold tracking-tighter text-white lg:text-6xl" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            MAKE VIDEOS IN <em className="not-italic text-[#ccff00]">ONE CLICK</em>
+            MAKE VIDEOS IN <em className="not-italic text-[#f97316]">ONE CLICK</em>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-zinc-400">
             250+ presets for camera control, framing, and high-quality VFX
@@ -346,7 +346,7 @@ export function VideoStudioSection({
               <img src={previewUrl} alt="Output" className="aspect-video w-full object-cover" />
             ) : isJobActive(selectedJob) ? (
               <div className="flex aspect-video flex-col items-center justify-center gap-4">
-                <Loader2 className="h-10 w-10 animate-spin text-[#ccff00]" />
+                <Loader2 className="h-10 w-10 animate-spin text-[#f97316]" />
                 <p className="text-sm font-semibold text-white">Generating…</p>
                 <p className="text-xs text-zinc-500">{selectedJob.progress ?? 0}% complete</p>
               </div>
@@ -371,7 +371,7 @@ export function VideoStudioSection({
                 className={cn(
                   "shrink-0 rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap",
                   activeModelTab === tab
-                    ? "bg-[#ccff00] text-black"
+                    ? "bg-[#f97316] text-black"
                     : "bg-[#1a1919] text-zinc-500 hover:text-zinc-300"
                 )}
               >
@@ -399,11 +399,11 @@ export function VideoStudioSection({
           {/* Placeholder preset grid */}
           <div className="grid grid-cols-4 gap-3">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="group relative aspect-video rounded-xl bg-[#1a1919] overflow-hidden cursor-pointer border border-white/5 hover:border-[#ccff00]/30 transition-colors">
+              <div key={i} className="group relative aspect-video rounded-xl bg-[#1a1919] overflow-hidden cursor-pointer border border-white/5 hover:border-[#f97316]/30 transition-colors">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 {i === 0 && (
                   <div className="absolute top-2 left-2">
-                    <span className="px-2 py-0.5 rounded-full bg-[#ccff00] text-[8px] font-bold text-black uppercase">Top Choice</span>
+                    <span className="px-2 py-0.5 rounded-full bg-[#f97316] text-[8px] font-bold text-black uppercase">Top Choice</span>
                   </div>
                 )}
                 <div className="absolute bottom-2 left-2">
@@ -419,7 +419,7 @@ export function VideoStudioSection({
           <div className="space-y-4">
             <div className="flex items-end justify-between">
               <p className="text-sm font-semibold text-white">Recent Creations</p>
-              <button className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#ccff00] transition-colors">View All →</button>
+              <button className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-[#f97316] transition-colors">View All →</button>
             </div>
             <div className="grid grid-cols-4 gap-4">
               {recentResults.map((job) => {
@@ -435,7 +435,7 @@ export function VideoStudioSection({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute right-2 top-2">
                       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm">
-                        <Play className="h-3 w-3 text-[#ccff00]" />
+                        <Play className="h-3 w-3 text-[#f97316]" />
                       </div>
                     </div>
                   </div>
@@ -469,7 +469,7 @@ export function VideoStudioSection({
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Images & Elements (up to 4)</p>
           <div className="flex gap-3">
             {[0, 1, 2, 3].map((i) => (
-              <button key={i} className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-zinc-800 bg-black/30 hover:border-[#ccff00]/50 transition-colors">
+              <button key={i} className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-zinc-800 bg-black/30 hover:border-[#f97316]/50 transition-colors">
                 <Plus className="h-4 w-4 text-zinc-600" />
               </button>
             ))}
@@ -480,18 +480,18 @@ export function VideoStudioSection({
           value={prompt}
           onChange={(e) => onPromptChange(e.currentTarget.value)}
           placeholder="Describe the change you want..."
-          className="min-h-[100px] resize-none rounded-xl border-white/10 bg-[#1a1919] px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus-visible:ring-[#ccff00]/30"
+          className="min-h-[100px] resize-none rounded-xl border-white/10 bg-[#1a1919] px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus-visible:ring-[#f97316]/30"
         />
 
         <div className="flex items-center justify-between rounded-xl bg-[#1a1919] px-4 py-2.5">
           <span className="text-xs font-semibold text-zinc-400">Auto Settings</span>
-          <Switch checked={editAutoSettings} onCheckedChange={setEditAutoSettings} className="data-[state=checked]:bg-[#ccff00]" />
+          <Switch checked={editAutoSettings} onCheckedChange={setEditAutoSettings} className="data-[state=checked]:bg-[#f97316]" />
         </div>
 
         <div className="space-y-2 rounded-xl bg-[#131313] p-4">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Model</span>
-            <span className="text-xs font-bold text-[#ccff00]">Kling O1 Edit</span>
+            <span className="text-xs font-bold text-[#f97316]">Kling O1 Edit</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Quality</span>
@@ -499,7 +499,7 @@ export function VideoStudioSection({
           </div>
         </div>
 
-        <Button onClick={onGenerate} disabled={submitting} className="w-full rounded-full bg-[#ccff00] py-5 text-sm font-extrabold uppercase tracking-widest text-black shadow-[0_0_30px_rgba(204,255,0,0.3)] hover:bg-[#d4ff33] disabled:opacity-50">
+        <Button onClick={onGenerate} disabled={submitting} className="w-full rounded-full bg-[#f97316] py-5 text-sm font-extrabold uppercase tracking-widest text-black shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:bg-[#fb923c] disabled:opacity-50">
           {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
           {submitting ? "Processing…" : "Generate ✦ 28"}
         </Button>
@@ -520,11 +520,11 @@ export function VideoStudioSection({
         {selectedJob && isJobActive(selectedJob) && (
           <div className="rounded-2xl border border-white/5 bg-[#131313] p-6">
             <div className="flex items-center gap-4">
-              <Loader2 className="h-6 w-6 animate-spin text-[#ccff00]" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#f97316]" />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">Processing edit…</p>
                 <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
-                  <div className="h-full rounded-full bg-[#ccff00] transition-all duration-500" style={{ width: `${selectedJob.progress ?? 0}%` }} />
+                  <div className="h-full rounded-full bg-[#f97316] transition-all duration-500" style={{ width: `${selectedJob.progress ?? 0}%` }} />
                 </div>
               </div>
               <span className="text-xs font-bold text-zinc-500">{selectedJob.progress ?? 0}%</span>
@@ -544,7 +544,7 @@ export function VideoStudioSection({
       <div className="min-w-0 flex-1 space-y-10">
         <div>
           <h1 className="text-5xl font-bold tracking-tighter text-white lg:text-6xl" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            RECREATE ANY <em className="not-italic text-[#ccff00]">MOTION</em><br />WITH YOUR IMAGE
+            RECREATE ANY <em className="not-italic text-[#f97316]">MOTION</em><br />WITH YOUR IMAGE
           </h1>
           <p className="mt-4 max-w-2xl text-sm text-zinc-500">Our neural animation engine analyzes reference motion and re-creates it with your character or scene.</p>
         </div>
@@ -553,20 +553,20 @@ export function VideoStudioSection({
           <div className="flex items-end justify-between">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">Motion Library</p>
-              <div className="mt-2 h-1 w-24 bg-[#ccff00]" />
+              <div className="mt-2 h-1 w-24 bg-[#f97316]" />
             </div>
-            <button className="text-[10px] font-bold uppercase tracking-widest text-[#ccff00] hover:opacity-80 transition-opacity">View All →</button>
+            <button className="text-[10px] font-bold uppercase tracking-widest text-[#f97316] hover:opacity-80 transition-opacity">View All →</button>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
             {MOTION_LIBRARY.map((item) => (
-              <div key={item.id} className="group relative aspect-[9/16] w-40 shrink-0 cursor-pointer overflow-hidden rounded-xl bg-[#1a1919] hover:ring-2 hover:ring-[#ccff00]/30 transition-all">
+              <div key={item.id} className="group relative aspect-[9/16] w-40 shrink-0 cursor-pointer overflow-hidden rounded-xl bg-[#1a1919] hover:ring-2 hover:ring-[#f97316]/30 transition-all">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 <div className="absolute bottom-3 left-3 right-3 space-y-1">
                   <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-600">{item.category}</p>
-                  <p className="text-xs font-bold text-[#ccff00]">{item.title}</p>
+                  <p className="text-xs font-bold text-[#f97316]">{item.title}</p>
                 </div>
                 <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="flex h-7 w-14 items-center justify-center gap-1 rounded-full bg-[#ccff00] text-black">
+                  <div className="flex h-7 w-14 items-center justify-center gap-1 rounded-full bg-[#f97316] text-black">
                     <Play className="h-3 w-3" />
                     <span className="text-[8px] font-extrabold uppercase">Play</span>
                   </div>
@@ -579,11 +579,11 @@ export function VideoStudioSection({
         {selectedJob && isJobActive(selectedJob) && (
           <div className="rounded-2xl border border-white/5 bg-[#131313] p-6">
             <div className="flex items-center gap-4">
-              <Loader2 className="h-6 w-6 animate-spin text-[#ccff00]" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#f97316]" />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">Generating motion…</p>
                 <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
-                  <div className="h-full rounded-full bg-[#ccff00] transition-all duration-500" style={{ width: `${selectedJob.progress ?? 0}%` }} />
+                  <div className="h-full rounded-full bg-[#f97316] transition-all duration-500" style={{ width: `${selectedJob.progress ?? 0}%` }} />
                 </div>
               </div>
             </div>
@@ -599,7 +599,7 @@ export function VideoStudioSection({
         <div className="space-y-3 rounded-xl bg-[#131313] p-4">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Model</span>
-            <span className="text-xs font-bold text-[#ccff00]">Kling 3.0 Motion</span>
+            <span className="text-xs font-bold text-[#f97316]">Kling 3.0 Motion</span>
           </div>
           <div className="space-y-2">
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Quality</span>
@@ -611,7 +611,7 @@ export function VideoStudioSection({
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Scene Control</span>
-            <Switch checked={motionSceneControl} onCheckedChange={setMotionSceneControl} className="data-[state=checked]:bg-[#ccff00]" />
+            <Switch checked={motionSceneControl} onCheckedChange={setMotionSceneControl} className="data-[state=checked]:bg-[#f97316]" />
           </div>
           <div className="space-y-2">
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Input Type</span>
@@ -623,7 +623,7 @@ export function VideoStudioSection({
           </div>
         </div>
 
-        <Button onClick={onGenerate} disabled={submitting} className="w-full rounded-full bg-[#ccff00] py-5 text-sm font-extrabold uppercase tracking-widest text-black shadow-[0_0_30px_rgba(204,255,0,0.3)] hover:bg-[#d4ff33] disabled:opacity-50">
+        <Button onClick={onGenerate} disabled={submitting} className="w-full rounded-full bg-[#f97316] py-5 text-sm font-extrabold uppercase tracking-widest text-black shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:bg-[#fb923c] disabled:opacity-50">
           {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
           {submitting ? "Generating…" : `Generate ✦ ${currentModel?.credits ?? 30}`}
         </Button>

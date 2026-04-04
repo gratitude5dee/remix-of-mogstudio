@@ -220,7 +220,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
 
         {/* Hero section */}
         <div className="relative z-10 flex flex-col items-center pt-24 pb-16 px-6">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-[#ccff00] font-bold mb-4">AI-Powered Studio</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-[#f97316] font-bold mb-4">AI-Powered Studio</p>
           <h1 className="text-5xl md:text-7xl font-black text-white uppercase tracking-[-0.03em] text-center mb-4"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             TRANSFORM YOUR<br />IMAGES
@@ -240,7 +240,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                   key={feature.id}
                   onClick={() => setSelectedFeature(feature.id)}
                   className={`relative w-[200px] h-[280px] rounded-2xl overflow-hidden flex-shrink-0 transition-all duration-300 group ${
-                    isActive ? 'ring-2 ring-[#ccff00]/40 scale-105 z-10' : 'opacity-80 hover:opacity-100 hover:scale-[1.02]'
+                    isActive ? 'ring-2 ring-[#f97316]/40 scale-105 z-10' : 'opacity-80 hover:opacity-100 hover:scale-[1.02]'
                   }`}
                   style={{ transform: `rotateY(${rotations[i]}deg)`, transformStyle: 'preserve-3d' }}
                 >
@@ -253,11 +253,11 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <Icon className="h-3.5 w-3.5 text-[#ccff00]" />
+                      <Icon className="h-3.5 w-3.5 text-[#f97316]" />
                       {feature.badge && (
                         <span className={`text-[7px] font-bold px-1.5 py-0.5 rounded-full ${
                           feature.badge === 'TOP' ? 'bg-red-500/30 text-red-400' :
-                          feature.badge === 'NEW' ? 'bg-[#ccff00]/20 text-[#ccff00]' :
+                          feature.badge === 'NEW' ? 'bg-[#f97316]/20 text-[#f97316]' :
                           'bg-zinc-700/50 text-zinc-500'
                         }`}>{feature.badge}</span>
                       )}
@@ -283,18 +283,18 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                     onClick={() => setSelectedFeature(feature.id)}
                     className={`flex items-center gap-2.5 px-4 py-3 rounded-xl transition-all duration-200 ${
                       isActive
-                        ? 'bg-[#1a1a1a] border border-[#ccff00]/20 shadow-[0_0_20px_rgba(204,255,0,0.06)]'
+                        ? 'bg-[#1a1a1a] border border-[#f97316]/20 shadow-[0_0_20px_rgba(249,115,22,0.06)]'
                         : 'bg-[#111] border border-white/[0.04] hover:bg-[#161616] hover:border-white/[0.08]'
                     }`}
                   >
-                    <Icon className={`h-4 w-4 ${isActive ? 'text-[#ccff00]' : 'text-zinc-500'}`} />
+                    <Icon className={`h-4 w-4 ${isActive ? 'text-[#f97316]' : 'text-zinc-500'}`} />
                     <div className="text-left">
                       <div className="flex items-center gap-1.5">
                         <span className={`text-xs font-semibold ${isActive ? 'text-white' : 'text-zinc-400'}`}>{feature.label}</span>
                         {feature.badge && (
                           <span className={`text-[7px] font-bold px-1 py-0.5 rounded-full ${
                             feature.badge === 'TOP' ? 'bg-red-500/20 text-red-400' :
-                            feature.badge === 'NEW' ? 'bg-[#ccff00]/20 text-[#ccff00]' :
+                            feature.badge === 'NEW' ? 'bg-[#f97316]/20 text-[#f97316]' :
                             'bg-zinc-700/50 text-zinc-500'
                           }`}>{feature.badge}</span>
                         )}
@@ -310,7 +310,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
           <button
             onClick={handleUploadClick}
             disabled={uploading}
-            className="bg-[#ccff00] text-black font-bold uppercase tracking-widest text-[11px] px-10 py-4 rounded-full flex items-center gap-2.5 hover:shadow-[0_0_40px_rgba(204,255,0,0.3)] transition-all disabled:opacity-50 mb-6"
+            className="bg-[#f97316] text-black font-bold uppercase tracking-widest text-[11px] px-10 py-4 rounded-full flex items-center gap-2.5 hover:shadow-[0_0_40px_rgba(249,115,22,0.3)] transition-all disabled:opacity-50 mb-6"
           >
             {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
             {uploading ? 'Uploading…' : 'Upload to Start Editing'}
@@ -346,7 +346,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
         <button
           onClick={handleUploadClick}
           disabled={uploading}
-          className="w-full aspect-square rounded-xl bg-[#111] border border-dashed border-white/10 hover:border-[#ccff00]/30 flex flex-col items-center justify-center text-zinc-500 hover:text-[#ccff00] transition-all flex-shrink-0 gap-1"
+          className="w-full aspect-square rounded-xl bg-[#111] border border-dashed border-white/10 hover:border-[#f97316]/30 flex flex-col items-center justify-center text-zinc-500 hover:text-[#f97316] transition-all flex-shrink-0 gap-1"
         >
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           <span className="text-[7px] uppercase tracking-wider">Upload</span>
@@ -362,7 +362,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
               onClick={() => setSelectedAssetId(asset.id)}
               className={`w-full aspect-square rounded-xl overflow-hidden flex-shrink-0 transition-all duration-200 ${
                 isActive
-                  ? 'ring-2 ring-[#ccff00] ring-offset-2 ring-offset-[#0a0a0a] scale-105'
+                  ? 'ring-2 ring-[#f97316] ring-offset-2 ring-offset-[#0a0a0a] scale-105'
                   : 'opacity-60 hover:opacity-100 hover:scale-[1.02]'
               }`}
             >
@@ -395,7 +395,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                   <div className="w-full h-full bg-[#1a1a1a]" />
                 )}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Sparkles className="h-3 w-3 text-[#ccff00]" />
+                  <Sparkles className="h-3 w-3 text-[#f97316]" />
                 </div>
               </button>
             ))}
@@ -422,7 +422,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                   onClick={() => setSelectedFeature(feature.id)}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-white/10 text-[#ccff00] shadow-[inset_0_0_12px_rgba(204,255,0,0.06)]'
+                      ? 'bg-white/10 text-[#f97316] shadow-[inset_0_0_12px_rgba(249,115,22,0.06)]'
                       : 'text-zinc-500 hover:text-zinc-300'
                   }`}
                 >
@@ -441,7 +441,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1A1A1A] border border-white/[0.06] text-xs text-zinc-400 hover:text-white transition-colors"
               >
                 <span className="truncate max-w-[120px]">{selectedModel.name}</span>
-                <span className="text-[9px] text-[#ccff00] font-bold">{selectedModel.credits}cr</span>
+                <span className="text-[9px] text-[#f97316] font-bold">{selectedModel.credits}cr</span>
                 <ChevronDown className="h-3 w-3" />
               </button>
 
@@ -461,7 +461,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                           <span className="text-xs font-medium truncate">{model.name}</span>
                           {model.badge && (
                             <span className={`text-[7px] font-bold px-1 py-0.5 rounded-full flex-shrink-0 ${
-                              model.badge === 'TOP' ? 'bg-red-500/20 text-red-400' : 'bg-[#ccff00]/20 text-[#ccff00]'
+                              model.badge === 'TOP' ? 'bg-red-500/20 text-red-400' : 'bg-[#f97316]/20 text-[#f97316]'
                             }`}>{model.badge}</span>
                           )}
                         </div>
@@ -508,7 +508,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                 title={tool.label}
                 className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-2.5 transition-all duration-200 ${
                   isActive
-                    ? 'bg-[#ccff00] text-black shadow-[0_0_15px_rgba(204,255,0,0.2)]'
+                    ? 'bg-[#f97316] text-black shadow-[0_0_15px_rgba(249,115,22,0.2)]'
                     : 'text-zinc-500 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
@@ -530,7 +530,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                   max={60}
                   value={brushSize}
                   onChange={(e) => setBrushSize(Number(e.target.value))}
-                  className="w-12 h-1 accent-[#ccff00] [writing-mode:vertical-lr] rotate-180"
+                  className="w-12 h-1 accent-[#f97316] [writing-mode:vertical-lr] rotate-180"
                   style={{ height: 60 }}
                 />
                 <span className="text-[8px] text-zinc-500 font-mono">{brushSize}px</span>
@@ -579,7 +579,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
 
               {/* Active feature */}
               <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-                <activeFeature.icon className="h-3.5 w-3.5 text-[#ccff00]" />
+                <activeFeature.icon className="h-3.5 w-3.5 text-[#f97316]" />
                 <span className="text-xs text-white font-medium">{activeFeature.label}</span>
               </div>
 
@@ -589,7 +589,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                 <select
                   value={selectedModelId}
                   onChange={(e) => setSelectedModelId(e.target.value)}
-                  className="w-full bg-[#1a1a1a] border border-white/[0.08] rounded-lg px-3 py-2 text-xs text-white appearance-none focus:outline-none focus:border-[#ccff00]/30"
+                  className="w-full bg-[#1a1a1a] border border-white/[0.08] rounded-lg px-3 py-2 text-xs text-white appearance-none focus:outline-none focus:border-[#f97316]/30"
                 >
                   {EDIT_MODELS.map((m) => (
                     <option key={m.id} value={m.id}>{m.name} — {m.credits}cr</option>
@@ -607,11 +607,11 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
                     <input
                       type="range" min={2} max={60} value={brushSize}
                       onChange={(e) => setBrushSize(Number(e.target.value))}
-                      className="w-full h-1 accent-[#ccff00]"
+                      className="w-full h-1 accent-[#f97316]"
                     />
                     <div className="flex justify-between mt-1">
                       <span className="text-[8px] text-zinc-600">2px</span>
-                      <span className="text-[8px] text-[#ccff00] font-mono">{brushSize}px</span>
+                      <span className="text-[8px] text-[#f97316] font-mono">{brushSize}px</span>
                       <span className="text-[8px] text-zinc-600">60px</span>
                     </div>
                   </div>
@@ -669,14 +669,14 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
           {/* Processing progress bar */}
           {isProcessing && (
             <div className="w-full h-0.5 bg-[#1a1a1a] rounded-full mb-2 overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#ccff00] to-[#ccff00]/50 rounded-full animate-pulse" style={{ width: '60%' }} />
+              <div className="h-full bg-gradient-to-r from-[#f97316] to-[#f97316]/50 rounded-full animate-pulse" style={{ width: '60%' }} />
             </div>
           )}
 
           <div className="bg-[#131313]/95 backdrop-blur-2xl border border-white/[0.06] rounded-2xl p-3 flex items-center gap-3 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
             {/* Active feature pill */}
             <div className="flex-none flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06]">
-              <activeFeature.icon className="h-3.5 w-3.5 text-[#ccff00]" />
+              <activeFeature.icon className="h-3.5 w-3.5 text-[#f97316]" />
               <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">{activeFeature.label}</span>
             </div>
 
@@ -705,7 +705,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
             </button>
 
             {/* Credit cost badge */}
-            <span className="flex-none text-[10px] font-bold text-[#ccff00] bg-[#ccff00]/10 px-2 py-1 rounded-full">
+            <span className="flex-none text-[10px] font-bold text-[#f97316] bg-[#f97316]/10 px-2 py-1 rounded-full">
               {selectedModel.credits}cr
             </span>
 
@@ -713,7 +713,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
             <button
               onClick={handleGenerate}
               disabled={isProcessing || !activeFeature.operation}
-              className="flex-none bg-[#ccff00] text-black font-bold uppercase tracking-widest text-[11px] px-7 py-3 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(204,255,0,0.4)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-none bg-[#f97316] text-black font-bold uppercase tracking-widest text-[11px] px-7 py-3 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isProcessing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
               {isProcessing ? 'Processing…' : 'Edit'}

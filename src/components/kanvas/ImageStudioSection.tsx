@@ -152,7 +152,7 @@ export default function ImageStudioSection({
           className={cn(
             "text-sm font-semibold capitalize transition-colors pb-2 border-b-2",
             activeTab === tab
-              ? "text-white border-[#ccff00]"
+              ? "text-white border-[#f97316]"
               : "text-zinc-500 border-transparent hover:text-zinc-300"
           )}
         >
@@ -172,7 +172,7 @@ export default function ImageStudioSection({
         <span className="text-white">TURN IDEAS</span>
         <br />
         <span className="text-white">INTO </span>
-        <span className="text-[#ccff00]">VISUALS</span>
+        <span className="text-[#f97316]">VISUALS</span>
       </h1>
     </div>
   );
@@ -276,7 +276,7 @@ export default function ImageStudioSection({
         {groupedModels.map((group) => (
           <div key={group.label}>
             <div className="px-4 py-2 flex items-center gap-2 border-b border-white/5">
-              <div className="w-5 h-5 rounded-full bg-[#ccff00]/20 flex items-center justify-center text-[9px] font-bold text-[#ccff00]">
+              <div className="w-5 h-5 rounded-full bg-[#f97316]/20 flex items-center justify-center text-[9px] font-bold text-[#f97316]">
                 {group.icon}
               </div>
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{group.label}</span>
@@ -291,14 +291,14 @@ export default function ImageStudioSection({
                   onClick={() => { onModelChange(m.id); setModelDropdownOpen(false); }}
                   className={cn(
                     "w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors text-left",
-                    isActive ? "bg-[#ccff00]/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                    isActive ? "bg-[#f97316]/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-white"
                   )}
                 >
                   <span className="flex items-center gap-2">
-                    {isActive && <Check className="h-3 w-3 text-[#ccff00]" />}
+                    {isActive && <Check className="h-3 w-3 text-[#f97316]" />}
                     <span className="font-medium">{m.name}</span>
                     {isFeatured && (
-                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-[#ccff00]/20 text-[#ccff00]">
+                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-[#f97316]/20 text-[#f97316]">
                         Top Choice
                       </span>
                     )}
@@ -332,7 +332,7 @@ export default function ImageStudioSection({
           onClick={() => uploadRef.current?.click()}
           className="shrink-0 w-11 h-11 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
         >
-          {uploading ? <Loader2 className="h-4 w-4 animate-spin text-[#ccff00]" /> : <Plus className="h-4 w-4 text-zinc-400" />}
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin text-[#f97316]" /> : <Plus className="h-4 w-4 text-zinc-400" />}
         </button>
         <input
           ref={uploadRef}
@@ -362,7 +362,7 @@ export default function ImageStudioSection({
           onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
           className="shrink-0 flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3.5 py-2 hover:bg-white/10 transition-colors"
         >
-          <div className="w-4 h-4 rounded-full bg-[#ccff00]/20 flex items-center justify-center text-[8px] font-bold text-[#ccff00]">
+          <div className="w-4 h-4 rounded-full bg-[#f97316]/20 flex items-center justify-center text-[8px] font-bold text-[#f97316]">
             {getModelProvider(currentModel ?? models[0])?.charAt(0)?.toUpperCase() ?? "G"}
           </div>
           <span className="text-[11px] font-bold text-white whitespace-nowrap max-w-[120px] truncate">
@@ -383,7 +383,7 @@ export default function ImageStudioSection({
                 onClick={() => { setSelectedAspect(ar); onSettingsChange("aspect_ratio", ar); }}
                 className={cn(
                   "px-4 py-2 text-[11px] font-bold text-left transition-colors",
-                  selectedAspect === ar ? "text-[#ccff00] bg-[#ccff00]/10" : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  selectedAspect === ar ? "text-[#f97316] bg-[#f97316]/10" : "text-zinc-400 hover:text-white hover:bg-white/5"
                 )}
               >
                 {ar}
@@ -420,7 +420,7 @@ export default function ImageStudioSection({
           disabled={submitting || !prompt.trim()}
           className={cn(
             "shrink-0 flex items-center gap-2 px-6 h-11 rounded-full font-bold text-sm transition-all",
-            "bg-[#ccff00] text-black hover:shadow-[0_0_25px_rgba(204,255,0,0.4)]",
+            "bg-[#f97316] text-black hover:shadow-[0_0_25px_rgba(249,115,22,0.4)]",
             "disabled:opacity-40 disabled:cursor-not-allowed"
           )}
           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
@@ -463,7 +463,7 @@ export default function ImageStudioSection({
                 </div>
                 <button
                   onClick={() => setActiveTab("history")}
-                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 hover:text-[#ccff00] transition-colors"
+                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 hover:text-[#f97316] transition-colors"
                 >
                   View All →
                 </button>
@@ -483,7 +483,7 @@ export default function ImageStudioSection({
                           decoding="async"
                         />
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
-                          <Eye className="h-5 w-5 text-[#ccff00]" />
+                          <Eye className="h-5 w-5 text-[#f97316]" />
                         </div>
                       </div>
                     </div>

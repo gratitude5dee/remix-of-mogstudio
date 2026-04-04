@@ -241,13 +241,13 @@ function StudioNavButton({
       className={cn(
         "group flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all",
         active
-          ? "border-lime-300/40 bg-lime-300/10 text-white shadow-[0_0_40px_rgba(190,242,100,0.08)]"
+          ? "border-orange-400/40 bg-orange-400/10 text-white shadow-[0_0_40px_rgba(249,115,22,0.08)]"
           : "border-white/10 bg-white/[0.03] text-zinc-400 hover:border-white/20 hover:bg-white/[0.06] hover:text-white",
         compact && "justify-center px-0"
       )}
       aria-pressed={active}
     >
-      <Icon className={cn("h-4 w-4", active ? "text-lime-300" : "text-zinc-500")} />
+      <Icon className={cn("h-4 w-4", active ? "text-orange-400" : "text-zinc-500")} />
       {!compact && <span>{label}</span>}
     </button>
   );
@@ -283,7 +283,7 @@ function ModelControls({
                   variant="outline"
                   className={cn(
                     "border-white/10 bg-white/[0.03] text-xs",
-                    enabled ? "text-lime-300" : "text-zinc-400"
+                    enabled ? "text-orange-400" : "text-zinc-400"
                   )}
                 >
                   {enabled ? "On" : "Off"}
@@ -295,7 +295,7 @@ function ModelControls({
                 size="sm"
                 className={cn(
                   "w-full justify-between border-white/10 bg-white/[0.03]",
-                  enabled && "border-lime-300/40 bg-lime-300/10 text-white"
+                  enabled && "border-orange-400/40 bg-orange-400/10 text-white"
                 )}
                 onClick={() => onChange(control.key, !enabled)}
               >
@@ -391,7 +391,7 @@ function AssetSelector({
         </div>
         <div className="flex items-center gap-2">
           {selectedIds.length > 0 && (
-            <Badge variant="outline" className="border-lime-300/30 bg-lime-300/10 text-lime-200">
+            <Badge variant="outline" className="border-orange-400/30 bg-orange-400/10 text-orange-300">
               {selectedIds.length} selected
             </Badge>
           )}
@@ -439,7 +439,7 @@ function AssetSelector({
                 className={cn(
                   "overflow-hidden rounded-2xl border text-left transition-all",
                   selected
-                    ? "border-lime-300/40 bg-lime-300/10 shadow-[0_0_30px_rgba(190,242,100,0.08)]"
+                    ? "border-orange-400/40 bg-orange-400/10 shadow-[0_0_30px_rgba(249,115,22,0.08)]"
                     : "border-white/10 bg-black/30 hover:border-white/20 hover:bg-white/[0.04]"
                 )}
               >
@@ -460,7 +460,7 @@ function AssetSelector({
                         className="h-full w-full object-cover"
                       />
                     ) : asset.asset_type === "audio" ? (
-                      <AudioLines className="h-6 w-6 text-lime-300" />
+                      <AudioLines className="h-6 w-6 text-orange-400" />
                     ) : (
                       <Film className="h-6 w-6 text-zinc-500" />
                     )}
@@ -470,7 +470,7 @@ function AssetSelector({
                       <p className="truncate text-sm font-semibold text-white">
                         {getAssetTitle(asset)}
                       </p>
-                      {selected && <CheckCircle2 className="h-4 w-4 shrink-0 text-lime-300" />}
+                      {selected && <CheckCircle2 className="h-4 w-4 shrink-0 text-orange-400" />}
                     </div>
                     <p className="truncate text-xs text-zinc-500">{asset.asset_type.toUpperCase()}</p>
                     <p className="mt-2 truncate text-xs text-zinc-600">
@@ -527,7 +527,7 @@ function HistoryRail({
                   className={cn(
                     "w-full overflow-hidden rounded-2xl border text-left transition-all",
                     selected
-                      ? "border-lime-300/40 bg-lime-300/10"
+                      ? "border-orange-400/40 bg-orange-400/10"
                       : "border-white/10 bg-black/30 hover:border-white/20 hover:bg-white/[0.04]"
                   )}
                 >
@@ -544,7 +544,7 @@ function HistoryRail({
                       ) : job.resultPayload?.mediaType === "video" && previewUrl ? (
                         <video src={previewUrl} muted className="h-full w-full object-cover" />
                       ) : isJobActive(job) ? (
-                        <Loader2 className="h-5 w-5 animate-spin text-lime-300" />
+                        <Loader2 className="h-5 w-5 animate-spin text-orange-400" />
                       ) : (
                         <Icon className="h-5 w-5 text-zinc-500" />
                       )}
@@ -558,7 +558,7 @@ function HistoryRail({
                           variant="outline"
                           className={cn(
                             "border-white/10 text-[10px] uppercase tracking-[0.18em]",
-                            job.status === "completed" && "text-lime-300",
+                            job.status === "completed" && "text-orange-400",
                             job.status === "failed" && "text-rose-300",
                             isJobActive(job) && "text-amber-200"
                           )}
@@ -610,7 +610,7 @@ function PreviewStage({
 
   return (
     <Card className="relative overflow-hidden rounded-[36px] border-white/10 bg-[radial-gradient(circle_at_top,#1f2917,transparent_35%),linear-gradient(180deg,#0f1014,#08080a)] p-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.45)]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(190,242,100,0.15),transparent_35%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.15),transparent_35%)]" />
       <div className="relative space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -624,7 +624,7 @@ function PreviewStage({
           </div>
           <div className="flex items-center gap-2">
             {currentModel && (
-              <Badge className="bg-lime-300 text-black hover:bg-lime-300">
+              <Badge className="bg-orange-400 text-black hover:bg-orange-400">
                 {currentModel.credits} credits
               </Badge>
             )}
@@ -633,7 +633,7 @@ function PreviewStage({
                 variant="outline"
                 className={cn(
                   "border-white/10 bg-white/[0.03]",
-                  selectedJob.status === "completed" && "text-lime-300",
+                  selectedJob.status === "completed" && "text-orange-400",
                   selectedJob.status === "failed" && "text-rose-300",
                   isJobActive(selectedJob) && "text-amber-200"
                 )}
@@ -687,11 +687,11 @@ function PreviewStage({
             </div>
           ) : (
             <div className="flex aspect-[16/9] flex-col items-center justify-center gap-4 px-6 text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-[28px] border border-lime-300/30 bg-lime-300/10">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[28px] border border-orange-400/30 bg-orange-400/10">
                 {selectedJob && isJobActive(selectedJob) ? (
-                  <Loader2 className="h-10 w-10 animate-spin text-lime-300" />
+                  <Loader2 className="h-10 w-10 animate-spin text-orange-400" />
                 ) : (
-                  <Icon className="h-10 w-10 text-lime-300" />
+                  <Icon className="h-10 w-10 text-orange-400" />
                 )}
               </div>
               <div>
@@ -1432,7 +1432,7 @@ export default function KanvasPage() {
           {pageLoading && (
             <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
               <div className="rounded-[32px] border border-white/10 bg-[#09090b]/90 px-8 py-6 text-center text-white shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
-                <Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin text-lime-300" />
+                <Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin text-orange-400" />
                 <p className="text-sm font-semibold text-white">Loading Kanvas shell</p>
                 <p className="mt-1 text-xs text-zinc-500">Fetching models, assets, and history.</p>
               </div>

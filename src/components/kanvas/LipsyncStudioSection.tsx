@@ -105,7 +105,7 @@ function WizardSidebar({
     <div className="fixed left-0 top-[68px] bottom-0 w-[260px] bg-[#090909] z-40 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#ccff00] font-['Space_Grotesk']">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f97316] font-['Space_Grotesk']">
           UGC FACTORY
         </p>
         <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
@@ -126,7 +126,7 @@ function WizardSidebar({
               className={cn(
                 "w-full flex items-center gap-4 rounded-full px-4 py-3 text-xs uppercase tracking-[0.15em] font-['Space_Grotesk'] font-bold transition-all",
                 active
-                  ? "bg-[#ccff00] text-black"
+                  ? "bg-[#f97316] text-black"
                   : "text-zinc-500 hover:text-white hover:bg-white/5"
               )}
             >
@@ -205,7 +205,7 @@ function LipsyncDashboard({
         <h1 className="text-6xl md:text-8xl font-black font-['Space_Grotesk'] tracking-tighter leading-[0.9]">
           <span className="text-white">LIPSYNC MODELS,</span>
           <br />
-          <span className="text-[#ccff00]">ONE CLICK AWAY</span>
+          <span className="text-[#f97316]">ONE CLICK AWAY</span>
         </h1>
         <p className="mt-6 max-w-lg text-sm text-zinc-500 leading-relaxed">
           Upload a portrait, paste your script, and let AI bring it to life with natural lip movements and expressions.
@@ -220,13 +220,13 @@ function LipsyncDashboard({
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="w-full aspect-[16/9] rounded-2xl border border-white/5 bg-[#131313] flex flex-col items-center justify-center gap-3 hover:border-[#ccff00]/20 transition-all group cursor-pointer"
+            className="w-full aspect-[16/9] rounded-2xl border border-white/5 bg-[#131313] flex flex-col items-center justify-center gap-3 hover:border-[#f97316]/20 transition-all group cursor-pointer"
           >
             {uploadingImage ? (
-              <Loader2 className="h-8 w-8 animate-spin text-[#ccff00]" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#f97316]" />
             ) : (
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ccff00]/10 group-hover:bg-[#ccff00]/20 transition-colors">
-                <Upload className="h-6 w-6 text-[#ccff00]" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f97316]/10 group-hover:bg-[#f97316]/20 transition-colors">
+                <Upload className="h-6 w-6 text-[#f97316]" />
               </div>
             )}
             <p className="text-xs uppercase tracking-[0.2em] text-zinc-500 font-bold">
@@ -257,7 +257,7 @@ function LipsyncDashboard({
               className={cn(
                 "px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] font-bold transition-all font-['Space_Grotesk']",
                 audioMode === "text"
-                  ? "bg-[#ccff00] text-black"
+                  ? "bg-[#f97316] text-black"
                   : "text-zinc-500 hover:text-white"
               )}
             >
@@ -269,7 +269,7 @@ function LipsyncDashboard({
               className={cn(
                 "px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] font-bold transition-all font-['Space_Grotesk']",
                 audioMode === "generate"
-                  ? "bg-[#ccff00] text-black"
+                  ? "bg-[#f97316] text-black"
                   : "text-zinc-500 hover:text-white"
               )}
             >
@@ -290,7 +290,7 @@ function LipsyncDashboard({
               <span className="text-[10px] text-zinc-600 font-mono">
                 {prompt.length} / 2000
               </span>
-              <Wand2 className="h-4 w-4 text-zinc-600 hover:text-[#ccff00] cursor-pointer transition-colors" />
+              <Wand2 className="h-4 w-4 text-zinc-600 hover:text-[#f97316] cursor-pointer transition-colors" />
             </div>
           </div>
 
@@ -299,7 +299,7 @@ function LipsyncDashboard({
             type="button"
             onClick={onGenerate}
             disabled={submitting}
-            className="w-full flex items-center justify-center gap-2 bg-[#ccff00] text-black font-bold uppercase tracking-[0.15em] py-4 rounded-full hover:shadow-[0_0_30px_rgba(204,255,0,0.3)] transition-all font-['Space_Grotesk'] disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 bg-[#f97316] text-black font-bold uppercase tracking-[0.15em] py-4 rounded-full hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] transition-all font-['Space_Grotesk'] disabled:opacity-50"
           >
             {submitting ? (
               <>
@@ -323,12 +323,12 @@ function LipsyncDashboard({
               key={step.num}
               className={cn(
                 "rounded-2xl bg-[#1a1919]/60 p-6 flex items-center gap-6 transition-all",
-                i === activeWorkflowStep && "border-l-4 border-[#ccff00]"
+                i === activeWorkflowStep && "border-l-4 border-[#f97316]"
               )}
             >
               <span className={cn(
                 "text-4xl font-black font-['Space_Grotesk'] tracking-tighter",
-                i === activeWorkflowStep ? "text-[#ccff00]" : "text-zinc-700"
+                i === activeWorkflowStep ? "text-[#f97316]" : "text-zinc-700"
               )}>
                 {step.num}
               </span>
@@ -342,7 +342,7 @@ function LipsyncDashboard({
                 <p className="text-xs text-zinc-600 mt-1">{step.desc}</p>
               </div>
               {i < activeWorkflowStep && (
-                <Check className="ml-auto h-5 w-5 text-[#ccff00]" />
+                <Check className="ml-auto h-5 w-5 text-[#f97316]" />
               )}
             </div>
           ))}
@@ -403,7 +403,7 @@ function UGCTemplates({
       <div className="pt-4">
         <h1 className="text-6xl md:text-8xl font-black font-['Space_Grotesk'] tracking-tighter leading-[0.9]">
           <span className="text-white">Choose your </span>
-          <span className="text-[#ccff00]">Template</span>
+          <span className="text-[#f97316]">Template</span>
         </h1>
       </div>
 
@@ -419,7 +419,7 @@ function UGCTemplates({
               className={cn(
                 "relative rounded-[2rem] h-[400px] overflow-hidden group cursor-pointer transition-all",
                 selected
-                  ? "border-2 border-[#ccff00] shadow-[0_0_30px_rgba(204,255,0,0.15)]"
+                  ? "border-2 border-[#f97316] shadow-[0_0_30px_rgba(249,115,22,0.15)]"
                   : "border border-white/5 hover:border-white/10"
               )}
             >
@@ -432,7 +432,7 @@ function UGCTemplates({
 
               {/* Selected check */}
               {selected && (
-                <div className="absolute top-4 right-4 z-10 h-8 w-8 rounded-full bg-[#ccff00] flex items-center justify-center">
+                <div className="absolute top-4 right-4 z-10 h-8 w-8 rounded-full bg-[#f97316] flex items-center justify-center">
                   <Check className="h-4 w-4 text-black" />
                 </div>
               )}
@@ -441,7 +441,7 @@ function UGCTemplates({
               <div className="absolute bottom-6 left-6 z-10">
                 <p className={cn(
                   "text-[10px] uppercase tracking-[0.3em] font-bold mb-2",
-                  selected ? "text-[#ccff00]" : "text-zinc-500"
+                  selected ? "text-[#f97316]" : "text-zinc-500"
                 )}>
                   {tpl.label}
                 </p>
@@ -458,7 +458,7 @@ function UGCTemplates({
       <button
         type="button"
         onClick={onNext}
-        className="fixed bottom-8 right-8 z-50 w-20 h-20 rounded-full bg-[#ccff00] text-black flex items-center justify-center shadow-[0_0_40px_rgba(204,255,0,0.3)] hover:shadow-[0_0_60px_rgba(204,255,0,0.5)] transition-all"
+        className="fixed bottom-8 right-8 z-50 w-20 h-20 rounded-full bg-[#f97316] text-black flex items-center justify-center shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all"
       >
         <ArrowRight className="h-8 w-8" />
       </button>
@@ -484,7 +484,7 @@ function UGCAudioSettings({
       <div className="pt-4">
         <h1 className="text-6xl md:text-8xl font-black font-['Space_Grotesk'] tracking-tighter leading-[0.9]">
           <span className="text-white">AUDIO </span>
-          <span className="text-[#ccff00]">SETTINGS</span>
+          <span className="text-[#f97316]">SETTINGS</span>
         </h1>
       </div>
 
@@ -496,7 +496,7 @@ function UGCAudioSettings({
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className="w-full appearance-none bg-[#131313] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm font-['Space_Grotesk'] focus:outline-none focus:border-[#ccff00]/30 transition-colors"
+              className="w-full appearance-none bg-[#131313] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm font-['Space_Grotesk'] focus:outline-none focus:border-[#f97316]/30 transition-colors"
             >
               <option value="english">English</option>
               <option value="spanish">Spanish</option>
@@ -513,7 +513,7 @@ function UGCAudioSettings({
             <select
               value={accent}
               onChange={(e) => setAccent(e.target.value)}
-              className="w-full appearance-none bg-[#131313] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm font-['Space_Grotesk'] focus:outline-none focus:border-[#ccff00]/30 transition-colors"
+              className="w-full appearance-none bg-[#131313] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm font-['Space_Grotesk'] focus:outline-none focus:border-[#f97316]/30 transition-colors"
             >
               <option value="neutral">Neutral</option>
               <option value="british">British</option>
@@ -537,7 +537,7 @@ function UGCAudioSettings({
               className={cn(
                 "px-6 py-3 rounded-full text-xs uppercase tracking-[0.15em] font-bold transition-all font-['Space_Grotesk']",
                 voiceType === vt
-                  ? "bg-[#ccff00] text-black"
+                  ? "bg-[#f97316] text-black"
                   : "bg-[#131313] text-zinc-500 hover:text-white hover:bg-white/5"
               )}
             >
@@ -562,17 +562,17 @@ function UGCAudioSettings({
                 className={cn(
                   "flex flex-col items-center justify-center gap-3 rounded-2xl p-6 transition-all aspect-square",
                   active
-                    ? "border-2 border-[#ccff00] bg-[#ccff00]/5"
+                    ? "border-2 border-[#f97316] bg-[#f97316]/5"
                     : "border border-white/5 bg-[#131313] hover:border-white/10"
                 )}
               >
                 <EmIcon className={cn(
                   "h-6 w-6",
-                  active ? "text-[#ccff00]" : "text-zinc-600"
+                  active ? "text-[#f97316]" : "text-zinc-600"
                 )} />
                 <span className={cn(
                   "text-[10px] uppercase tracking-[0.2em] font-bold",
-                  active ? "text-[#ccff00]" : "text-zinc-500"
+                  active ? "text-[#f97316]" : "text-zinc-500"
                 )}>
                   {em.label}
                 </span>
@@ -586,7 +586,7 @@ function UGCAudioSettings({
       <div className="rounded-[2rem] bg-[#131313] p-6 flex items-center gap-6">
         <button
           type="button"
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#ccff00] text-black hover:shadow-[0_0_20px_rgba(204,255,0,0.3)] transition-all"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#f97316] text-black hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all"
         >
           <Play className="h-6 w-6 ml-1" />
         </button>
@@ -599,7 +599,7 @@ function UGCAudioSettings({
           </p>
           <div className="mt-3 flex items-center gap-3">
             <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
-              <div className="h-full w-1/3 rounded-full bg-[#ccff00]" />
+              <div className="h-full w-1/3 rounded-full bg-[#f97316]" />
             </div>
             <span className="text-[10px] text-zinc-600 font-mono whitespace-nowrap">0:04 / 0:12</span>
           </div>
@@ -611,7 +611,7 @@ function UGCAudioSettings({
         <button
           type="button"
           onClick={onNext}
-          className="flex items-center gap-2 bg-[#ccff00] text-black font-bold uppercase tracking-[0.15em] px-8 py-3 rounded-full hover:shadow-[0_0_20px_rgba(204,255,0,0.3)] transition-all text-xs font-['Space_Grotesk']"
+          className="flex items-center gap-2 bg-[#f97316] text-black font-bold uppercase tracking-[0.15em] px-8 py-3 rounded-full hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all text-xs font-['Space_Grotesk']"
         >
           Next Step
           <ArrowRight className="h-4 w-4" />
