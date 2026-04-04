@@ -1500,7 +1500,7 @@ function ShotComposer({
 }
 
 // ---------------------------------------------------------------------------
-// WorldviewSection — main export
+// WorldviewSection — main export (redesigned)
 // ---------------------------------------------------------------------------
 
 export function WorldviewSection() {
@@ -1519,7 +1519,6 @@ export function WorldviewSection() {
     setSceneShowCreator,
   } = useWorldviewStore();
 
-  const [collapsed, setCollapsed] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState<number | undefined>(undefined);
 
@@ -1530,19 +1529,20 @@ export function WorldviewSection() {
     ? worlds.find((w) => w.id === activeScene.worldId) ?? null
     : null;
 
+  // Determine if we have any content (worlds or scenes with worlds)
+  const hasContent = worlds.length > 0 || activeWorld !== null;
+
   const handleAddScene = useCallback(() => {
     addScene();
   }, [addScene]);
 
   const handleRemoveScene = useCallback(
     (id: string) => {
-      // Best-effort cleanup: delete take images from Supabase Storage
       const sceneToRemove = scenes.find((s) => s.id === id);
       if (sceneToRemove && sceneToRemove.takes.length > 0) {
         const filePaths = sceneToRemove.takes
           .filter((t) => t.imageUrl && !t.imageUrl.startsWith('data:'))
           .map((t) => {
-            // Extract file path from public URL (last segment)
             const url = t.imageUrl;
             const parts = url.split('/');
             return parts[parts.length - 1];
@@ -1550,13 +1550,10 @@ export function WorldviewSection() {
           .filter(Boolean);
 
         if (filePaths.length > 0) {
-          // Fire and forget — don't block on failure
           supabase.storage
             .from('worldview-takes')
             .remove(filePaths)
-            .catch(() => {
-              // Silently ignore cleanup errors
-            });
+            .catch(() => {});
         }
       }
       removeScene(id);
@@ -1573,7 +1570,6 @@ export function WorldviewSection() {
       setSceneGenerationError(activeScene.id, null);
 
       try {
-        // If an image file is provided, upload it first to get a media URL
         let imageUrl: string | undefined;
         if (imageFile) {
           const asset = await worldLabsService.uploadMediaAsset(imageFile);
@@ -1592,7 +1588,7 @@ export function WorldviewSection() {
 
         const finalOp = await worldLabsService.pollOperation(
           operation.id,
-          (status, description) => {
+          (status) => {
             if (status === 'running') {
               setGenerationProgress((prev) => Math.min((prev ?? 30) + 10, 90));
             }
@@ -1648,8 +1644,6 @@ export function WorldviewSection() {
     [activeSceneId, setSceneShowCreator],
   );
 
-  // -- Add to Canvas handler ------------------------------------------------
-
   const handleAddToCanvas = useCallback(
     (imageUrl: string) => {
       const store = useCanvasStore.getState();
@@ -1680,7 +1674,24 @@ export function WorldviewSection() {
     [],
   );
 
-  // -- Reset showCreator when switching scenes ------------------------------
+  // Enter a world from the history gallery
+  const handleEnterHistoryWorld = useCallback(
+    (worldId: string) => {
+      // Find or create a scene for this world
+      const existingScene = scenes.find((s) => s.worldId === worldId);
+      if (existingScene) {
+        setActiveScene(existingScene.id);
+      } else {
+        // Create a new scene and assign the world
+        const newSceneId = addScene();
+        if (newSceneId) {
+          assignWorldToScene(newSceneId, worldId);
+        }
+      }
+      setMode('world-viewer');
+    },
+    [scenes, setActiveScene, addScene, assignWorldToScene, setMode],
+  );
 
   useEffect(() => {
     if (activeSceneId) {
@@ -1688,20 +1699,15 @@ export function WorldviewSection() {
     }
   }, [activeSceneId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // -- Focus management on mode switch -------------------------------------
-
   const contentRef = useRef<HTMLDivElement>(null);
   const prevModeRef = useRef(mode);
 
   useEffect(() => {
     if (prevModeRef.current !== mode) {
       prevModeRef.current = mode;
-      // Wait for AnimatePresence transition to render the new mode's DOM
       const timer = setTimeout(() => {
         const container = contentRef.current;
         if (!container) return;
-
-        // Find the first focusable element in the new mode's content
         const focusable = container.querySelector<HTMLElement>(
           'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
@@ -1711,98 +1717,174 @@ export function WorldviewSection() {
     }
   }, [mode]);
 
-  return (
-    <div className="min-w-0 space-y-3 px-2 sm:space-y-4 sm:px-0">
-      {/* Section header */}
-      <button
-        type="button"
-        onClick={() => setCollapsed((c) => !c)}
-        aria-label={collapsed ? 'Expand Worldview section' : 'Collapse Worldview section'}
-        className="flex w-full items-center gap-3 rounded-2xl border border-zinc-700/40 bg-zinc-900/40 px-4 py-3 backdrop-blur-xl transition-colors hover:border-zinc-600/60"
-      >
-        <Globe2 className="h-5 w-5 text-amber-400" />
-        <span className="text-sm font-semibold text-white">Worldview</span>
-        <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
-          3D Worlds
-        </span>
-        {/* Green pulse dot */}
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
-        </span>
-        <ChevronDown
-          className={cn(
-            'ml-auto h-4 w-4 text-zinc-500 transition-transform',
-            collapsed && '-rotate-90',
-          )}
-        />
-      </button>
-
-      {/* Collapsible content */}
-      <AnimatePresence>
-        {!collapsed && (
-          <motion.div
-            key="worldview-content"
-            variants={collapseVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="space-y-4 overflow-hidden"
+  // ── Landing state: no active world ──
+  if (!hasContent && !activeScene?.showCreator && !generating) {
+    return (
+      <div className="relative min-h-[calc(100vh-60px)] flex flex-col">
+        {/* Watermark */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <span
+            className="select-none text-[12vw] font-black uppercase tracking-[-0.04em] text-white/[0.02]"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
-            {/* Scene strip */}
-            <SceneStrip
-              scenes={scenes}
-              activeSceneId={activeSceneId}
-              onSelect={setActiveScene}
-              onAddScene={handleAddScene}
-              onRemoveScene={handleRemoveScene}
-            />
+            WORLDVIEW
+          </span>
+        </div>
 
-            {/* Mode-dependent content */}
-            <div ref={contentRef}>
-              <AnimatePresence mode="wait">
-                {activeScene ? (
-                  mode === 'canvas' ? (
-                    <WorldviewCanvas
-                      key="canvas"
-                      scene={activeScene}
-                      world={activeWorld}
-                      generating={generating}
-                      generationProgress={generationProgress}
-                      generationError={generationError}
-                      showCreator={showCreator}
-                      onCreateWorld={handleCreateWorld}
-                      onEnterWorld={handleEnterWorld}
-                      onComposeTake={handleComposeTake}
-                      onRetryGeneration={handleRetryGeneration}
-                      onSetShowCreator={handleSetShowCreator}
-                      onAddToCanvas={handleAddToCanvas}
-                    />
-                  ) : mode === 'world-viewer' ? (
-                    <GSplatViewer
-                      key="world-viewer"
-                      world={activeWorld}
-                      onClose={() => setMode('canvas')}
-                    />
-                  ) : (
-                    <ShotComposer
-                      key="shot-composer"
-                      scene={activeScene}
-                      onBack={() => setMode('canvas')}
-                    />
-                  )
-                ) : (
-                  <motion.div key="empty" {...fadeIn} className="py-6 text-center">
-                    <p className="text-sm text-zinc-500">
-                      Create a new scene to get started
-                    </p>
-                  </motion.div>
+        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-16">
+          {/* Hero */}
+          <div className="mb-3 flex items-center gap-2">
+            <Globe2 className="h-5 w-5 text-[#BEFF00]" />
+            <span className="rounded-full bg-[#BEFF00]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#BEFF00]">
+              3D Worlds
+            </span>
+          </div>
+          <h1
+            className="mb-3 text-center text-4xl font-black uppercase tracking-tight text-white md:text-5xl"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            CREATE 3D WORLDS
+          </h1>
+          <p className="mb-10 max-w-lg text-center text-sm text-zinc-500">
+            Generate immersive environments, capture camera takes, and compose AI-powered shots
+          </p>
+
+          {/* Feature cards */}
+          <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {[
+              { icon: Globe2, title: 'Text to World', desc: 'Describe any environment' },
+              { icon: ImagePlus, title: 'Image to World', desc: 'Upload a reference image' },
+              { icon: Camera, title: 'Camera Takes', desc: 'Capture 3D viewpoints' },
+              { icon: Sparkles, title: 'Shot Composer', desc: 'AI-driven compositions' },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div
+                key={title}
+                className="group flex flex-col items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-6 text-center transition-all duration-300 hover:border-[#BEFF00]/20 hover:bg-white/[0.04] hover:shadow-[0_0_30px_rgba(190,255,0,0.05)]"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#BEFF00]/10 text-[#BEFF00] transition-colors group-hover:bg-[#BEFF00]/20">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <p className="text-sm font-semibold text-white">{title}</p>
+                <p className="text-xs text-zinc-500">{desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <button
+            type="button"
+            onClick={() => {
+              if (!activeScene) addScene();
+              const sceneId = activeSceneId ?? scenes[0]?.id;
+              if (sceneId) setSceneShowCreator(sceneId, true);
+            }}
+            className="flex items-center gap-2 rounded-full bg-[#BEFF00] px-6 py-3 text-sm font-bold text-black transition-all duration-200 hover:bg-[#d4ff4d] hover:shadow-[0_0_30px_rgba(190,255,0,0.2)]"
+          >
+            <Zap className="h-4 w-4" />
+            Create Your First World
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Workspace state ──
+  return (
+    <div className="min-w-0 space-y-4 px-2 sm:px-0">
+      {/* Mode pill-tab nav (centered) */}
+      <div className="flex justify-center pt-2">
+        <div className="inline-flex rounded-full bg-[#1A1A1A] p-1 border border-white/[0.06]">
+          {(['canvas', 'world-viewer', 'shot-composer'] as const).map((m) => {
+            const labels = { canvas: 'Canvas', 'world-viewer': 'World Viewer', 'shot-composer': 'Shot Composer' };
+            const isActive = mode === m;
+            return (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                className={cn(
+                  'px-5 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                  isActive
+                    ? 'bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]'
+                    : 'text-zinc-500 hover:text-zinc-300',
                 )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              >
+                {labels[m]}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Scene strip */}
+      <SceneStrip
+        scenes={scenes}
+        activeSceneId={activeSceneId}
+        onSelect={setActiveScene}
+        onAddScene={handleAddScene}
+        onRemoveScene={handleRemoveScene}
+      />
+
+      {/* Mode-dependent content */}
+      <div ref={contentRef}>
+        <AnimatePresence mode="wait">
+          {activeScene ? (
+            mode === 'canvas' ? (
+              <WorldviewCanvas
+                key="canvas"
+                scene={activeScene}
+                world={activeWorld}
+                generating={generating}
+                generationProgress={generationProgress}
+                generationError={generationError}
+                showCreator={showCreator}
+                onCreateWorld={handleCreateWorld}
+                onEnterWorld={handleEnterWorld}
+                onComposeTake={handleComposeTake}
+                onRetryGeneration={handleRetryGeneration}
+                onSetShowCreator={handleSetShowCreator}
+                onAddToCanvas={handleAddToCanvas}
+              />
+            ) : mode === 'world-viewer' ? (
+              <GSplatViewer
+                key="world-viewer"
+                world={activeWorld}
+                onClose={() => setMode('canvas')}
+              />
+            ) : (
+              <ShotComposer
+                key="shot-composer"
+                scene={activeScene}
+                onBack={() => setMode('canvas')}
+              />
+            )
+          ) : (
+            <motion.div key="empty" {...fadeIn} className="py-6 text-center">
+              <p className="text-sm text-zinc-500">
+                Create a new scene to get started
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── YOUR WORLDS — History Gallery ── */}
+      {worlds.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            Your Worlds
+          </h2>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            {worlds.map((world) => (
+              <WorldCard
+                key={world.id}
+                world={world}
+                onEnterWorld={() => handleEnterHistoryWorld(world.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
