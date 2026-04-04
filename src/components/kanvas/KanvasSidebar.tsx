@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { ShineBorder } from '@/components/ui/shine-border';
 
 const STUDIO_ICONS: Record<KanvasStudio, typeof ImageIcon> = {
   image: ImageIcon,
@@ -59,12 +60,24 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
           'fixed left-3 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
           'bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/[0.06]',
           'shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.03)]',
-          'transition-all duration-300 ease-out overflow-hidden',
-          isVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none',
+          'transition-all duration-300 ease-out',
+          isVisible
+            ? 'w-14 opacity-100 translate-x-0'
+            : 'w-3 opacity-0 -translate-x-2 pointer-events-none overflow-hidden',
         )}
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
       >
+        {/* Lime glow border */}
+        <ShineBorder
+          shineColor={['#BEFF00', '#86efac', '#BEFF00']}
+          borderWidth={1}
+          duration={8}
+        />
+
+        {/* Faint lime gradient top-highlight */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#BEFF00]/[0.04] via-transparent to-transparent pointer-events-none" />
+
         {/* Home button */}
         <Tooltip>
           <TooltipTrigger asChild>
@@ -72,12 +85,12 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
               type="button"
               onClick={() => navigate(appRoutes.home)}
               aria-label="Home"
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-500 transition-all duration-200 hover:bg-white/[0.04] hover:text-zinc-300"
+              className="relative flex h-10 w-10 items-center justify-center rounded-lg text-zinc-500 transition-all duration-200 hover:bg-white/[0.04] hover:text-zinc-300"
             >
               <Home className="h-[18px] w-[18px]" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="right">Home</TooltipContent>
+          <TooltipContent side="right" sideOffset={8} className="z-[60]">Home</TooltipContent>
         </Tooltip>
 
         {/* Divider */}
@@ -110,17 +123,18 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
                     <Icon className="h-[18px] w-[18px]" />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="right">{label}</TooltipContent>
+                <TooltipContent side="right" sideOffset={8} className="z-[60]">{label}</TooltipContent>
               </Tooltip>
             );
           })}
         </nav>
 
-        {/* Bottom WZRD mark */}
-        <div className="mt-auto pt-3">
+        {/* Bottom WZRD mark + brand dot */}
+        <div className="mt-auto pt-3 flex flex-col items-center gap-2">
           <div className="flex h-12 w-12 items-center justify-center">
             <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD" className="h-10 w-10 object-contain" />
           </div>
+          <div className="h-1.5 w-1.5 rounded-full bg-[#BEFF00] shadow-[0_0_6px_rgba(190,255,0,0.5)]" />
         </div>
       </aside>
     </TooltipProvider>
