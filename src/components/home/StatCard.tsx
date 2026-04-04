@@ -95,9 +95,9 @@ export const StatCard = ({
           >
             <span className={cn(
               "inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm",
-              trendDirection === 'up' && "text-orange-300 bg-orange-500/15 border border-orange-500/25",
-              trendDirection === 'down' && "text-rose-300 bg-rose-500/15 border border-rose-500/25",
-              trendDirection === 'neutral' && "text-amber-300 bg-amber/10 border border-amber/20"
+              trendDirection === 'up' && "text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-500/15 border border-orange-200 dark:border-orange-500/25",
+              trendDirection === 'down' && "text-rose-600 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/25",
+              trendDirection === 'neutral' && "text-amber-600 dark:text-amber-300 bg-amber-50 dark:bg-amber/10 border border-amber-200 dark:border-amber/20"
             )}>
               {trendDirection === 'up' && <TrendingUp className="w-3 h-3" />}
               {trendDirection === 'down' && <TrendingDown className="w-3 h-3" />}
