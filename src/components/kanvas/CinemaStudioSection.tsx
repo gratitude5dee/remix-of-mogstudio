@@ -443,7 +443,7 @@ export default function CinemaStudioSection({
     };
 
     return (
-      <div className="flex-1 overflow-y-auto pb-28" style={{ scrollbarWidth: 'none' }}>
+      <div className="flex-1 overflow-y-auto pb-40" style={{ scrollbarWidth: 'none' }}>
         <div className="pt-16 pb-12 flex flex-col items-center relative z-10 px-8">
           {/* Floating avatars — real character blueprints */}
           <div className="flex justify-center gap-4 mb-8">
