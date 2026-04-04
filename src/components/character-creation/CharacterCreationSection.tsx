@@ -43,7 +43,7 @@ export function CharacterCreationSection() {
   }, [setBlueprints, setLoading]);
 
   return (
-    <div className="mx-auto w-full max-w-[1200px]">
+    <div className="mx-auto w-full max-w-[1200px] px-4 md:px-0 pb-16 md:pb-0">
       <AnimatePresence mode="wait">
         {mode === 'gallery' && (
           <motion.div key="gallery" {...sectionFade}>
