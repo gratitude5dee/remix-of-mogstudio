@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import CreditsDisplay from "@/components/CreditsDisplay";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -1189,11 +1190,11 @@ export default function KanvasPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,242,100,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.08),transparent_24%)] pointer-events-none" />
         <div className="relative">
           {/* Slim status header */}
-          <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)]">
-            <div className="flex items-center justify-between px-5 py-2">
+           <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-transparent" style={{ borderImage: 'linear-gradient(to right, rgba(190,255,0,0.15), transparent 60%) 1' }}>
+            <div className="flex items-center justify-between px-5 py-1.5">
               {/* Left: WZRD logo + badge */}
               <div className="flex items-center gap-3 min-w-[140px]">
-                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-10 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
+                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-7 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
                 <span className="text-[10px] text-[#BEFF00] bg-[#BEFF00]/10 px-2 py-0.5 rounded-full border border-[#BEFF00]/20 font-medium">ALPHA</span>
               </div>
 
@@ -1300,7 +1301,7 @@ export default function KanvasPage() {
             </div>
           </header>
 
-          <div className="mx-auto max-w-[1600px] px-4 py-6 md:px-6">
+          <div className="mx-auto max-w-[1600px] px-3 py-2 pb-12 md:px-4">
             <div className="min-w-0">
             {studio === "image" ? (
               <ImageStudioSection
@@ -1429,6 +1430,27 @@ export default function KanvasPage() {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Film grain overlay */}
+      <svg className="pointer-events-none fixed inset-0 z-[1] w-full h-full mix-blend-overlay opacity-[0.03]" aria-hidden="true">
+        <filter id="kanvasNoise">
+          <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#kanvasNoise)" />
+      </svg>
+
+      {/* Bottom status bar */}
+      <div className="fixed bottom-0 left-0 right-0 h-8 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/[0.04] flex items-center justify-between px-4">
+        <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-medium">WZRD Studio</span>
+        <div className="flex items-center gap-2">
+          <div className="h-1.5 w-1.5 rounded-full bg-[#BEFF00] shadow-[0_0_6px_rgba(190,255,0,0.5)] animate-pulse" />
+          <span className="text-[10px] text-zinc-400 font-medium capitalize">{KANVAS_STUDIO_META[studio].label}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <CreditsDisplay showTooltip={false} />
+          <kbd className="text-[9px] text-zinc-500 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-0.5 font-mono">⌘K</kbd>
         </div>
       </div>
 
