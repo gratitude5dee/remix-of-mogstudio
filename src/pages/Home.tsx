@@ -356,14 +356,6 @@ export default function Home() {
                   <TooltipContent>Help & Tour</TooltipContent>
                 </Tooltip>
 
-                <img 
-                  src={wzrdLogo} 
-                  alt="WZRD STUDIO Logo" 
-                  className="h-20 object-contain"
-                />
-                <span className="text-xs text-primary bg-primary/15 px-2 py-0.5 rounded-full border border-primary/25 font-medium">
-                  ALPHA
-                </span>
                 <ThemeToggle />
               </div>
             </div>
