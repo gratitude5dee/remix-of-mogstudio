@@ -497,7 +497,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
         <EditCanvas ref={canvasRef} imageUrl={canvasImageUrl} />
 
         {/* Floating left tool palette */}
-        <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-[#131313]/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl flex flex-col p-1.5 gap-0.5 z-20">
+        <div className="hidden md:flex absolute left-5 top-1/2 -translate-y-1/2 bg-[#131313]/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl flex-col p-1.5 gap-0.5 z-20">
           {TOOLS.map((tool) => {
             const Icon = tool.icon;
             const isActive = activeTool === tool.id;
