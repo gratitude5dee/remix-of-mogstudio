@@ -331,7 +331,7 @@ export function VideoStudioSection({
         </div>
 
         {/* 3-step flow */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FeatureCard title="Add Image" description="Upload a start frame or reference" icon={ImagePlus} accent="lime" />
           <FeatureCard title="Choose Preset" description="Pick from 250+ motion presets and styles" icon={SlidersHorizontal} accent="white" />
           <FeatureCard title="Get Video" description="AI generates cinematic video in seconds" icon={Film} accent="pink" />

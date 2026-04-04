@@ -667,12 +667,35 @@ export default function LipsyncStudioSection(props: LipsyncStudioProps) {
         style={{ backgroundImage: NOISE_SVG, backgroundRepeat: "repeat", backgroundSize: "128px 128px" }}
       />
 
-      {/* Sidebar */}
+      {/* Mobile: horizontal step indicator */}
+      <div className="md:hidden flex items-center gap-1 px-4 py-3 overflow-x-auto scrollbar-hide border-b border-white/[0.06] bg-[#090909] z-40 relative">
+        {WIZARD_STEPS.map((step, i) => {
+          const active = activeStep === step.key;
+          const StepIcon = step.icon;
+          return (
+            <button
+              key={step.key}
+              onClick={() => setActiveStep(step.key)}
+              className={cn(
+                "shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all",
+                active
+                  ? "bg-[#f97316] text-black"
+                  : "text-zinc-500 bg-white/[0.03]"
+              )}
+            >
+              <StepIcon className="h-3 w-3" />
+              {step.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Desktop Sidebar */}
       <WizardSidebar activeStep={activeStep} onStepChange={setActiveStep} />
 
       {/* Main Content */}
-      <div className="absolute inset-0 left-[260px] top-0 overflow-y-auto z-[2]" style={{ scrollbarWidth: "none" }}>
-        <div className="px-10 py-8 max-w-[1200px]">
+      <div className="absolute inset-0 left-0 md:left-[260px] top-[52px] md:top-0 overflow-y-auto z-[2] pb-16 md:pb-0" style={{ scrollbarWidth: "none" }}>
+        <div className="px-4 md:px-10 py-6 md:py-8 max-w-[1200px]">
           {activeView === "dashboard" && (
             <LipsyncDashboard
               prompt={props.prompt}
