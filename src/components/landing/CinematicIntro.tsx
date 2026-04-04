@@ -114,42 +114,47 @@ function IntroQuad({ phase }: { phase: number }) {
   );
 }
 
-/* ─── Enhanced Particles (300 count) ─── */
+/* ─── Enhanced Particles (400 count, orbital motion) ─── */
 function IntroParticles({ phase }: { phase: number }) {
   const ref = useRef<THREE.Points>(null);
-  const count = 300;
+  const count = 400;
+  const timeRef = useRef(0);
 
-  const [positions, velocities] = useMemo(() => {
+  const [positions, angles, radii] = useMemo(() => {
     const pos = new Float32Array(count * 3);
-    const vel = new Float32Array(count * 3);
+    const ang = new Float32Array(count);
+    const rad = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 10;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+      ang[i] = Math.random() * Math.PI * 2;
+      rad[i] = Math.random() * 5 + 1;
+      pos[i * 3] = Math.cos(ang[i]) * rad[i];
+      pos[i * 3 + 1] = Math.sin(ang[i]) * rad[i];
       pos[i * 3 + 2] = (Math.random() - 0.5) * 4;
-      vel[i * 3] = (Math.random() - 0.5) * 0.008;
-      vel[i * 3 + 1] = Math.random() * 0.006 + 0.002;
-      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.003;
     }
-    return [pos, vel] as const;
+    return [pos, ang, rad] as const;
   }, []);
 
-  useFrame(() => {
-    if (!ref.current || phase < 0.6) return;
+  useFrame((_, delta) => {
+    if (!ref.current || phase < 0.3) return;
+    timeRef.current += delta;
     const arr = (ref.current.geometry.attributes.position as THREE.BufferAttribute).array as Float32Array;
     const speed = phase < 2.5 ? 1.5 : 0.8;
     for (let i = 0; i < count; i++) {
-      arr[i * 3] += velocities[i * 3] * speed;
-      arr[i * 3 + 1] += velocities[i * 3 + 1] * speed;
-      arr[i * 3 + 2] += velocities[i * 3 + 2];
-      if (arr[i * 3 + 1] > 4.5) {
-        arr[i * 3 + 1] = -4.5;
-        arr[i * 3] = (Math.random() - 0.5) * 10;
+      // Spiral orbital motion
+      angles[i] += (0.3 / (radii[i] + 0.5)) * delta * speed;
+      radii[i] -= 0.005 * speed * delta; // Slowly spiral inward
+      if (radii[i] < 0.2) {
+        radii[i] = Math.random() * 4 + 2;
+        angles[i] = Math.random() * Math.PI * 2;
       }
+      arr[i * 3] = Math.cos(angles[i]) * radii[i];
+      arr[i * 3 + 1] = Math.sin(angles[i]) * radii[i] + Math.sin(timeRef.current + i) * 0.02;
+      arr[i * 3 + 2] += (Math.random() - 0.5) * 0.001;
     }
     (ref.current.geometry.attributes.position as THREE.BufferAttribute).needsUpdate = true;
   });
 
-  const opacity = phase < 0.6 ? 0 : phase > 5 ? Math.max(0, 1 - (phase - 5)) : 0.45;
+  const opacity = phase < 0.3 ? 0 : phase > 5 ? Math.max(0, 1 - (phase - 5)) : 0.7;
 
   return (
     <points ref={ref}>
@@ -157,8 +162,8 @@ function IntroParticles({ phase }: { phase: number }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} count={count} />
       </bufferGeometry>
       <pointsMaterial
-        color="#FF6B4A"
-        size={0.02}
+        color="#FF8844"
+        size={0.05}
         transparent
         opacity={opacity}
         depthWrite={false}

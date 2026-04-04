@@ -1,4 +1,4 @@
-// Cinematic intro shaders — god rays, heat distortion, film grain
+// Cinematic "Genesis Event" intro shaders — BOLD, DRAMATIC, AWARD-WINNING
 
 export const introVertexShader = /* glsl */ `
   varying vec2 vUv;
@@ -49,7 +49,15 @@ export const introFragmentShader = /* glsl */ `
     return f;
   }
 
-  // Film grain
+  // Domain-warped FBM for plasma
+  float warpedFbm(vec2 p, float t) {
+    vec2 q = vec2(fbm(p + vec2(0.0, 0.0)),
+                  fbm(p + vec2(5.2, 1.3)));
+    vec2 r = vec2(fbm(p + 4.0*q + vec2(1.7, 9.2) + 0.15*t),
+                  fbm(p + 4.0*q + vec2(8.3, 2.8) + 0.126*t));
+    return fbm(p + 4.0*r);
+  }
+
   float grain(vec2 uv, float t) {
     return fract(sin(dot(uv, vec2(12.9898,78.233)) + t) * 43758.5453);
   }
@@ -69,38 +77,83 @@ export const introFragmentShader = /* glsl */ `
     float pResolve = smoothstep(4.0, 5.0, uPhase);
     float pFade    = smoothstep(5.0, 6.0, uPhase);
 
-    // ── Pass 1: Volumetric god rays ──
+    // ── PLASMA BACKGROUND ──
+    float angle = uTime * 0.2;
+    mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+    vec2 rotUv = rot * uvA;
+    
+    float plasma = warpedFbm(rotUv * 2.0, uTime * 0.6);
+    plasma = plasma * 0.5 + 0.5;
+    plasma = pow(plasma, 1.3);
+    float radialFade = 1.0 - smoothstep(0.0, 0.9, distA);
+    plasma *= radialFade;
+    
+    // Rich fire color ramp
+    vec3 plasmaColor;
+    if (plasma < 0.25) {
+      plasmaColor = mix(vec3(0.02, 0.0, 0.04), vec3(0.35, 0.02, 0.0), plasma / 0.25);
+    } else if (plasma < 0.5) {
+      plasmaColor = mix(vec3(0.35, 0.02, 0.0), vec3(0.85, 0.3, 0.05), (plasma - 0.25) / 0.25);
+    } else if (plasma < 0.75) {
+      plasmaColor = mix(vec3(0.85, 0.3, 0.05), vec3(1.0, 0.65, 0.15), (plasma - 0.5) / 0.25);
+    } else {
+      plasmaColor = mix(vec3(1.0, 0.65, 0.15), vec3(1.0, 0.92, 0.7), (plasma - 0.75) / 0.25);
+    }
+    
+    vec3 bg = plasmaColor * pDark * 0.7;
+
+    // ── VOLUMETRIC GOD RAYS (60 samples, 3x intensity) ──
+    float rayStr = pRays * (1.0 - pResolve * 0.5);
     vec3 godRays = vec3(0.0);
-    float rayStr = pRays * (1.0 - pResolve * 0.7);
     if (rayStr > 0.01) {
       vec2 rayUv = uv;
       float decay = 1.0;
-      float totalWeight = 0.0;
       vec2 rayCenter = vec2(0.5);
-      for (int i = 0; i < 30; i++) {
-        rayUv -= (rayUv - rayCenter) * 0.02;
-        float noise = fbm(rayUv * 4.0 + uTime * 0.1) * 0.5 + 0.5;
-        godRays += vec3(0.97, 0.45, 0.09) * noise * decay * 0.03;
-        totalWeight += decay;
-        decay *= 0.96;
+      // Slowly rotating rays
+      float rayAngle = uTime * 0.05;
+      for (int i = 0; i < 60; i++) {
+        rayUv -= (rayUv - rayCenter) * 0.015;
+        vec2 rUv = rayUv;
+        // Add subtle rotation to ray sampling
+        vec2 rc = rUv - 0.5;
+        rUv = vec2(rc.x * cos(rayAngle) - rc.y * sin(rayAngle),
+                    rc.x * sin(rayAngle) + rc.y * cos(rayAngle)) + 0.5;
+        float noise = fbm(rUv * 5.0 + uTime * 0.15) * 0.5 + 0.5;
+        noise = pow(noise, 0.8); // Brighter
+        godRays += vec3(1.0, 0.55, 0.12) * noise * decay * 0.025;
+        decay *= 0.975;
       }
-      godRays *= rayStr / max(totalWeight * 0.03, 0.001) * 0.8;
+      // Pulsating brightness
+      float pulse = 0.7 + 0.3 * sin(uTime * 2.5);
+      godRays *= rayStr * 3.0 * pulse;
     }
 
-    // ── Pass 2: Heat distortion ──
+    // ── ANAMORPHIC LENS FLARE ──
+    float flareStr = pBloom * (1.0 - pResolve);
+    vec3 flare = vec3(0.0);
+    if (flareStr > 0.01) {
+      // Horizontal streak
+      float hStreak = exp(-abs(center.y) * 40.0) * exp(-center.x * center.x * 4.0);
+      // White core with orange falloff
+      vec3 flareCore = vec3(1.0, 0.95, 0.9) * hStreak * 2.0;
+      vec3 flareOuter = vec3(1.0, 0.5, 0.1) * exp(-abs(center.y) * 20.0) * exp(-center.x * center.x * 2.0);
+      flare = (flareCore + flareOuter) * flareStr * 0.6;
+    }
+
+    // ── HEAT DISTORTION ──
     float heatStr = pBloom * (1.0 - pResolve);
     vec2 distortedUv = uv;
     if (heatStr > 0.01) {
-      float distort = cnoise(uv * 8.0 + uTime * 0.5) * 0.006 * heatStr;
-      distortedUv += vec2(distort, distort * 0.7);
+      float distort = cnoise(uv * 10.0 + uTime * 0.8) * 0.012 * heatStr;
+      distortedUv += vec2(distort, distort * 0.6);
     }
 
-    // ── Logo ──
+    // ── LOGO with INTENSE CHROMATIC ABERRATION ──
     vec2 logoUv = distortedUv * 2.5 - 0.75;
     float inBounds = step(0.0,logoUv.x)*step(logoUv.x,1.0)*step(0.0,logoUv.y)*step(logoUv.y,1.0);
 
-    // Chromatic aberration
-    float caStr = heatStr * 0.004;
+    // 5x stronger chromatic aberration (0.02 during bloom)
+    float caStr = heatStr * 0.02;
     vec2 caDir = normalize(center + 0.001) * caStr;
     float logoR = texture2D(uLogo, clamp(logoUv + caDir, 0.0, 1.0)).r;
     float logoG = texture2D(uLogo, clamp(logoUv, 0.0, 1.0)).g;
@@ -108,44 +161,74 @@ export const introFragmentShader = /* glsl */ `
     float logoA = texture2D(uLogo, clamp(logoUv, 0.0, 1.0)).a;
     vec4 logoTex = vec4(logoR, logoG, logoB, logoA * inBounds);
 
-    // Dissolve
-    float noiseT = cnoise(distortedUv * 6.0 + uTime * 0.15) * 0.5 + 0.5;
-    float dissolve = smoothstep(noiseT - 0.06, noiseT + 0.06, pBloom);
+    // Dissolve with burning edge
+    float noiseT = cnoise(distortedUv * 6.0 + uTime * 0.2) * 0.5 + 0.5;
+    float dissolve = smoothstep(noiseT - 0.04, noiseT + 0.04, pBloom);
     float logoAlpha = logoTex.a * dissolve;
 
-    // ── Pass 3: Edge glow (Sobel-like) ──
-    float edgeDist = 0.008;
+    // BURNING EDGE — white-hot → orange → red
+    vec3 edgeGlow = vec3(0.0);
+    float e1 = smoothstep(0.0, 0.1, dissolve) * (1.0 - smoothstep(0.1, 0.25, dissolve));
+    float e2 = smoothstep(0.0, 0.06, dissolve) * (1.0 - smoothstep(0.15, 0.4, dissolve));
+    edgeGlow += vec3(1.0, 0.95, 0.85) * e1 * 5.0; // white-hot
+    edgeGlow += vec3(1.0, 0.5, 0.1) * e2 * 3.0;   // orange
+    edgeGlow += vec3(0.7, 0.1, 0.0) * smoothstep(0.0, 0.03, dissolve) * (1.0 - smoothstep(0.3, 0.6, dissolve)) * 2.0; // red
+    edgeGlow *= (1.0 - pResolve) * logoTex.a;
+
+    // INTENSE BLOOM HALO around logo
+    vec3 bloomHalo = vec3(0.0);
+    float bloomStr = pBloom * (1.0 - pResolve * 0.5);
+    if (bloomStr > 0.01) {
+      for (int i = 0; i < 16; i++) {
+        float a = float(i) * 3.14159 * 2.0 / 16.0;
+        for (int j = 1; j <= 3; j++) {
+          float r = float(j) * 0.015;
+          vec2 offset = vec2(cos(a), sin(a)) * r;
+          vec2 sampleUv = clamp(logoUv + offset, 0.0, 1.0);
+          float sampleA = texture2D(uLogo, sampleUv).a * inBounds;
+          bloomHalo += vec3(1.0, 0.6, 0.2) * sampleA * dissolve / float(j);
+        }
+      }
+      bloomHalo *= bloomStr * 0.06;
+    }
+
+    // Sobel edge detection for energy lines
+    float edgeDist = 0.006;
     float aL = texture2D(uLogo, clamp(logoUv + vec2(-edgeDist,0.0),0.0,1.0)).a * inBounds;
     float aR = texture2D(uLogo, clamp(logoUv + vec2( edgeDist,0.0),0.0,1.0)).a * inBounds;
     float aT = texture2D(uLogo, clamp(logoUv + vec2(0.0, edgeDist),0.0,1.0)).a * inBounds;
     float aB = texture2D(uLogo, clamp(logoUv + vec2(0.0,-edgeDist),0.0,1.0)).a * inBounds;
     float edgeDetect = abs(aR - aL) + abs(aT - aB);
-    edgeDetect = smoothstep(0.05, 0.5, edgeDetect);
-    vec3 edgeGlow = vec3(1.0, 0.5, 0.15) * edgeDetect * dissolve * (1.0 - pResolve) * 2.5;
+    edgeDetect = smoothstep(0.03, 0.4, edgeDetect);
+    vec3 energyLines = vec3(1.0, 0.6, 0.2) * edgeDetect * dissolve * (1.0 - pResolve) * 3.0;
 
-    // ── Text ──
+    // ── TEXT with CHARACTER FLASH ──
     vec2 textUv = vec2(uv.x * 3.0 - 1.0, (uv.y + 0.15) * 3.0 - 1.0);
     float textInB = step(0.0,textUv.x)*step(textUv.x,1.0)*step(0.0,textUv.y)*step(textUv.y,1.0);
     vec4 textTex = texture2D(uText, clamp(textUv, 0.0, 1.0));
     textTex.a *= textInB;
-    // Per-character stagger using x-position
-    float charProgress = smoothstep(textUv.x * 0.5, textUv.x * 0.5 + 0.3, pReveal);
+    // Per-character stagger with flash
+    float charProgress = smoothstep(textUv.x * 0.4, textUv.x * 0.4 + 0.2, pReveal);
+    // Flash at reveal moment
+    float charFlash = smoothstep(textUv.x * 0.4, textUv.x * 0.4 + 0.05, pReveal) 
+                    * (1.0 - smoothstep(textUv.x * 0.4 + 0.05, textUv.x * 0.4 + 0.2, pReveal));
     float textAlpha = textTex.a * charProgress;
+    vec3 textGlow = vec3(1.0, 0.7, 0.3) * charFlash * textTex.a * 2.0;
 
-    // ── Background ──
-    float fog = fbm(uvA * 3.0 + uTime * 0.1) * 0.5 + 0.5;
-    vec3 bg = mix(vec3(0.01, 0.005, 0.02), vec3(0.08, 0.03, 0.01), fog * pDark * 0.5);
-    bg *= 1.0 - smoothstep(0.3, 0.9, distA) * 0.6; // vignette
+    // ── DEEP VIGNETTE ──
+    float vig = 1.0 - smoothstep(0.15, 0.8, distA);
+    bg *= mix(0.2, 1.0, vig);
 
-    // ── Pass 4: Film grain ──
+    // ── Film grain (stronger) ──
     float g = grain(uv * uResolution, uTime * 60.0);
-    bg += (g - 0.5) * 0.04;
+    bg += (g - 0.5) * 0.08;
 
-    // ── Compose ──
-    vec3 color = bg + godRays;
-    vec3 logoFinal = logoTex.rgb + edgeGlow;
+    // ── COMPOSE ──
+    vec3 color = bg + godRays + flare;
+    vec3 logoFinal = logoTex.rgb + edgeGlow + bloomHalo + energyLines;
     color = mix(color, logoFinal, logoAlpha);
-    color = mix(color, textTex.rgb, textAlpha * 0.85);
+    color += bloomHalo * 0.4 * (1.0 - logoAlpha); // Bloom bleeds into bg
+    color = mix(color, textTex.rgb + textGlow, textAlpha * 0.9);
 
     // Fade out
     float opacity = 1.0 - pFade;

@@ -107,37 +107,42 @@ function ShaderQuad({ phase }: { phase: number }) {
 /* ─── Particle System ─── */
 function Particles({ phase }: { phase: number }) {
   const ref = useRef<THREE.Points>(null);
-  const count = 200;
+  const count = 300;
 
-  const [positions, velocities, _seeds] = useMemo(() => {
+  const [positions, velocities, sizes, colors] = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const vel = new Float32Array(count * 3);
-    const sd = new Float32Array(count);
+    const sz = new Float32Array(count);
+    const col = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.random() * 4 + 1;
       pos[i * 3] = Math.cos(angle) * radius;
       pos[i * 3 + 1] = Math.sin(angle) * radius;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 2;
-      // Spiral inward
-      vel[i * 3] = -Math.cos(angle) * 0.008;
-      vel[i * 3 + 1] = -Math.sin(angle) * 0.008;
-      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.002;
-      sd[i] = Math.random();
+      vel[i * 3] = -Math.cos(angle) * 0.012;
+      vel[i * 3 + 1] = -Math.sin(angle) * 0.012;
+      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.003;
+      sz[i] = Math.random() * 0.06 + 0.02;
+      // Orange → white gradient
+      const t = Math.random();
+      col[i * 3] = 1.0;
+      col[i * 3 + 1] = 0.4 + t * 0.55;
+      col[i * 3 + 2] = 0.1 + t * 0.8;
     }
-    return [pos, vel, sd] as const;
+    return [pos, vel, sz, col] as const;
   }, []);
 
   useFrame(() => {
-    if (!ref.current || phase < 0.5) return;
+    if (!ref.current) return; // Start immediately
     const arr = (ref.current.geometry.attributes.position as THREE.BufferAttribute).array as Float32Array;
-    const speed = phase > 1.5 ? 0.5 : 1.5;
+    const speed = phase > 1.5 ? 0.6 : 1.8;
     for (let i = 0; i < count; i++) {
       arr[i * 3] += velocities[i * 3] * speed;
       arr[i * 3 + 1] += velocities[i * 3 + 1] * speed;
       arr[i * 3 + 2] += velocities[i * 3 + 2];
       const d = Math.sqrt(arr[i * 3] ** 2 + arr[i * 3 + 1] ** 2);
-      if (d < 0.1) {
+      if (d < 0.15) {
         const angle = Math.random() * Math.PI * 2;
         const radius = Math.random() * 3 + 2;
         arr[i * 3] = Math.cos(angle) * radius;
@@ -147,7 +152,7 @@ function Particles({ phase }: { phase: number }) {
     (ref.current.geometry.attributes.position as THREE.BufferAttribute).needsUpdate = true;
   });
 
-  const opacity = phase < 0.5 ? 0 : phase > 3 ? Math.max(0, 1 - (phase - 3)) : 0.6;
+  const opacity = phase < 0.1 ? 0 : phase > 3 ? Math.max(0, 1 - (phase - 3)) : 0.8;
 
   return (
     <points ref={ref}>
@@ -155,8 +160,8 @@ function Particles({ phase }: { phase: number }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} count={count} />
       </bufferGeometry>
       <pointsMaterial
-        color="#FF6B4A"
-        size={0.02}
+        color="#FF8844"
+        size={0.05}
         transparent
         opacity={opacity}
         depthWrite={false}
