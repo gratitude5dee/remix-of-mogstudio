@@ -230,7 +230,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
           </p>
 
           {/* Feature carousel — perspective tilted cards */}
-          <div className="flex gap-5 mb-16" style={{ perspective: '1200px' }}>
+          <div className="hidden md:flex gap-5 mb-16" style={{ perspective: '1200px' }}>
             {HERO_FEATURES.map((feature, i) => {
               const Icon = feature.icon;
               const isActive = selectedFeature === feature.id;
