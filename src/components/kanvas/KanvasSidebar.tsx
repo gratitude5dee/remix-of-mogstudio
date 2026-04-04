@@ -70,13 +70,13 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
       >
         {/* Lime glow border */}
         <ShineBorder
-          shineColor={['#BEFF00', '#86efac', '#BEFF00']}
+          shineColor={['#f97316', '#86efac', '#f97316']}
           borderWidth={1}
           duration={8}
         />
 
         {/* Faint lime gradient top-highlight */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#BEFF00]/[0.04] via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#f97316]/[0.04] via-transparent to-transparent pointer-events-none" />
 
         {/* Home button */}
         <Tooltip>
@@ -113,12 +113,12 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
                     className={cn(
                       'relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-200',
                       isActive
-                        ? 'bg-white/10 text-[#BEFF00]'
+                        ? 'bg-white/10 text-[#f97316]'
                         : 'text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300',
                     )}
                   >
                     {isActive && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[2px] rounded-r-full bg-[#BEFF00] shadow-[0_0_6px_rgba(190,255,0,0.4)]" />
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[2px] rounded-r-full bg-[#f97316] shadow-[0_0_6px_rgba(249,115,22,0.4)]" />
                     )}
                     <Icon className="h-[18px] w-[18px]" />
                   </button>
@@ -134,7 +134,7 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
           <div className="flex h-12 w-12 items-center justify-center">
             <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD" className="h-10 w-10 object-contain" />
           </div>
-          <div className="h-1.5 w-1.5 rounded-full bg-[#BEFF00] shadow-[0_0_6px_rgba(190,255,0,0.5)]" />
+          <div className="h-1.5 w-1.5 rounded-full bg-[#f97316] shadow-[0_0_6px_rgba(249,115,22,0.5)]" />
         </div>
       </aside>
     </TooltipProvider>

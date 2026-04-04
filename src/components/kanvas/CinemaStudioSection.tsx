@@ -164,7 +164,7 @@ export default function CinemaStudioSection({
               <button
                 onClick={() => setGenMode('image')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all ${
-                  genMode === 'image' ? 'bg-[#BEFF00] text-black' : 'text-zinc-500 hover:text-white'
+                  genMode === 'image' ? 'bg-[#f97316] text-black' : 'text-zinc-500 hover:text-white'
                 }`}
               >
                 <ImageIcon className="h-3 w-3" /> Image
@@ -172,7 +172,7 @@ export default function CinemaStudioSection({
               <button
                 onClick={() => setGenMode('video')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all ${
-                  genMode === 'video' ? 'bg-[#BEFF00] text-black' : 'text-zinc-500 hover:text-white'
+                  genMode === 'video' ? 'bg-[#f97316] text-black' : 'text-zinc-500 hover:text-white'
                 }`}
               >
                 <Video className="h-3 w-3" /> Video
@@ -180,7 +180,7 @@ export default function CinemaStudioSection({
             </div>
 
             {/* + button */}
-            <button className="w-9 h-9 rounded-full bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-[#BEFF00] transition-colors flex-shrink-0">
+            <button className="w-9 h-9 rounded-full bg-[#1a1a1a] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-[#f97316] transition-colors flex-shrink-0">
               <Plus className="h-4 w-4" />
             </button>
 
@@ -229,7 +229,7 @@ export default function CinemaStudioSection({
             <button
               onClick={onGenerate}
               disabled={submitting || !prompt.trim()}
-              className="bg-[#BEFF00] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(190,255,0,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+              className="bg-[#f97316] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(249,115,22,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               GENERATE ✦ {creditCost}
@@ -265,7 +265,7 @@ export default function CinemaStudioSection({
               <button
                 onClick={() => setSoundOn(!soundOn)}
                 className={`text-[10px] uppercase tracking-widest border border-white/[0.06] rounded-full px-3 py-1.5 flex-shrink-0 flex items-center gap-1.5 transition-colors ${
-                  soundOn ? 'text-[#BEFF00]' : 'text-zinc-500'
+                  soundOn ? 'text-[#f97316]' : 'text-zinc-500'
                 }`}
               >
                 {soundOn ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
@@ -289,7 +289,7 @@ export default function CinemaStudioSection({
               <button
                 onClick={onGenerate}
                 disabled={submitting || !prompt.trim()}
-                className="bg-[#BEFF00] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(190,255,0,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+                className="bg-[#f97316] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(249,115,22,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 GENERATE ✦ {creditCost}
@@ -322,7 +322,7 @@ export default function CinemaStudioSection({
           {/* Character Avatars — real blueprints or fallback */}
           <div className="flex justify-center gap-3 mb-8">
             {avatars.slice(0, 4).map((a, i) => (
-              <div key={i} className="w-14 h-14 rounded-full border-2 border-white/10 overflow-hidden hover:border-[#BEFF00]/40 transition-colors cursor-pointer" title={a.name}>
+              <div key={i} className="w-14 h-14 rounded-full border-2 border-white/10 overflow-hidden hover:border-[#f97316]/40 transition-colors cursor-pointer" title={a.name}>
                 {a.src ? (
                   <img src={a.src} alt={a.name} className="w-full h-full object-cover" loading="lazy" />
                 ) : (
@@ -332,7 +332,7 @@ export default function CinemaStudioSection({
                 )}
               </div>
             ))}
-            <button className="w-14 h-14 rounded-full border-2 border-dashed border-white/10 flex items-center justify-center text-zinc-500 hover:border-[#BEFF00]/30 hover:text-[#BEFF00] transition-colors">
+            <button className="w-14 h-14 rounded-full border-2 border-dashed border-white/10 flex items-center justify-center text-zinc-500 hover:border-[#f97316]/30 hover:text-[#f97316] transition-colors">
               <Plus className="h-5 w-5" />
             </button>
           </div>
@@ -340,16 +340,16 @@ export default function CinemaStudioSection({
           {/* Quick action cards */}
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
             <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-2xl p-5 text-left hover:border-white/10 transition-colors cursor-pointer">
-              <Users className="h-5 w-5 text-[#BEFF00] mb-3" />
+              <Users className="h-5 w-5 text-[#f97316] mb-3" />
               <p className="text-xs font-bold text-white mb-1">Characters</p>
               <p className="text-[10px] text-zinc-500 leading-relaxed">Reuse characters across scenes</p>
-              <button className="mt-3 text-[9px] uppercase tracking-widest text-[#BEFF00] font-bold">+ Create Character</button>
+              <button className="mt-3 text-[9px] uppercase tracking-widest text-[#f97316] font-bold">+ Create Character</button>
             </div>
             <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-2xl p-5 text-left hover:border-white/10 transition-colors cursor-pointer">
-              <Film className="h-5 w-5 text-[#BEFF00] mb-3" />
+              <Film className="h-5 w-5 text-[#f97316] mb-3" />
               <p className="text-xs font-bold text-white mb-1">Locations</p>
               <p className="text-[10px] text-zinc-500 leading-relaxed">Keep every scene in the same world</p>
-              <button className="mt-3 text-[9px] uppercase tracking-widest text-[#BEFF00] font-bold">+ Create Location</button>
+              <button className="mt-3 text-[9px] uppercase tracking-widest text-[#f97316] font-bold">+ Create Location</button>
             </div>
           </div>
         </div>
@@ -372,11 +372,11 @@ export default function CinemaStudioSection({
                   key={preset.label}
                   onClick={() => setCameraPreset(preset.label)}
                   className={`rounded-2xl overflow-hidden border transition-all ${
-                    isActive ? 'border-[#BEFF00]/40 shadow-[0_0_20px_rgba(190,255,0,0.1)]' : 'border-white/[0.06] hover:border-white/10'
+                    isActive ? 'border-[#f97316]/40 shadow-[0_0_20px_rgba(249,115,22,0.1)]' : 'border-white/[0.06] hover:border-white/10'
                   }`}
                 >
                   <div className="aspect-video bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                    <Camera className={`h-6 w-6 ${isActive ? 'text-[#BEFF00]' : 'text-zinc-600'}`} />
+                    <Camera className={`h-6 w-6 ${isActive ? 'text-[#f97316]' : 'text-zinc-600'}`} />
                   </div>
                   <div className="bg-[#131313] px-3 py-2">
                     <p className={`text-[10px] font-bold ${isActive ? 'text-white' : 'text-zinc-400'}`}>{preset.label}</p>
@@ -483,7 +483,7 @@ export default function CinemaStudioSection({
                   onClick={() => setActiveFilter(pill.id)}
                   className={`px-6 py-2.5 rounded-full text-[10px] uppercase tracking-[0.15em] font-bold transition-all ${
                     isActive
-                      ? 'bg-[#BEFF00] text-black'
+                      ? 'bg-[#f97316] text-black'
                       : 'border border-white/10 text-zinc-400 hover:bg-white/[0.03] hover:text-white'
                   }`}
                 >
@@ -551,7 +551,7 @@ export default function CinemaStudioSection({
             <button
               onClick={onGenerate}
               disabled={submitting}
-              className="bg-[#BEFF00] text-black font-bold uppercase tracking-widest text-[11px] px-10 py-3.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(190,255,0,0.3)] transition-all disabled:opacity-40"
+              className="bg-[#f97316] text-black font-bold uppercase tracking-widest text-[11px] px-10 py-3.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(249,115,22,0.3)] transition-all disabled:opacity-40"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               Generate ✦
@@ -590,7 +590,7 @@ export default function CinemaStudioSection({
                   onClick={() => setActiveTab(id)}
                   className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]'
+                      ? 'bg-white/10 text-[#f97316] shadow-[inset_0_0_12px_rgba(249,115,22,0.06)]'
                       : 'text-zinc-500 hover:text-zinc-300'
                   }`}
                 >
@@ -638,7 +638,7 @@ export default function CinemaStudioSection({
         </button>
         <div className="h-px w-6 bg-white/[0.06]" />
         {avatars.slice(0, 3).map((a, i) => (
-          <div key={i} className="w-9 h-9 rounded-full overflow-hidden border border-white/10 hover:border-[#BEFF00]/40 transition-colors cursor-pointer" title={a.name}>
+          <div key={i} className="w-9 h-9 rounded-full overflow-hidden border border-white/10 hover:border-[#f97316]/40 transition-colors cursor-pointer" title={a.name}>
             {a.src ? (
               <img src={a.src} alt={a.name} className="w-full h-full object-cover" loading="lazy" />
             ) : (
@@ -648,7 +648,7 @@ export default function CinemaStudioSection({
             )}
           </div>
         ))}
-        <button className="w-9 h-9 rounded-full border border-dashed border-white/10 flex items-center justify-center text-zinc-600 hover:border-[#BEFF00]/30 transition-colors">
+        <button className="w-9 h-9 rounded-full border border-dashed border-white/10 flex items-center justify-center text-zinc-600 hover:border-[#f97316]/30 transition-colors">
           <Plus className="h-3 w-3" />
         </button>
 
@@ -659,7 +659,7 @@ export default function CinemaStudioSection({
           <button
             onClick={() => setGenMode('image')}
             className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all ${
-              genMode === 'image' ? 'bg-[#BEFF00] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
+              genMode === 'image' ? 'bg-[#f97316] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
             }`}
           >
             <ImageIcon className="h-3.5 w-3.5" />
@@ -668,7 +668,7 @@ export default function CinemaStudioSection({
           <button
             onClick={() => setGenMode('video')}
             className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all ${
-              genMode === 'video' ? 'bg-[#BEFF00] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
+              genMode === 'video' ? 'bg-[#f97316] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
             }`}
           >
             <Video className="h-3.5 w-3.5" />

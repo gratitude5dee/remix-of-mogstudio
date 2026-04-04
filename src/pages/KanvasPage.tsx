@@ -1190,12 +1190,12 @@ export default function KanvasPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,242,100,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.08),transparent_24%)] pointer-events-none" />
         <div className="relative">
           {/* Slim status header */}
-           <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-transparent" style={{ borderImage: 'linear-gradient(to right, rgba(190,255,0,0.15), transparent 60%) 1' }}>
+           <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-transparent" style={{ borderImage: 'linear-gradient(to right, rgba(249,115,22,0.15), transparent 60%) 1' }}>
             <div className="flex items-center justify-between px-5 py-1.5">
               {/* Left: WZRD logo + badge */}
               <div className="flex items-center gap-3 min-w-[140px]">
                 <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-14 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
-                <span className="text-[10px] text-[#BEFF00] bg-[#BEFF00]/10 px-2 py-0.5 rounded-full border border-[#BEFF00]/20 font-medium">ALPHA</span>
+                <span className="text-[10px] text-[#f97316] bg-[#f97316]/10 px-2 py-0.5 rounded-full border border-[#f97316]/20 font-medium">ALPHA</span>
               </div>
 
               {/* Center: Pill-slider studio nav */}
@@ -1219,7 +1219,7 @@ export default function KanvasPage() {
                       className={cn(
                         'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200',
                         isActive
-                          ? 'bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]'
+                          ? 'bg-white/10 text-[#f97316] shadow-[inset_0_0_12px_rgba(249,115,22,0.06)]'
                           : 'text-zinc-500 hover:text-zinc-300',
                       )}
                     >
@@ -1445,7 +1445,7 @@ export default function KanvasPage() {
       <div className="fixed bottom-0 left-0 right-0 h-8 z-[55] bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/[0.04] flex items-center justify-between px-4">
         <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-medium">WZRD Studio</span>
         <div className="flex items-center gap-2">
-          <div className="h-1.5 w-1.5 rounded-full bg-[#BEFF00] shadow-[0_0_6px_rgba(190,255,0,0.5)] animate-pulse" />
+          <div className="h-1.5 w-1.5 rounded-full bg-[#f97316] shadow-[0_0_6px_rgba(249,115,22,0.5)] animate-pulse" />
           <span className="text-[10px] text-zinc-400 font-medium capitalize">{KANVAS_STUDIO_META[studio].label}</span>
         </div>
         <div className="flex items-center gap-3">
