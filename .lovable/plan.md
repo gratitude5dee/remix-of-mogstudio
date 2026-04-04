@@ -1,70 +1,117 @@
 
 
-# Chevron Expand Button + Award-Winning Light Mode Polish
+# Sync All Models (Image + Video + Audio) Across App + Mobile-Ready All Pages
 
-## 1. Chevron to Re-Open Collapsed Sidebar
+## Overview
 
-**File: `src/pages/Home.tsx`**
+Three workstreams: (1) Add ~30 missing image and video models to the centralized catalog, (2) Add ~25 new audio models, (3) Unify Cinema Studio with the central catalog, add audio model selector to project-setup, and make all pages mobile-responsive.
 
-Add a `ChevronRight` button that appears to the left of the WZRD logo in the header **only when `isCollapsed` is true**. Clicking it calls `setIsCollapsed(false)`.
+---
 
-- Position: inline before the logo image (line ~250), wrapped in `AnimatePresence` for smooth enter/exit
-- Style: 28px circle, subtle border, orange hover glow, `ChevronRight` icon
-- Imports: add `ChevronRight` from lucide, `AnimatePresence` already imported via framer-motion, `useSidebar` already imported
+## 1. New Image Models to Add to `studio-model-constants.ts`
 
-## 2. Light Mode — Award-Winning Design Overhaul
+The following models exist on fal.ai but are missing from `imageGenerationModels`:
 
-The current light mode uses hardcoded dark colors (`bg-[#0a0a0f]`, `text-white/60`, `bg-white/[0.04]`, `bg-[#1A1A1A]`) throughout the dashboard, making it look broken in light mode. The fix involves updating multiple components to use proper light/dark adaptive classes.
+| Model ID | Name | Credits | Badge |
+|----------|------|---------|-------|
+| `fal-ai/flux-2-pro` | Flux 2 Pro | 8 | Premium |
+| `fal-ai/flux-2` | Flux 2 | 6 | Quality |
+| `fal-ai/flux-2/turbo` | Flux 2 Turbo | 5 | Fast |
+| `fal-ai/flux-2/flash` | Flux 2 Flash | 4 | Fast |
+| `fal-ai/flux-2-max` | Flux 2 Max | 10 | Premium |
+| `fal-ai/flux-2-flex` | Flux 2 Flex | 6 | — |
+| `fal-ai/flux-pro/kontext/text-to-image` | FLUX Kontext Pro | 7 | Quality |
+| `fal-ai/gpt-image-1.5` | GPT-Image 1.5 | 8 | Premium |
+| `xai/grok-imagine-image` | Grok Imagine Image | 7 | — |
+| `fal-ai/imagen4/preview` | Imagen 4 | 7 | Quality |
+| `fal-ai/imagen4/preview/ultra` | Imagen 4 Ultra | 10 | Premium |
+| `fal-ai/imagen4/preview/fast` | Imagen 4 Fast | 5 | Fast |
+| `fal-ai/bytedance/seedream/v4.5/text-to-image` | Seedream 4.5 | 5 | — |
+| `fal-ai/z-image/turbo` | Z-Image Turbo | 4 | Fast |
 
-### 2a. Header (`src/pages/Home.tsx` lines 242-421)
+## 2. New Video Models to Add
 
-- `bg-[#0a0a0f]/90` → `bg-white/90 dark:bg-[#0a0a0f]/90` — warm white with blur in light mode
-- Tabs container `bg-white/[0.03]` → `bg-zinc-100 dark:bg-white/[0.03]`
-- Active tab: add `dark:` prefix to orange bg/border styles; light mode gets `bg-orange-50 border-orange-200 text-orange-600`
-- Inactive tab text: use `text-zinc-500 dark:text-text-tertiary`
-- Settings dropdown content: `bg-[#0f0f13]` → `bg-white dark:bg-[#0f0f13]`, text colors adaptive
-- Invite button: light mode gets `bg-zinc-100 border-zinc-200 text-zinc-600`
+**Text-to-Video (add to `videoGenerationModels`):**
 
-### 2b. Stats Row (`src/pages/Home.tsx` line 424)
+| Model ID | Name | Credits | Badge |
+|----------|------|---------|-------|
+| `fal-ai/veo3.1` | Veo 3.1 | 40 | Premium |
+| `fal-ai/veo3.1/fast` | Veo 3.1 Fast | 30 | Fast |
+| `fal-ai/veo3.1/lite` | Veo 3.1 Lite | 22 | — |
+| `fal-ai/veo3` | Veo 3 | 35 | Quality |
+| `fal-ai/veo3/fast` | Veo 3 Fast | 25 | Fast |
+| `fal-ai/kling-video/v3/pro/text-to-video` | Kling 3.0 Pro T2V | 32 | Premium |
+| `fal-ai/kling-video/v3/standard/text-to-video` | Kling 3.0 Std T2V | 22 | — |
+| `fal-ai/kling-video/v2.6/pro/text-to-video` | Kling 2.6 Pro T2V | 28 | Quality |
+| `fal-ai/bytedance/seedance/v1.5/pro/text-to-video` | Seedance 1.5 Pro T2V | 32 | Premium |
+| `xai/grok-imagine-video/text-to-video` | Grok Imagine Video | 30 | — |
+| `fal-ai/minimax/hailuo-02/standard/text-to-video` | Hailuo 02 Std T2V | 24 | — |
+| `fal-ai/minimax/hailuo-02/pro/text-to-video` | Hailuo 02 Pro T2V | 32 | Premium |
+| `fal-ai/pixverse/v6/text-to-video` | Pixverse V6 T2V | 20 | — |
+| `fal-ai/ltx-2.3/text-to-video` | LTX 2.3 Pro T2V | 22 | Quality |
+| `fal-ai/ltx-2.3/text-to-video/fast` | LTX 2.3 Fast T2V | 16 | Fast |
+| `fal-ai/wan/v2.2-a14b/text-to-video` | Wan 2.2 T2V | 20 | — |
 
-- Gradient background: adaptive `from-orange-50/50 dark:from-[rgba(249,115,22,0.02)]`
+**Image-to-Video (add to `videoGenerationModels`):**
 
-### 2c. StatCard (`src/components/home/StatCard.tsx`)
+| Model ID | Name | Credits | Badge |
+|----------|------|---------|-------|
+| `fal-ai/veo3.1/image-to-video` | Veo 3.1 I2V | 42 | Premium |
+| `fal-ai/veo3.1/fast/image-to-video` | Veo 3.1 Fast I2V | 32 | Fast |
+| `fal-ai/veo3.1/lite/image-to-video` | Veo 3.1 Lite I2V | 24 | — |
+| `fal-ai/kling-video/v2.6/pro/image-to-video` | Kling 2.6 Pro I2V | 30 | Quality |
+| `fal-ai/sora-2/image-to-video` | Sora 2 I2V | 38 | Premium |
+| `fal-ai/bytedance/seedance/v1.5/pro/image-to-video` | Seedance 1.5 Pro I2V | 34 | Premium |
+| `fal-ai/minimax/hailuo-02/standard/image-to-video` | Hailuo 02 Std I2V | 26 | — |
+| `fal-ai/minimax/hailuo-02/pro/image-to-video` | Hailuo 02 Pro I2V | 34 | Premium |
 
-- `glass-stat` class doesn't exist — replace with `bg-white dark:bg-white/[0.03]`
-- Border: `border-orange-100 dark:border-[rgba(249,115,22,0.1)]`
-- Hover: `hover:border-orange-200 dark:hover:border-[rgba(249,115,22,0.3)]`
-- Trend badges: light-mode variants (e.g., `text-orange-600 bg-orange-50` for up trends)
-- Label text: ensure readable in light (`text-zinc-500 dark:text-muted-foreground/70`)
+## 3. New Audio Models (same as previous plan)
 
-### 2d. ProjectViewModeSelector (`src/components/home/ProjectViewModeSelector.tsx`)
+Add 25+ TTS, voice clone, music, SFX, and STT models to `AUDIO_MODELS` array (ElevenLabs, MiniMax Speech, Chatterbox, Qwen TTS, Lyria2, CassetteAI, Whisper, etc.)
 
-- Container: `bg-zinc-100 dark:bg-white/[0.04]`, `border-zinc-200 dark:border-white/[0.08]`
-- Inactive text: `text-zinc-500 dark:text-white/60`
-- Active: keep orange gradient (works on both)
+## 4. Unify Cinema Studio with Central Catalog
 
-### 2e. SortDropdown (`src/components/home/SortDropdown.tsx`)
+**File: `src/components/kanvas/CinemaStudioSection.tsx`**
 
-- Trigger: `bg-zinc-100 dark:bg-white/[0.04]`, `border-zinc-200 dark:border-white/[0.08]`, `text-zinc-600 dark:text-white/60`
-- Content: `bg-white dark:bg-[#1A1A1A]`, `border-zinc-200 dark:border-white/[0.08]`
-- Items: `text-zinc-700 dark:text-white/60`, hover `text-zinc-900 dark:text-white`
+Replace the local `AUDIO_MODELS` array (lines 25-41) with imports from `studio-model-constants.ts`. Map the centralized `StudioModel` to the local `AudioModel` interface, deriving category from the centralized category field.
 
-### 2f. ProjectCard (`src/components/home/ProjectCard.tsx`)
+## 5. Add Audio Model Selector to Project Setup
 
-- Already has `dark:` variants — mostly fine
-- Empty state play icon bg: add light variant `bg-orange-50 dark:bg-[rgba(249,115,22,0.2)]`
+- **`src/components/project-setup/types.ts`**: Add `baseAudioModel?: string` to `ProjectData`
+- **`src/components/project-setup/TabNavigation.tsx`**: Add a 3rd model selector after video for "Audio Model"
+- **`src/components/project-setup/ProjectContext.tsx`**: Wire `baseAudioModel` to save/load
 
-### 2g. SearchBar (`src/components/home/SearchBar.tsx`)
+## 6. Mobile Responsiveness
 
-- Already uses CSS variables (`bg-card/60`, `text-foreground`) — should work. No changes needed.
+### 6a. Kanvas Page (`src/pages/KanvasPage.tsx`)
+- Mobile bottom tab bar (`md:hidden`) for 7 studio icons
+- Hide `KanvasSidebar` on mobile (`hidden md:block`)
+- Safe area padding (`pb-[env(safe-area-inset-bottom)]`)
+
+### 6b. Project Setup (`src/components/project-setup/ProjectSetupWizard.tsx`)
+- Scrollable tabs on mobile (`overflow-x-auto flex-nowrap`)
+- Responsive padding (`px-4 md:px-8`)
+- Models popover width: `w-[calc(100vw-2rem)]` on mobile
+
+### 6c. KanvasSidebar
+- Add `hidden md:block` to sidebar wrapper and trigger zone
+
+### 6d. Global PWA
+- `index.html`: Add `viewport-fit=cover`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style` meta tags
+
+---
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/pages/Home.tsx` | Add chevron expand button next to logo when sidebar collapsed; fix all hardcoded dark colors in header/tabs/stats to use light/dark adaptive classes |
-| `src/components/home/StatCard.tsx` | Replace `glass-stat` with adaptive bg, fix trend badge colors for light mode |
-| `src/components/home/ProjectViewModeSelector.tsx` | Add light-mode adaptive backgrounds and text |
-| `src/components/home/SortDropdown.tsx` | Add light-mode adaptive backgrounds, text, and dropdown content |
-| `src/components/home/ProjectCard.tsx` | Minor light-mode fixes for empty state icon |
+| `src/lib/studio-model-constants.ts` | Add ~14 new image models, ~24 new video models, ~25 new audio models |
+| `src/components/kanvas/CinemaStudioSection.tsx` | Replace local audio models with centralized imports |
+| `src/components/project-setup/types.ts` | Add `baseAudioModel` to `ProjectData` |
+| `src/components/project-setup/TabNavigation.tsx` | Add audio model selector, responsive popover |
+| `src/components/project-setup/ProjectContext.tsx` | Wire `baseAudioModel` |
+| `src/pages/KanvasPage.tsx` | Mobile bottom nav, safe areas, responsive header |
+| `src/components/kanvas/KanvasSidebar.tsx` | `hidden md:block` for mobile |
+| `src/components/project-setup/ProjectSetupWizard.tsx` | Responsive tabs and padding |
+| `index.html` | PWA meta tags |
 
