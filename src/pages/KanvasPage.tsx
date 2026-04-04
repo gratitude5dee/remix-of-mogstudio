@@ -1450,7 +1450,7 @@ export default function KanvasPage() {
       </svg>
 
       {/* Bottom status bar */}
-      <div className="fixed bottom-0 left-0 right-0 h-8 z-[55] bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/[0.04] flex items-center justify-between px-4">
+      <div className="hidden md:flex fixed bottom-0 left-0 right-0 h-8 z-[55] bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-white/[0.04] items-center justify-between px-4">
         <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-medium">WZRD Studio</span>
         <div className="flex items-center gap-2">
           <div className="h-1.5 w-1.5 rounded-full bg-[#f97316] shadow-[0_0_6px_rgba(249,115,22,0.5)] animate-pulse" />
@@ -1459,6 +1459,32 @@ export default function KanvasPage() {
         <div className="flex items-center gap-3">
           <CreditsDisplay showTooltip={false} />
           <kbd className="text-[9px] text-zinc-500 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-0.5 font-mono">⌘K</kbd>
+        </div>
+      </div>
+
+      {/* Mobile bottom nav */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[55] bg-[#0A0A0A]/95 backdrop-blur-xl border-t border-white/[0.06] pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-center justify-around px-2 py-2">
+          {KANVAS_STUDIO_ORDER.map((s) => {
+            const Icon = STUDIO_ICONS[s];
+            const isActive = studio === s;
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setStudio(s)}
+                className={cn(
+                  'flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-all',
+                  isActive
+                    ? 'text-[#f97316]'
+                    : 'text-zinc-500 active:text-zinc-300',
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                <span className="text-[9px] font-medium">{KANVAS_STUDIO_META[s].label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

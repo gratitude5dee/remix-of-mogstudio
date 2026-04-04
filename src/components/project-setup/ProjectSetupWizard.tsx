@@ -8,9 +8,9 @@ import NavigationFooter from './NavigationFooter';
 const ProjectSetupWizard = () => {
   return (
     <ProjectProvider>
-      <div className="min-h-screen flex flex-col bg-[#0A0A0F]">
-        {/* Ambient background effects */}
-        <div className="fixed inset-0 pointer-events-none">
+        <div className="min-h-screen flex flex-col bg-[#0A0A0F]">
+          {/* Ambient background effects */}
+          <div className="fixed inset-0 pointer-events-none hidden md:block">
           {/* Top-left warm glow */}
           <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-[120px]" />
           {/* Bottom-right accent glow */}

@@ -161,7 +161,7 @@ const TabNavigation = () => {
                 align="end"
                 sideOffset={12}
                 className={cn(
-                  "w-[420px] p-0 rounded-xl",
+                  "w-[calc(100vw-2rem)] sm:w-[420px] p-0 rounded-xl",
                   "bg-[#0f0f13] border-[rgba(249,115,22,0.15)]",
                   "shadow-[0_8px_40px_rgba(0,0,0,0.5),0_0_0_1px_rgba(249,115,22,0.08)]"
                 )}

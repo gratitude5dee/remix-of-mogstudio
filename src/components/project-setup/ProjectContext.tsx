@@ -82,6 +82,7 @@ const defaultProjectData: ProjectData = {
   storylineTextSettings: {},
   baseImageModel: 'fal-ai/nano-banana-2',
   baseVideoModel: 'fal-ai/kling-video/o3/standard/text-to-video',
+  baseAudioModel: 'fal-ai/elevenlabs/tts/turbo-v2.5',
   evaluationMode: 'shadow',
   evaluationThresholds: DEFAULT_EVALUATION_THRESHOLDS,
   canonFacts: [],
