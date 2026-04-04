@@ -339,7 +339,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
       />
 
       {/* Left: Thumbnail Rail (80px) */}
-      <div className="w-20 flex-shrink-0 h-full bg-[#0a0a0a] border-r border-white/[0.06] flex flex-col py-4 px-2 gap-1.5 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+      <div className="hidden md:flex w-20 flex-shrink-0 h-full bg-[#0a0a0a] border-r border-white/[0.06] flex-col py-4 px-2 gap-1.5 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
         <p className="text-[8px] uppercase tracking-[0.2em] text-zinc-600 font-bold text-center mb-2">Assets</p>
 
         {/* Upload button */}
