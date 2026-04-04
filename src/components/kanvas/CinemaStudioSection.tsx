@@ -40,7 +40,7 @@ const AUDIO_MODELS: AudioModel[] = [
   { id: 'cassette-video-sfx', name: 'Video SFX', endpoint: 'cassetteai/video-sound-effects-generator', credits: 4, category: 'video-sfx' },
 ];
 
-type AudioMode = 'voiceover' | 'change-voice' | 'translate';
+type AudioMode = 'voiceover' | 'change-voice' | 'translate' | 'music-sfx';
 type CinemaTab = 'image' | 'video' | 'audio' | 'cast' | 'all' | 'liked';
 type FilterItem = 'genre' | 'budget' | 'era' | 'archetype' | 'identity' | 'appearance' | 'details' | 'outfit';
 
