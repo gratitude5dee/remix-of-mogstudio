@@ -3,6 +3,7 @@ import {
   Sparkles, Search, Plus, ChevronLeft, ChevronRight,
   ImageIcon, Video, Users, Shuffle, Loader2, Clapperboard,
   Camera, Film, Volume2, VolumeX, Music, Heart, LayoutGrid,
+  Mic, X, Upload, Languages, RefreshCw, Coins,
 } from 'lucide-react';
 import type {
   KanvasAsset, KanvasJob, KanvasAssetType, KanvasModel,
@@ -11,7 +12,35 @@ import type { KanvasCinemaSettings } from '@/features/kanvas/types';
 import type { CharacterMention } from '@/types/character-creation';
 import { MentionDropdown } from '@/components/character-creation/MentionDropdown';
 
-/* ── Types ── */
+/* ── Audio Models Registry ── */
+type AudioModelCategory = 'voiceover' | 'voice-clone' | 'multi-speaker' | 'music' | 'sfx' | 'video-sfx';
+interface AudioModel {
+  id: string;
+  name: string;
+  endpoint: string;
+  credits: number;
+  category: AudioModelCategory;
+}
+
+const AUDIO_MODELS: AudioModel[] = [
+  { id: 'eleven-tts', name: 'Eleven v3', endpoint: 'fal-ai/elevenlabs/tts/turbo-v2.5', credits: 4, category: 'voiceover' },
+  { id: 'minimax-02-hd', name: 'MiniMax HD', endpoint: 'fal-ai/minimax/speech-02-hd', credits: 3, category: 'voiceover' },
+  { id: 'minimax-28-hd', name: 'MiniMax 2.8', endpoint: 'fal-ai/minimax/speech-2.8-hd', credits: 3, category: 'voiceover' },
+  { id: 'minimax-turbo', name: 'MiniMax Turbo', endpoint: 'fal-ai/minimax/speech-02-turbo', credits: 2, category: 'voiceover' },
+  { id: 'minimax-clone', name: 'MiniMax Clone', endpoint: 'fal-ai/minimax/voice-clone', credits: 5, category: 'voice-clone' },
+  { id: 'chatterbox', name: 'Chatterbox', endpoint: 'fal-ai/chatterbox/text-to-speech', credits: 2, category: 'voiceover' },
+  { id: 'qwen-tts', name: 'Qwen 3 TTS', endpoint: 'fal-ai/qwen-3-tts/text-to-speech/1.7b', credits: 2, category: 'voiceover' },
+  { id: 'index-tts', name: 'Index TTS 2', endpoint: 'fal-ai/index-tts-2/text-to-speech', credits: 3, category: 'voiceover' },
+  { id: 'vibevoice', name: 'VibeVoice 7B', endpoint: 'fal-ai/vibevoice/7b', credits: 4, category: 'multi-speaker' },
+  { id: 'lux-tts', name: 'Lux TTS', endpoint: 'fal-ai/lux-tts', credits: 3, category: 'voice-clone' },
+  { id: 'lyria2', name: 'Lyria 2', endpoint: 'fal-ai/lyria2', credits: 6, category: 'music' },
+  { id: 'cassette-music', name: 'CassetteAI Music', endpoint: 'cassetteai/music-generator', credits: 5, category: 'music' },
+  { id: 'cassette-sfx', name: 'CassetteAI SFX', endpoint: 'cassetteai/sound-effects-generator', credits: 3, category: 'sfx' },
+  { id: 'pixverse-sfx', name: 'Pixverse SFX', endpoint: 'fal-ai/pixverse/sound-effects', credits: 4, category: 'video-sfx' },
+  { id: 'cassette-video-sfx', name: 'Video SFX', endpoint: 'cassetteai/video-sound-effects-generator', credits: 4, category: 'video-sfx' },
+];
+
+type AudioMode = 'voiceover' | 'change-voice' | 'translate';
 type CinemaTab = 'image' | 'video' | 'audio' | 'cast' | 'all' | 'liked';
 type FilterItem = 'genre' | 'budget' | 'era' | 'archetype' | 'identity' | 'appearance' | 'details' | 'outfit';
 
