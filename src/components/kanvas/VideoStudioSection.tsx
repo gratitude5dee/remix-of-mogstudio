@@ -322,7 +322,7 @@ export function VideoStudioSection({
       {/* Main Content */}
       <div className="min-w-0 flex-1 space-y-10">
         <div>
-          <h1 className="text-5xl font-bold tracking-tighter text-white lg:text-6xl" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-white lg:text-6xl" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             MAKE VIDEOS IN <em className="not-italic text-[#f97316]">ONE CLICK</em>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-zinc-400">
