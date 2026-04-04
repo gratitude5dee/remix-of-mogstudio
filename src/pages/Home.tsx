@@ -247,17 +247,19 @@ export default function Home() {
             {/* Row 1: Title + Project Count + Actions */}
             <div className="h-16 flex items-center justify-between px-6">
               <div className="flex items-center gap-4">
+                <img 
+                  src={wzrdLogo} 
+                  alt="WZRD STUDIO Logo" 
+                  className="h-20 object-contain"
+                />
+                <span className="text-xs text-primary bg-primary/15 px-2 py-0.5 rounded-full border border-primary/25 font-medium">
+                  ALPHA
+                </span>
+                <div className="h-5 w-px bg-[rgba(249,115,22,0.1)]" />
                 <div className="flex items-center gap-2">
                   <TextAnimate animation="blurInUp" by="word" className="text-xl font-semibold text-text-primary dark:text-foreground">
                     Dashboard
                   </TextAnimate>
-                  <motion.span
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3, type: "spring" }}
-                    className="text-lg"
-                  >
-                  </motion.span>
                 </div>
                 <div className="h-5 w-px bg-[rgba(249,115,22,0.1)]" />
                 <span className="text-sm text-text-secondary dark:text-muted-foreground font-medium">
