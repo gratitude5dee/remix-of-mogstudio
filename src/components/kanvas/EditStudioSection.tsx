@@ -330,7 +330,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
   ];
 
   return (
-    <div className="fixed inset-0 top-[68px] bg-[#090909] z-20 overflow-hidden flex" style={{ scrollbarWidth: 'none' }}>
+    <div className="fixed inset-0 top-[68px] bg-[#090909] z-20 overflow-hidden flex flex-col md:flex-row" style={{ scrollbarWidth: 'none' }}>
       <style>{`::-webkit-scrollbar { display: none; }`}</style>
 
       {/* SVG noise overlay */}
