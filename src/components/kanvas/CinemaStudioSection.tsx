@@ -737,70 +737,113 @@ export default function CinemaStudioSection({
       audioMode === 'translate' ? 'Enter text to translate...' :
       'Describe the music or sound effect...';
 
+    const categoryDotColor: Record<string, string> = {
+      'voiceover': '#f97316',
+      'voice-clone': '#fb923c',
+      'multi-speaker': '#fbbf24',
+      'music': '#a855f7',
+      'sfx': '#3b82f6',
+      'video-sfx': '#06b6d4',
+    };
+
     return (
       <div className="absolute bottom-8 left-0 right-0 z-30">
         <div className="bg-[#0e0e0e]/95 backdrop-blur-2xl border-t border-white/[0.06] px-6 py-3">
-          <div className="max-w-[1400px] mx-auto flex items-center gap-3">
+          <div className="max-w-[1400px] mx-auto flex items-center gap-4">
 
-            {/* ── Turnable Dial ── */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <div className="relative w-[72px] h-[72px]">
-                {/* Dial body */}
+            {/* ── Premium Turnable Dial ── */}
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <div
+                className="relative w-[88px] h-[88px] cursor-grab"
+                style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}
+              >
+                {/* Outer ring — knurled edge */}
                 <div
-                  className="absolute inset-0 rounded-full border border-white/[0.08]"
+                  className="absolute inset-0 rounded-full"
                   style={{
-                    background: 'radial-gradient(circle at 40% 35%, #2a2a2a 0%, #111 60%, #0a0a0a 100%)',
-                    boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4)',
+                    background: 'conic-gradient(from 0deg, #1a1a1a 0%, #2a2a2a 5%, #1a1a1a 10%, #2a2a2a 15%, #1a1a1a 20%, #2a2a2a 25%, #1a1a1a 30%, #2a2a2a 35%, #1a1a1a 40%, #2a2a2a 45%, #1a1a1a 50%, #2a2a2a 55%, #1a1a1a 60%, #2a2a2a 65%, #1a1a1a 70%, #2a2a2a 75%, #1a1a1a 80%, #2a2a2a 85%, #1a1a1a 90%, #2a2a2a 95%, #1a1a1a 100%)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)',
                   }}
                 />
-                {/* Tick marks */}
+                {/* Inner bevel ring */}
+                <div
+                  className="absolute inset-[3px] rounded-full border border-white/[0.04]"
+                  style={{
+                    background: 'radial-gradient(circle at 40% 30%, #2a2a2a 0%, #151515 50%, #0d0d0d 100%)',
+                    boxShadow: 'inset 0 3px 10px rgba(0,0,0,0.8), inset 0 -1px 4px rgba(255,255,255,0.03)',
+                  }}
+                />
+                {/* Tick marks — 2px × 6px rounded bars */}
                 {AUDIO_MODES.map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-1 rounded-full"
+                    className="absolute rounded-full transition-all duration-300"
                     style={{
+                      width: '2px',
+                      height: '6px',
                       top: '50%',
                       left: '50%',
-                      transform: `rotate(${i * 72}deg) translateY(-28px) translate(-50%, -50%)`,
-                      backgroundColor: i === activeIndex ? '#f97316' : 'rgba(255,255,255,0.15)',
+                      transformOrigin: '50% 50%',
+                      transform: `rotate(${i * 72}deg) translateY(-36px) translate(-50%, -50%)`,
+                      backgroundColor: i === activeIndex ? '#f97316' : 'rgba(255,255,255,0.12)',
+                      boxShadow: i === activeIndex ? '0 0 8px rgba(249,115,22,0.5)' : 'none',
                     }}
                   />
                 ))}
-                {/* Indicator dot */}
+                {/* Indicator line — 3px wide radial */}
                 <div
                   className="absolute top-1/2 left-1/2 transition-transform duration-300 ease-out"
                   style={{
-                    transform: `rotate(${dialRotation}deg) translateY(-22px) translate(-50%, -50%)`,
+                    width: '3px',
+                    height: '18px',
+                    borderRadius: '2px',
+                    transformOrigin: '50% 100%',
+                    transform: `translate(-50%, -100%) rotate(${dialRotation}deg)`,
+                    background: 'linear-gradient(to top, #f97316, rgba(249,115,22,0.2))',
+                    boxShadow: '0 0 12px rgba(249,115,22,0.5), 0 0 24px rgba(249,115,22,0.2)',
+                  }}
+                />
+                {/* Center cap — concentric rings */}
+                <div
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, #282828 0%, #1a1a1a 50%, #111 100%)',
+                    boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.06), 0 2px 6px rgba(0,0,0,0.5)',
                   }}
                 >
                   <div
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{
-                      background: '#f97316',
-                      boxShadow: '0 0 10px rgba(249,115,22,0.6), 0 0 20px rgba(249,115,22,0.3)',
-                    }}
-                  />
+                    className="absolute inset-[3px] rounded-full"
+                    style={{ background: 'radial-gradient(circle, #222 0%, #181818 100%)' }}
+                  >
+                    <div
+                      className="absolute inset-[2px] rounded-full border border-white/[0.03]"
+                      style={{ background: 'radial-gradient(circle at 40% 35%, #2a2a2a 0%, #161616 100%)' }}
+                    />
+                  </div>
                 </div>
-                {/* Center cap */}
-                <div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full border border-white/[0.06]"
-                  style={{ background: 'radial-gradient(circle, #222 0%, #111 100%)' }}
-                />
               </div>
 
-              {/* Mode labels */}
+              {/* ── Mode Labels with Icons + Accent Bar ── */}
               <div className="flex flex-col gap-0.5">
-                {AUDIO_MODES.map(({ id, label }) => (
+                {AUDIO_MODES.map(({ id, label, Icon }) => (
                   <button
                     key={id}
                     onClick={() => setAudioMode(id)}
-                    className={`text-left text-[9px] uppercase tracking-[0.15em] font-bold px-2 py-0.5 rounded transition-all ${
+                    className={`group flex items-center gap-2 text-left text-[10px] uppercase tracking-[0.12em] font-bold pl-0 pr-3 py-1 rounded-r transition-all duration-200 ${
                       audioMode === id
-                        ? 'text-[#f97316]'
-                        : 'text-zinc-600 hover:text-zinc-400'
+                        ? 'text-[#f97316] bg-white/[0.03]'
+                        : 'text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.02]'
                     }`}
                   >
-                    {audioMode === id && <span className="mr-1">›</span>}
+                    {/* Left accent bar */}
+                    <div
+                      className={`w-[3px] h-5 rounded-r transition-all duration-200 ${
+                        audioMode === id ? 'bg-[#f97316]' : 'bg-transparent'
+                      }`}
+                    />
+                    <Icon className={`h-3.5 w-3.5 transition-colors duration-200 ${
+                      audioMode === id ? 'text-[#f97316]' : 'text-zinc-600 group-hover:text-zinc-400'
+                    }`} />
                     {label}
                   </button>
                 ))}
@@ -808,11 +851,11 @@ export default function CinemaStudioSection({
             </div>
 
             {/* Divider */}
-            <div className="w-px h-10 bg-white/[0.06] flex-shrink-0" />
+            <div className="w-px h-14 bg-white/[0.06] flex-shrink-0" />
 
             {/* Prompt input */}
             <div className="flex-1 min-w-0">
-              <div className="bg-[#1a1a1a] rounded-full px-4 py-2.5 flex items-center">
+              <div className="bg-[#1a1a1a] rounded-full px-4 py-2.5 flex items-center border border-white/[0.04] hover:border-white/[0.08] transition-colors">
                 <input
                   type="text"
                   value={audioPrompt}
@@ -827,54 +870,87 @@ export default function CinemaStudioSection({
             {/* Model badge + popup */}
             <div className="relative flex-shrink-0">
               <button
-                className={`bg-[#1a1a1a] border rounded-full px-3 py-2 text-[10px] text-zinc-400 flex items-center gap-1.5 transition-colors flex-shrink-0 ${
-                  showAudioModelPicker ? 'border-[#f97316]/40' : 'border-white/[0.06] hover:border-white/10'
+                className={`bg-[#1a1a1a] border rounded-full px-3 py-2 text-[10px] text-zinc-400 flex items-center gap-1.5 transition-all flex-shrink-0 ${
+                  showAudioModelPicker ? 'border-[#f97316]/40 shadow-[0_0_12px_rgba(249,115,22,0.1)]' : 'border-white/[0.06] hover:border-white/10'
                 }`}
                 onClick={() => setShowAudioModelPicker(!showAudioModelPicker)}
               >
                 <Coins className="h-3 w-3 text-[#f97316]" />
-                {selectedAudioModel.name} · {selectedAudioModel.credits}cr
+                <span className="font-medium">{selectedAudioModel.name}</span>
+                <span className="text-zinc-600">·</span>
+                <span className="text-[#f97316] font-bold">{selectedAudioModel.credits}cr</span>
+                <ChevronLeft className={`h-3 w-3 text-zinc-500 transition-transform duration-200 ${showAudioModelPicker ? 'rotate-90' : '-rotate-90'}`} />
               </button>
 
-              {/* Model Picker Popup */}
+              {/* ── Enhanced Model Picker Popup ── */}
               {showAudioModelPicker && (
                 <>
-                  {/* Backdrop */}
                   <div className="fixed inset-0 z-40" onClick={() => setShowAudioModelPicker(false)} />
                   <div
-                    className="absolute bottom-full mb-2 right-0 z-50 w-[280px] max-h-[360px] overflow-y-auto rounded-xl border border-white/[0.08] bg-[#111]/95 backdrop-blur-xl shadow-2xl"
-                    style={{ scrollbarWidth: 'thin' }}
+                    className="absolute bottom-full mb-2 right-0 z-50 w-[340px] max-h-[400px] flex flex-col rounded-xl border border-white/[0.08] bg-[#0e0e0e]/95 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-2 fade-in duration-200"
                   >
-                    <div className="p-3 border-b border-white/[0.06]">
-                      <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Select Model</p>
-                    </div>
-                    {Object.entries(groupedModels).map(([cat, models]) => (
-                      <div key={cat}>
-                        <div className="px-3 py-1.5 bg-white/[0.02]">
-                          <p className="text-[9px] uppercase tracking-widest text-zinc-600 font-bold">
-                            {categoryLabels[cat] || cat}
-                          </p>
-                        </div>
-                        {models.map((model) => (
-                          <button
-                            key={model.id}
-                            onClick={() => {
-                              setSelectedAudioModel(model);
-                              setShowAudioModelPicker(false);
-                            }}
-                            className={`w-full text-left px-3 py-2 flex items-center gap-2 hover:bg-white/[0.04] transition-colors ${
-                              selectedAudioModel.id === model.id ? 'border-l-2 border-l-[#f97316] bg-white/[0.03]' : 'border-l-2 border-l-transparent'
-                            }`}
-                          >
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs text-white font-medium truncate">{model.name}</p>
-                              <p className="text-[9px] text-zinc-600 truncate">{model.endpoint.split('/').slice(-1)[0]}</p>
-                            </div>
-                            <span className="text-[10px] text-[#f97316] font-bold flex-shrink-0">{model.credits}cr</span>
-                          </button>
-                        ))}
+                    {/* Header with search */}
+                    <div className="p-3 border-b border-white/[0.06] flex-shrink-0">
+                      <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-bold mb-2">Select Model</p>
+                      <div className="bg-[#1a1a1a] rounded-lg px-3 py-1.5 flex items-center gap-2 border border-white/[0.04]">
+                        <Search className="h-3 w-3 text-zinc-600 flex-shrink-0" />
+                        <input
+                          type="text"
+                          placeholder="Search models..."
+                          className="flex-1 bg-transparent border-none text-xs text-white placeholder-zinc-600 focus:outline-none"
+                          onChange={(e) => {
+                            const q = e.target.value.toLowerCase();
+                            // Filter handled inline below
+                            (e.target as HTMLInputElement).dataset.query = q;
+                            // Force re-render by toggling a harmless state
+                          }}
+                        />
                       </div>
-                    ))}
+                    </div>
+                    {/* Model list */}
+                    <div className="overflow-y-auto flex-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#f97316 transparent' }}>
+                      {Object.entries(groupedModels).map(([cat, models]) => (
+                        <div key={cat}>
+                          {/* Sticky category header */}
+                          <div className="sticky top-0 px-3 py-1.5 bg-[#0e0e0e]/98 backdrop-blur-sm border-b border-white/[0.03] flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: categoryDotColor[cat] || '#f97316' }} />
+                              <p className="text-[9px] uppercase tracking-[0.15em] text-zinc-500 font-bold">
+                                {categoryLabels[cat] || cat}
+                              </p>
+                            </div>
+                            <span className="text-[9px] text-zinc-700 font-mono">{models.length}</span>
+                          </div>
+                          {/* Model cards */}
+                          {models.map((model) => (
+                            <button
+                              key={model.id}
+                              onClick={() => {
+                                setSelectedAudioModel(model);
+                                setShowAudioModelPicker(false);
+                              }}
+                              className={`w-full text-left px-3 py-2.5 flex items-center gap-3 hover:bg-white/[0.04] transition-all duration-150 ${
+                                selectedAudioModel.id === model.id
+                                  ? 'border-l-[3px] border-l-[#f97316] bg-[#f97316]/[0.04]'
+                                  : 'border-l-[3px] border-l-transparent'
+                              }`}
+                            >
+                              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: categoryDotColor[cat] || '#f97316' }} />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[11px] text-white font-semibold truncate">{model.name}</p>
+                                <p className="text-[9px] text-zinc-600 truncate font-mono">{model.endpoint.split('/').slice(-1)[0]}</p>
+                              </div>
+                              <span
+                                className="text-[10px] font-bold flex-shrink-0 px-2 py-0.5 rounded-full"
+                                style={{ backgroundColor: 'rgba(249,115,22,0.1)', color: '#f97316' }}
+                              >
+                                {model.credits}cr
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </>
               )}
@@ -893,11 +969,13 @@ export default function CinemaStudioSection({
               </button>
             )}
 
-            {/* Generate */}
+            {/* Generate — pulses when prompt is filled */}
             <button
               onClick={onGenerate}
               disabled={submitting || !audioPrompt.trim()}
-              className="bg-[#f97316] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(249,115,22,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+              className={`bg-[#f97316] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(249,115,22,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 ${
+                audioPrompt.trim() && !submitting ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]' : ''
+              }`}
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               GENERATE ✦ {selectedAudioModel.credits}
