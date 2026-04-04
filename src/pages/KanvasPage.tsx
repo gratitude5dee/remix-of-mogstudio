@@ -1174,6 +1174,12 @@ export default function KanvasPage() {
   const videoAssets = assets.filter((asset) => asset.asset_type === "video");
   const audioAssets = assets.filter((asset) => asset.asset_type === "audio");
 
+  // Hydrate character store on mount so @mentions work across all studios
+  const listBlueprints = useCharacterCreationStore((s) => s.listBlueprints);
+  useEffect(() => {
+    listBlueprints().catch(() => {});
+  }, [listBlueprints]);
+
   // Full character mention list for cinema cast (unfiltered)
   const getMentionListFn = useCharacterCreationStore((s) => s.getMentionList);
   const allCharacterMentions = useMemo(() => {
