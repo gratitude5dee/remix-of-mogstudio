@@ -1,204 +1,272 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMemo } from 'react';
+import { useRef, useMemo, useEffect, useState, useCallback, Component, type ReactNode } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import * as THREE from 'three';
+import { loadingVertexShader, loadingFragmentShader } from './shaders/loading-shaders';
 
+/* ─── WebGL Detection ─── */
+function isWebGLAvailable(): boolean {
+  try {
+    const c = document.createElement('canvas');
+    return !!(c.getContext('webgl2') || c.getContext('webgl'));
+  } catch { return false; }
+}
+
+/* ─── Error Boundary ─── */
+class WebGLErrorBoundary extends Component<
+  { fallback: ReactNode; onError?: () => void; children: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch() { this.props.onError?.(); }
+  render() { return this.state.hasError ? this.props.fallback : this.props.children; }
+}
+
+/* ─── Create text texture with Canvas2D ─── */
+function createTextTexture(text: string, fontSize = 32): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d')!;
+  const dpr = Math.min(window.devicePixelRatio, 2);
+  
+  ctx.font = `${fontSize}px "Inter", "SF Pro Display", -apple-system, sans-serif`;
+  const metrics = ctx.measureText(text);
+  const w = Math.ceil(metrics.width + 40);
+  const h = Math.ceil(fontSize * 2);
+  
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+  
+  ctx.clearRect(0, 0, w, h);
+  ctx.font = `300 ${fontSize}px "Inter", "SF Pro Display", -apple-system, sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.letterSpacing = '0.25em';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, w / 2, h / 2);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  return texture;
+}
+
+/* ─── Fullscreen Shader Quad ─── */
+function ShaderQuad({ phase }: { phase: number }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const { viewport, size } = useThree();
+
+  const [logoTex, setLogoTex] = useState<THREE.Texture | null>(null);
+  const textTex = useMemo(() => createTextTexture('WZRD STUDIO', 28), []);
+
+  useEffect(() => {
+    const loader = new THREE.TextureLoader();
+    loader.load('/lovable-uploads/wzrdtechlogo.png', (tex) => {
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      setLogoTex(tex);
+    });
+  }, []);
+
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uPhase: { value: 0 },
+    uLogo: { value: new THREE.Texture() },
+    uText: { value: textTex },
+    uResolution: { value: new THREE.Vector2(size.width, size.height) },
+  }), [textTex, size.width, size.height]);
+
+  useEffect(() => {
+    if (logoTex) uniforms.uLogo.value = logoTex;
+  }, [logoTex, uniforms]);
+
+  useEffect(() => {
+    uniforms.uResolution.value.set(size.width, size.height);
+  }, [size, uniforms]);
+
+  useFrame((_, delta) => {
+    uniforms.uTime.value += delta;
+    uniforms.uPhase.value += (phase - uniforms.uPhase.value) * 3.0 * delta;
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <planeGeometry args={[viewport.width, viewport.height]} />
+      <shaderMaterial
+        vertexShader={loadingVertexShader}
+        fragmentShader={loadingFragmentShader}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+/* ─── Particle System ─── */
+function Particles({ phase }: { phase: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const count = 200;
+
+  const [positions, velocities, _seeds] = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const vel = new Float32Array(count * 3);
+    const sd = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 4 + 1;
+      pos[i * 3] = Math.cos(angle) * radius;
+      pos[i * 3 + 1] = Math.sin(angle) * radius;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 2;
+      // Spiral inward
+      vel[i * 3] = -Math.cos(angle) * 0.008;
+      vel[i * 3 + 1] = -Math.sin(angle) * 0.008;
+      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.002;
+      sd[i] = Math.random();
+    }
+    return [pos, vel, sd] as const;
+  }, []);
+
+  useFrame(() => {
+    if (!ref.current || phase < 0.5) return;
+    const arr = (ref.current.geometry.attributes.position as THREE.BufferAttribute).array as Float32Array;
+    const speed = phase > 1.5 ? 0.5 : 1.5;
+    for (let i = 0; i < count; i++) {
+      arr[i * 3] += velocities[i * 3] * speed;
+      arr[i * 3 + 1] += velocities[i * 3 + 1] * speed;
+      arr[i * 3 + 2] += velocities[i * 3 + 2];
+      const d = Math.sqrt(arr[i * 3] ** 2 + arr[i * 3 + 1] ** 2);
+      if (d < 0.1) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 3 + 2;
+        arr[i * 3] = Math.cos(angle) * radius;
+        arr[i * 3 + 1] = Math.sin(angle) * radius;
+      }
+    }
+    (ref.current.geometry.attributes.position as THREE.BufferAttribute).needsUpdate = true;
+  });
+
+  const opacity = phase < 0.5 ? 0 : phase > 3 ? Math.max(0, 1 - (phase - 3)) : 0.6;
+
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={count} />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#FF6B4A"
+        size={0.02}
+        transparent
+        opacity={opacity}
+        depthWrite={false}
+        sizeAttenuation
+      />
+    </points>
+  );
+}
+
+/* ─── Scene ─── */
+function Scene({ phase }: { phase: number }) {
+  return (
+    <>
+      <color attach="background" args={['#000000']} />
+      <ShaderQuad phase={phase} />
+      <Particles phase={phase} />
+    </>
+  );
+}
+
+/* ─── CSS Fallback ─── */
+function CSSFallback({ message }: { message: string }) {
+  return (
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black overflow-hidden">
+      <motion.div
+        className="w-[min(600px,80vw)] h-[min(600px,80vh)] rounded-full absolute"
+        style={{ background: 'radial-gradient(circle, hsla(24,100%,50%,0.15) 0%, transparent 70%)' }}
+        animate={{ scale: [0.8, 1.2, 0.8], opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.img
+        src="/lovable-uploads/wzrdtechlogo.png"
+        alt="WZRD"
+        className="w-32 h-32 sm:w-48 sm:h-48 object-contain relative z-10"
+        initial={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
+        animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+        transition={{ duration: 1, ease: 'easeOut' }}
+      />
+      <motion.p
+        className="text-xs text-white/30 tracking-[0.2em] uppercase mt-6 relative z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+      >
+        {message}
+      </motion.p>
+    </div>
+  );
+}
+
+/* ─── Main Component ─── */
 interface LoadingScreenProps {
   isLoading: boolean;
   message?: string;
 }
 
-const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 2 + 1,
-  duration: Math.random() * 3 + 3,
-  delay: Math.random() * 2,
-}));
+export function LoadingScreen({ isLoading, message = 'Initializing studio…' }: LoadingScreenProps) {
+  const [webglOk] = useState(() => isWebGLAvailable());
+  const [phase, setPhase] = useState(0);
+  const [webglFailed, setWebglFailed] = useState(false);
 
-export function LoadingScreen({ isLoading, message = 'Loading...' }: LoadingScreenProps) {
-  const particles = useMemo(() => PARTICLES, []);
+  // Phase timeline: 0→void, 1→ignite, 2→bloom, 3→reveal, 4→resolve
+  useEffect(() => {
+    if (!isLoading) return;
+    const start = performance.now();
+    let raf: number;
+    const tick = () => {
+      const elapsed = (performance.now() - start) / 1000;
+      // Map 0-2.5s to phase 0-4
+      setPhase(Math.min(elapsed * 1.6, 4));
+      if (elapsed < 2.5) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [isLoading]);
+
+  const handleWebGLError = useCallback(() => setWebglFailed(true), []);
 
   return (
     <AnimatePresence>
       {isLoading && (
         <motion.div
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black overflow-hidden"
+          className="fixed inset-0 z-[9999] bg-black"
         >
-          {/* Radial glow with hue rotation — responsive sizing */}
-          <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(800px,200vw)] h-[min(800px,200vh)] rounded-full"
-            style={{
-              background: 'radial-gradient(circle, hsla(14, 100%, 64%, 0.15) 0%, hsla(30, 100%, 55%, 0.05) 40%, transparent 70%)',
-            }}
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{
-              scale: [0.6, 1.2, 1],
-              opacity: [0, 0.8, 0.6],
-              filter: ['hue-rotate(0deg)', 'hue-rotate(15deg)', 'hue-rotate(-10deg)', 'hue-rotate(0deg)'],
-            }}
-            transition={{
-              scale: { duration: 1.4, ease: 'easeOut' },
-              opacity: { duration: 1.4, ease: 'easeOut' },
-              filter: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
-            }}
-          />
-
-          {/* Pulsing aura behind logo — responsive */}
-          <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-72 sm:h-72 rounded-full"
-            style={{
-              background: 'radial-gradient(circle, hsla(14, 100%, 64%, 0.2) 0%, transparent 70%)',
-            }}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
-            transition={{ delay: 0.8, duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          />
-
-          {/* Concentric ring 1 — repeating, contained by overflow-hidden */}
-          <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-orange-500/20"
-            initial={{ width: 60, height: 60, opacity: 0 }}
-            animate={{ width: [60, 500], height: [60, 500], opacity: [0, 0.4, 0] }}
-            transition={{ delay: 0.5, duration: 2.5, ease: 'easeOut', repeat: Infinity, repeatDelay: 1 }}
-          />
-
-          {/* Concentric ring 2 — repeating staggered */}
-          <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-500/15"
-            initial={{ width: 60, height: 60, opacity: 0 }}
-            animate={{ width: [60, 650], height: [60, 650], opacity: [0, 0.3, 0] }}
-            transition={{ delay: 1.2, duration: 2.8, ease: 'easeOut', repeat: Infinity, repeatDelay: 0.8 }}
-          />
-
-          {/* Particle field */}
-          {particles.map((p) => (
-            <motion.div
-              key={p.id}
-              className="absolute rounded-full bg-orange-500/30"
-              style={{
-                width: p.size,
-                height: p.size,
-                left: `${p.x}%`,
-                top: `${p.y}%`,
-              }}
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: [0, 0.6, 0],
-                y: [0, -20, 0],
-              }}
-              transition={{
-                duration: p.duration,
-                delay: p.delay,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            />
-          ))}
-
-          {/* Logo + effects container — responsive gap & sizing */}
-          <div className="relative z-10 flex flex-col items-center gap-6 sm:gap-8 px-4">
-            <motion.div
-              className="relative"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-            >
-              {/* Rotating energy ring (WebGL-style) — responsive */}
-              <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 sm:w-64 sm:h-64 rounded-full"
-                style={{
-                  background: 'conic-gradient(from 0deg, transparent 0%, #f97316 25%, #f59e0b 50%, transparent 75%)',
-                  filter: 'blur(8px)',
-                  opacity: 0.4,
-                }}
-                initial={{ rotate: 0, opacity: 0 }}
-                animate={{ rotate: 360, opacity: 0.4 }}
-                transition={{
-                  rotate: { duration: 4, repeat: Infinity, ease: 'linear' },
-                  opacity: { delay: 0.6, duration: 0.8 },
-                }}
-              />
-
-              {/* Logo: cinematic 3-keyframe entry — responsive */}
-              <motion.img
-                src="/lovable-uploads/wzrdtechlogo.png"
-                alt="WZRD Logo"
-                className="w-40 h-40 sm:w-60 sm:h-60 object-contain relative z-10"
-                initial={{ scale: 0.7, opacity: 0, filter: 'blur(20px) brightness(0.5)' }}
-                animate={{
-                  scale: [0.7, 1.02, 1],
-                  opacity: [0, 1, 1],
-                  filter: [
-                    'blur(20px) brightness(0.5)',
-                    'blur(0px) brightness(1.6)',
-                    'blur(0px) brightness(1)',
-                  ],
-                }}
-                transition={{ delay: 0.3, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              />
-
-              {/* Horizontal lens flare sweep */}
-              <motion.div
-                className="absolute inset-0 overflow-hidden pointer-events-none z-20"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ delay: 1.2, duration: 0.8, ease: 'easeInOut' }}
+          {webglOk && !webglFailed ? (
+            <WebGLErrorBoundary fallback={<CSSFallback message={message} />} onError={handleWebGLError}>
+              <Canvas
+                gl={{ antialias: true, alpha: false, powerPreference: 'high-performance', failIfMajorPerformanceCaveat: false }}
+                camera={{ position: [0, 0, 5], fov: 50 }}
+                style={{ background: '#000000' }}
+                fallback={<CSSFallback message={message} />}
               >
-                <motion.div
-                  className="absolute top-0 h-full w-24"
-                  style={{
-                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
-                  }}
-                  initial={{ left: '-6rem' }}
-                  animate={{ left: 'calc(100% + 6rem)' }}
-                  transition={{ delay: 1.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                />
-              </motion.div>
-
-              {/* Vertical lens flare sweep */}
-              <motion.div
-                className="absolute inset-0 overflow-hidden pointer-events-none z-20"
+                <Scene phase={phase} />
+              </Canvas>
+              {/* Message overlay */}
+              <motion.p
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xs text-white/30 tracking-[0.2em] uppercase z-10"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 0.7, 0] }}
-                transition={{ delay: 1.5, duration: 0.8, ease: 'easeInOut' }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
               >
-                <motion.div
-                  className="absolute left-0 w-full h-24"
-                  style={{
-                    background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.35), transparent)',
-                  }}
-                  initial={{ top: '-6rem' }}
-                  animate={{ top: 'calc(100% + 6rem)' }}
-                  transition={{ delay: 1.5, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                />
-              </motion.div>
-            </motion.div>
-
-            {/* Loading message */}
-            <motion.p
-              className="text-xs sm:text-sm text-white/40 tracking-[0.2em] uppercase font-light"
-              initial={{ opacity: 0, letterSpacing: '0.4em' }}
-              animate={{ opacity: 1, letterSpacing: '0.2em' }}
-              transition={{ delay: 1.4, duration: 0.6, ease: 'easeOut' }}
-            >
-              {message}
-            </motion.p>
-          </div>
-
-          {/* Bottom progress bar — slightly thicker for visibility */}
-          <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/5">
-            <motion.div
-              className="h-full rounded-r-full"
-              style={{
-                background: 'linear-gradient(90deg, #f97316, #f59e0b)',
-              }}
-              initial={{ scaleX: 0, transformOrigin: 'left' }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
+                {message}
+              </motion.p>
+            </WebGLErrorBoundary>
+          ) : (
+            <CSSFallback message={message} />
+          )}
         </motion.div>
       )}
     </AnimatePresence>

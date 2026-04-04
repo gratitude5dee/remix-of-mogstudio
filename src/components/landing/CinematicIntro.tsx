@@ -1,219 +1,111 @@
 import { useState, useEffect, useCallback, useRef, useMemo, Component, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useTexture } from '@react-three/drei';
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
+import { introVertexShader, introFragmentShader } from './shaders/intro-shaders';
 
-/* ─── WebGL Detection ─────────────────────────────────────────────── */
-
+/* ─── WebGL Detection ─── */
 function isWebGLAvailable(): boolean {
   try {
     const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl'));
-  } catch {
-    return false;
-  }
+    return !!(c.getContext('webgl2') || c.getContext('webgl'));
+  } catch { return false; }
 }
 
-/* ─── Error Boundary ──────────────────────────────────────────────── */
-
-interface ErrorBoundaryProps {
-  fallback: ReactNode;
-  onError?: () => void;
-  children: ReactNode;
+/* ─── Error Boundary ─── */
+class WebGLErrorBoundary extends Component<
+  { fallback: ReactNode; onError?: () => void; children: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch() { this.props.onError?.(); }
+  render() { return this.state.hasError ? this.props.fallback : this.props.children; }
 }
 
-interface ErrorBoundaryState {
-  hasError: boolean;
+/* ─── Create text texture ─── */
+function createTextTexture(text: string, fontSize = 36): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d')!;
+  const dpr = Math.min(window.devicePixelRatio, 2);
+
+  ctx.font = `300 ${fontSize}px "Inter", "SF Pro Display", -apple-system, sans-serif`;
+  const metrics = ctx.measureText(text);
+  const w = Math.ceil(metrics.width + 60);
+  const h = Math.ceil(fontSize * 2.5);
+
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.font = `300 ${fontSize}px "Inter", "SF Pro Display", -apple-system, sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  // Letter spacing simulation
+  const chars = text.split('');
+  const spacing = fontSize * 0.3;
+  const totalWidth = chars.reduce((acc, ch) => acc + ctx.measureText(ch).width + spacing, -spacing);
+  let x = (w - totalWidth) / 2;
+  chars.forEach(ch => {
+    const cw = ctx.measureText(ch).width;
+    ctx.fillText(ch, x + cw / 2, h / 2);
+    x += cw + spacing;
+  });
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  return texture;
 }
 
-class WebGLErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  state: ErrorBoundaryState = { hasError: false };
-
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    return { hasError: true };
-  }
-
-  componentDidCatch() {
-    this.props.onError?.();
-  }
-
-  render() {
-    if (this.state.hasError) return this.props.fallback;
-    return this.props.children;
-  }
-}
-
-/* ─── GLSL Shaders ────────────────────────────────────────────────── */
-
-const vertexShader = /* glsl */ `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-const fragmentShader = /* glsl */ `
-  uniform sampler2D uTexture;
-  uniform float uProgress;
-  uniform float uDissolve;
-  uniform float uBloom;
-  uniform float uTime;
-  varying vec2 vUv;
-
-  // Classic Perlin noise helpers
-  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec4 permute(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
-  vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-  vec2 fade(vec2 t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
-
-  float cnoise(vec2 P) {
-    vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
-    vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
-    Pi = mod289(Pi);
-    vec4 ix = Pi.xzxz;
-    vec4 iy = Pi.yyww;
-    vec4 fx = Pf.xzxz;
-    vec4 fy = Pf.yyww;
-    vec4 i = permute(permute(ix) + iy);
-    vec4 gx = fract(i * (1.0 / 41.0)) * 2.0 - 1.0;
-    vec4 gy = abs(gx) - 0.5;
-    vec4 tx = floor(gx + 0.5);
-    gx = gx - tx;
-    vec2 g00 = vec2(gx.x, gy.x);
-    vec2 g10 = vec2(gx.y, gy.y);
-    vec2 g01 = vec2(gx.z, gy.z);
-    vec2 g11 = vec2(gx.w, gy.w);
-    vec4 norm = taylorInvSqrt(vec4(dot(g00,g00), dot(g01,g01), dot(g10,g10), dot(g11,g11)));
-    g00 *= norm.x; g01 *= norm.y; g10 *= norm.z; g11 *= norm.w;
-    float n00 = dot(g00, vec2(fx.x, fy.x));
-    float n10 = dot(g10, vec2(fx.y, fy.y));
-    float n01 = dot(g01, vec2(fx.z, fy.z));
-    float n11 = dot(g11, vec2(fx.w, fy.w));
-    vec2 fade_xy = fade(Pf.xy);
-    vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
-    float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
-    return 2.3 * n_xy;
-  }
-
-  void main() {
-    // Displacement based on Perlin noise
-    float noiseScale = 4.0;
-    float noiseVal = cnoise(vUv * noiseScale + uTime * 0.3);
-
-    // Dissolve threshold: compare noise to dissolve progress
-    float dissolveEdge = smoothstep(uDissolve - 0.15, uDissolve + 0.05, (noiseVal + 1.0) * 0.5);
-
-    // UV displacement for distortion during reveal
-    float displaceAmount = (1.0 - uProgress) * 0.03;
-    vec2 displacedUv = vUv + vec2(
-      cnoise(vUv * 3.0 + uTime * 0.5) * displaceAmount,
-      cnoise(vUv * 3.0 + uTime * 0.5 + 100.0) * displaceAmount
-    );
-
-    vec4 texColor = texture2D(uTexture, displacedUv);
-
-    // Edge glow during dissolve (bright orange-amber fringe)
-    float edgeGlow = smoothstep(0.0, 0.15, dissolveEdge) * (1.0 - smoothstep(0.15, 0.4, dissolveEdge));
-    vec3 glowColor = vec3(1.0, 0.45, 0.2); // Warm orange glow
-
-    // Mix: logo color + edge glow
-    vec3 finalColor = mix(texColor.rgb, texColor.rgb + glowColor * 2.0, edgeGlow * uBloom);
-
-    // Apply dissolve mask
-    float alpha = texColor.a * dissolveEdge * uProgress;
-
-    // Extra bloom additive pass
-    finalColor += glowColor * uBloom * 0.3 * texColor.a * dissolveEdge;
-
-    gl_FragColor = vec4(finalColor, alpha);
-  }
-`;
-
-/* ─── Logo Plane Component ────────────────────────────────────────── */
-
-interface LogoPlaneProps {
-  phase: 'dark' | 'bloom' | 'reveal' | 'resolve';
-}
-
-function LogoPlane({ phase }: LogoPlaneProps) {
+/* ─── Fullscreen Shader Quad ─── */
+function IntroQuad({ phase }: { phase: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useTexture('/wzrdtechlogo.png');
-  const { viewport } = useThree();
+  const { viewport, size } = useThree();
 
-  const uniforms = useMemo(
-    () => ({
-      uTexture: { value: texture },
-      uProgress: { value: 0 },
-      uDissolve: { value: 0 },
-      uBloom: { value: 0 },
-      uTime: { value: 0 },
-    }),
-    [texture],
-  );
+  const [logoTex, setLogoTex] = useState<THREE.Texture | null>(null);
+  const textTex = useMemo(() => createTextTexture('WZRD STUDIO', 32), []);
 
-  // Compute plane size to fit nicely in viewport
-  const planeSize = useMemo(() => {
-    const img = texture.image as { width: number; height: number } | undefined;
-    const aspect = img ? img.width / img.height : 2;
-    const maxW = viewport.width * 0.45;
-    const maxH = viewport.height * 0.35;
-    let w = maxW;
-    let h = w / aspect;
-    if (h > maxH) {
-      h = maxH;
-      w = h * aspect;
-    }
-    return [w, h] as const;
-  }, [viewport.width, viewport.height, texture]);
+  useEffect(() => {
+    const loader = new THREE.TextureLoader();
+    loader.load('/lovable-uploads/wzrdtechlogo.png', (tex) => {
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      setLogoTex(tex);
+    });
+  }, []);
 
-  useFrame((_state, delta) => {
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uPhase: { value: 0 },
+    uLogo: { value: new THREE.Texture() },
+    uText: { value: textTex },
+    uResolution: { value: new THREE.Vector2(size.width, size.height) },
+  }), [textTex, size.width, size.height]);
+
+  useEffect(() => {
+    if (logoTex) uniforms.uLogo.value = logoTex;
+  }, [logoTex, uniforms]);
+
+  useEffect(() => {
+    uniforms.uResolution.value.set(size.width, size.height);
+  }, [size, uniforms]);
+
+  useFrame((_, delta) => {
     uniforms.uTime.value += delta;
-
-    // Phase-based animation targets
-    let targetProgress = 0;
-    let targetDissolve = 0;
-    let targetBloom = 0;
-
-    switch (phase) {
-      case 'dark':
-        targetProgress = 0;
-        targetDissolve = 0;
-        targetBloom = 0;
-        break;
-      case 'bloom':
-        targetProgress = 0.3;
-        targetDissolve = 0.15;
-        targetBloom = 1.5;
-        break;
-      case 'reveal':
-        targetProgress = 1;
-        targetDissolve = 1;
-        targetBloom = 0.8;
-        break;
-      case 'resolve':
-        targetProgress = 1;
-        targetDissolve = 1;
-        targetBloom = 0;
-        break;
-    }
-
-    // Smooth interpolation
-    const speed = 2.5;
-    uniforms.uProgress.value += (targetProgress - uniforms.uProgress.value) * speed * delta;
-    uniforms.uDissolve.value += (targetDissolve - uniforms.uDissolve.value) * speed * delta;
-    uniforms.uBloom.value += (targetBloom - uniforms.uBloom.value) * speed * delta;
+    // Smooth phase tracking
+    uniforms.uPhase.value += (phase - uniforms.uPhase.value) * 2.0 * delta;
   });
 
   return (
     <mesh ref={meshRef}>
-      <planeGeometry args={[planeSize[0], planeSize[1]]} />
+      <planeGeometry args={[viewport.width, viewport.height]} />
       <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
+        vertexShader={introVertexShader}
+        fragmentShader={introFragmentShader}
         uniforms={uniforms}
         transparent
         depthWrite={false}
@@ -222,64 +114,53 @@ function LogoPlane({ phase }: LogoPlaneProps) {
   );
 }
 
-/* ─── Ambient Particles ───────────────────────────────────────────── */
-
-function AmbientParticles({ phase }: { phase: string }) {
-  const pointsRef = useRef<THREE.Points>(null);
-  const count = 120;
+/* ─── Enhanced Particles (300 count) ─── */
+function IntroParticles({ phase }: { phase: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const count = 300;
 
   const [positions, velocities] = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const vel = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 8;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 6;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 2;
-      vel[i * 3] = (Math.random() - 0.5) * 0.01;
-      vel[i * 3 + 1] = Math.random() * 0.01 + 0.002;
-      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.005;
+      pos[i * 3] = (Math.random() - 0.5) * 10;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 4;
+      vel[i * 3] = (Math.random() - 0.5) * 0.008;
+      vel[i * 3 + 1] = Math.random() * 0.006 + 0.002;
+      vel[i * 3 + 2] = (Math.random() - 0.5) * 0.003;
     }
-    return [pos, vel];
+    return [pos, vel] as const;
   }, []);
 
   useFrame(() => {
-    if (!pointsRef.current) return;
-    const geo = pointsRef.current.geometry;
-    const posAttr = geo.attributes.position as THREE.BufferAttribute;
-    const arr = posAttr.array as Float32Array;
-
-    const visible = phase !== 'dark';
-    const speed = phase === 'bloom' ? 1.5 : 1;
-
+    if (!ref.current || phase < 0.6) return;
+    const arr = (ref.current.geometry.attributes.position as THREE.BufferAttribute).array as Float32Array;
+    const speed = phase < 2.5 ? 1.5 : 0.8;
     for (let i = 0; i < count; i++) {
-      if (visible) {
-        arr[i * 3] += velocities[i * 3] * speed;
-        arr[i * 3 + 1] += velocities[i * 3 + 1] * speed;
-        arr[i * 3 + 2] += velocities[i * 3 + 2] * speed;
-      }
-      // Wrap particles
-      if (arr[i * 3 + 1] > 3.5) {
-        arr[i * 3 + 1] = -3.5;
-        arr[i * 3] = (Math.random() - 0.5) * 8;
+      arr[i * 3] += velocities[i * 3] * speed;
+      arr[i * 3 + 1] += velocities[i * 3 + 1] * speed;
+      arr[i * 3 + 2] += velocities[i * 3 + 2];
+      if (arr[i * 3 + 1] > 4.5) {
+        arr[i * 3 + 1] = -4.5;
+        arr[i * 3] = (Math.random() - 0.5) * 10;
       }
     }
-    posAttr.needsUpdate = true;
+    (ref.current.geometry.attributes.position as THREE.BufferAttribute).needsUpdate = true;
   });
 
+  const opacity = phase < 0.6 ? 0 : phase > 5 ? Math.max(0, 1 - (phase - 5)) : 0.45;
+
   return (
-    <points ref={pointsRef}>
+    <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-          count={count}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={count} />
       </bufferGeometry>
       <pointsMaterial
         color="#FF6B4A"
-        size={0.025}
+        size={0.02}
         transparent
-        opacity={phase === 'dark' ? 0 : phase === 'bloom' ? 0.7 : 0.35}
+        opacity={opacity}
         depthWrite={false}
         sizeAttenuation
       />
@@ -287,102 +168,65 @@ function AmbientParticles({ phase }: { phase: string }) {
   );
 }
 
-/* ─── Scene (Three.js internals) ──────────────────────────────────── */
-
-interface SceneProps {
-  phase: 'dark' | 'bloom' | 'reveal' | 'resolve';
-}
-
-function Scene({ phase }: SceneProps) {
-  const bloomIntensity = phase === 'bloom' ? 2.5 : phase === 'reveal' ? 1.2 : phase === 'resolve' ? 0.2 : 0;
-
+/* ─── Scene ─── */
+function IntroScene({ phase }: { phase: number }) {
   return (
     <>
       <color attach="background" args={['#000000']} />
-      <ambientLight intensity={0.1} />
-      <pointLight position={[0, 0, 3]} intensity={phase === 'dark' ? 0 : 1.5} color="#FF6B4A" />
-      <LogoPlane phase={phase} />
-      <AmbientParticles phase={phase} />
-      <EffectComposer>
-        <Bloom
-          luminanceThreshold={0.2}
-          luminanceSmoothing={0.9}
-          intensity={bloomIntensity}
-          mipmapBlur
-        />
-        <Vignette eskil={false} offset={0.3} darkness={1.2} />
-      </EffectComposer>
+      <IntroQuad phase={phase} />
+      <IntroParticles phase={phase} />
     </>
   );
 }
 
-/* ─── Main CinematicIntro Component ───────────────────────────────── */
-
+/* ─── Main Component ─── */
 interface CinematicIntroProps {
   onComplete: () => void;
 }
 
-type Phase = 'dark' | 'bloom' | 'reveal' | 'resolve' | 'complete';
-
 const CinematicIntro = ({ onComplete }: CinematicIntroProps) => {
-  const [phase, setPhase] = useState<Phase>('dark');
+  const [phase, setPhase] = useState(0);
   const [webglAvailable] = useState(() => isWebGLAvailable());
+  const [done, setDone] = useState(false);
 
-  // Phase sequencing (~5s total)
+  // Continuous phase from 0→6 over 6 seconds
   useEffect(() => {
-    // If WebGL not available, skip intro immediately
-    if (!webglAvailable) {
-      onComplete();
-      return;
-    }
-
-    const timers: ReturnType<typeof setTimeout>[] = [];
-
-    // dark -> bloom at 0.5s
-    timers.push(setTimeout(() => setPhase('bloom'), 500));
-    // bloom -> reveal at 1.8s
-    timers.push(setTimeout(() => setPhase('reveal'), 1800));
-    // reveal -> resolve at 3.8s
-    timers.push(setTimeout(() => setPhase('resolve'), 3800));
-    // resolve -> complete at 5.0s
-    timers.push(
-      setTimeout(() => {
-        setPhase('complete');
+    if (!webglAvailable) { onComplete(); return; }
+    const start = performance.now();
+    let raf: number;
+    const tick = () => {
+      const elapsed = (performance.now() - start) / 1000;
+      setPhase(Math.min(elapsed, 6));
+      if (elapsed >= 6) {
+        setDone(true);
         onComplete();
-      }, 5000),
-    );
-
-    return () => timers.forEach(clearTimeout);
+      } else {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [onComplete, webglAvailable]);
 
-  // Safety timeout: if Canvas fails to render / hangs, skip after 6s
+  // Safety timeout
   useEffect(() => {
-    const safety = setTimeout(() => {
-      setPhase((prev) => {
-        if (prev !== 'complete') {
-          onComplete();
-          return 'complete';
-        }
-        return prev;
-      });
-    }, 6000);
-    return () => clearTimeout(safety);
-  }, [onComplete]);
+    const t = setTimeout(() => {
+      if (!done) { setDone(true); onComplete(); }
+    }, 7000);
+    return () => clearTimeout(t);
+  }, [onComplete, done]);
 
-  // Skip handler
   const handleSkip = useCallback(() => {
-    setPhase('complete');
+    setDone(true);
     onComplete();
   }, [onComplete]);
 
-  // Error handler for WebGL failures during rendering
   const handleWebGLError = useCallback(() => {
-    setPhase('complete');
+    setDone(true);
     onComplete();
   }, [onComplete]);
 
-  // If WebGL not available or completed, render nothing
-  if (!webglAvailable || phase === 'complete') return null;
+  if (!webglAvailable || done) return null;
 
   return (
     <motion.div
@@ -395,23 +239,15 @@ const CinematicIntro = ({ onComplete }: CinematicIntroProps) => {
     >
       <WebGLErrorBoundary fallback={null} onError={handleWebGLError}>
         <Canvas
-          gl={{
-            antialias: true,
-            alpha: false,
-            powerPreference: 'high-performance',
-            failIfMajorPerformanceCaveat: false,
-          }}
+          gl={{ antialias: true, alpha: false, powerPreference: 'high-performance', failIfMajorPerformanceCaveat: false }}
           camera={{ position: [0, 0, 5], fov: 50 }}
           style={{ background: '#000000' }}
-          fallback={
-            <div className="w-full h-full bg-black" />
-          }
+          fallback={<div className="w-full h-full bg-black" />}
         >
-          <Scene phase={phase as Exclude<Phase, 'complete'>} />
+          <IntroScene phase={phase} />
         </Canvas>
       </WebGLErrorBoundary>
 
-      {/* Skip hint */}
       <motion.p
         className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xs text-white/20 tracking-widest uppercase pointer-events-none"
         initial={{ opacity: 0 }}
