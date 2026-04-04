@@ -381,9 +381,9 @@ export default function Home() {
             </div>
             
             {/* Row 2: Tabs + Search + Actions */}
-            <div className="h-14 flex items-center justify-between px-6 border-t border-[rgba(249,115,22,0.08)]">
+            <div className="h-14 flex items-center justify-between px-6 border-t border-zinc-100 dark:border-[rgba(249,115,22,0.08)]">
               {/* Tabs */}
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.03]">
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-zinc-100 dark:bg-white/[0.03]">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -391,8 +391,8 @@ export default function Home() {
                     className={cn(
                       "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                       activeTab === tab.id
-                        ? "text-[#f97316] bg-[rgba(249,115,22,0.08)] border border-[rgba(249,115,22,0.25)] shadow-sm"
-                        : "text-text-tertiary hover:text-text-primary"
+                        ? "text-orange-600 dark:text-[#f97316] bg-orange-50 dark:bg-[rgba(249,115,22,0.08)] border border-orange-200 dark:border-[rgba(249,115,22,0.25)] shadow-sm"
+                        : "text-zinc-500 dark:text-text-tertiary hover:text-zinc-800 dark:hover:text-text-primary"
                     )}
                   >
                     {tab.label}
