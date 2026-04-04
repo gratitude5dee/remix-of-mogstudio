@@ -323,10 +323,64 @@ export default function ImageStudioSection({
 
   /* ---- Bottom Prompt Bar ---- */
   const renderPromptBar = () => (
-    <div className="fixed bottom-8 left-8 right-8 flex justify-center z-50">
-      <div className="relative bg-[#131313]/95 backdrop-blur-2xl border border-white/10 rounded-[28px] p-2.5 flex items-center gap-2 shadow-[0_20px_60px_rgba(0,0,0,0.9)] w-full max-w-[1100px]">
+    <div className="fixed bottom-16 left-3 right-3 md:bottom-8 md:left-8 md:right-8 flex justify-center z-50">
+      <div className="relative bg-[#131313]/95 backdrop-blur-2xl border border-white/10 rounded-[28px] p-2.5 shadow-[0_20px_60px_rgba(0,0,0,0.9)] w-full max-w-[1100px]">
         {renderModelDropdown()}
 
+        {/* Mobile: 2-row layout */}
+        <div className="flex flex-col gap-2 md:hidden">
+          {/* Row 1: Upload + Input + Generate */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => uploadRef.current?.click()}
+              className="shrink-0 w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin text-[#f97316]" /> : <Plus className="h-4 w-4 text-zinc-400" />}
+            </button>
+            <input
+              type="text"
+              value={prompt}
+              onChange={(e) => onPromptChange(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && prompt.trim()) onGenerate(); }}
+              placeholder="Describe the scene..."
+              className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 focus:outline-none text-white placeholder-zinc-600 font-medium text-sm px-2"
+            />
+            <button
+              onClick={onGenerate}
+              disabled={submitting || !prompt.trim()}
+              className={cn(
+                "shrink-0 flex items-center gap-1.5 px-4 h-10 rounded-full font-bold text-sm transition-all",
+                "bg-[#f97316] text-black hover:shadow-[0_0_25px_rgba(249,115,22,0.4)]",
+                "disabled:opacity-40 disabled:cursor-not-allowed"
+              )}
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+          {/* Row 2: Model + Aspect + Count (scrollable) */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
+              className="shrink-0 flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 hover:bg-white/10 transition-colors"
+            >
+              <span className="text-[10px] font-bold text-white whitespace-nowrap max-w-[100px] truncate">
+                {currentModel?.name ?? "Model"}
+              </span>
+              <ChevronDown className="h-3 w-3 text-zinc-500" />
+            </button>
+            <button className="shrink-0 flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2.5 py-1.5">
+              <span className="text-[10px] font-bold text-white">{selectedAspect}</span>
+            </button>
+            <div className="shrink-0 flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2 py-1">
+              <button onClick={() => setImageCount(Math.max(1, imageCount - 1))} className="p-0.5 text-zinc-500"><Minus className="h-3 w-3" /></button>
+              <span className="text-[10px] font-bold text-white w-5 text-center">{imageCount}</span>
+              <button onClick={() => setImageCount(Math.min(4, imageCount + 1))} className="p-0.5 text-zinc-500"><Plus className="h-3 w-3" /></button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: single-row layout */}
+        <div className="hidden md:flex items-center gap-2">
         {/* Plus (upload) */}
         <button
           onClick={() => uploadRef.current?.click()}
@@ -334,17 +388,6 @@ export default function ImageStudioSection({
         >
           {uploading ? <Loader2 className="h-4 w-4 animate-spin text-[#f97316]" /> : <Plus className="h-4 w-4 text-zinc-400" />}
         </button>
-        <input
-          ref={uploadRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            e.currentTarget.value = "";
-            if (file) onUpload(file, "image");
-          }}
-        />
 
         {/* Prompt input */}
         <input
@@ -435,6 +478,19 @@ export default function ImageStudioSection({
             </>
           )}
         </button>
+        </div>
+
+        <input
+          ref={uploadRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.currentTarget.value = "";
+            if (file) onUpload(file, "image");
+          }}
+        />
       </div>
     </div>
   );
