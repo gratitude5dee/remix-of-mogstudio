@@ -179,7 +179,7 @@ export default function ImageStudioSection({
 
   /* ---- Use Case Carousel ---- */
   const renderCarousel = () => (
-    <div className="relative max-w-[1100px] mx-auto px-12">
+    <div className="relative max-w-[1100px] mx-auto px-4 md:px-12 hidden md:block">
       <div className="flex items-center gap-4">
         <button
           onClick={() => setCarouselIndex(Math.max(0, carouselIndex - 1))}
