@@ -260,7 +260,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
                 <ChevronLeft className="h-[18px] w-[18px] rotate-180" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right">Expand sidebar</TooltipContent>
+            <TooltipContent side="right" sideOffset={8} className="z-[60]">Expand sidebar</TooltipContent>
           </Tooltip>
 
           {/* Divider */}
