@@ -46,6 +46,8 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
   useEffect(() => {
     if (!isCollapsed) setIsFloatingVisible(false);
   }, [isCollapsed]);
+
+  const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       toast.error('Failed to log out');
