@@ -1172,12 +1172,46 @@ export default function KanvasPage() {
           {/* Slim status header */}
           <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)]">
             <div className="flex items-center justify-between px-5 py-2">
-              <div className="flex items-center gap-2.5">
+              {/* Left: WZRD wordmark */}
+              <div className="flex items-center gap-2.5 min-w-[80px]">
                 <div className="w-2 h-2 rounded-full bg-[#BEFF00] shadow-[0_0_8px_rgba(190,255,0,0.4)]" />
                 <span className="text-sm font-bold tracking-tight text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>WZRD</span>
-                <span className="text-zinc-600 text-sm">/</span>
-                <span className="text-sm font-medium text-zinc-400">{KANVAS_STUDIO_META[studio].label}</span>
               </div>
+
+              {/* Center: Pill-slider studio nav */}
+              <div className="inline-flex items-center bg-[#111] rounded-full p-1 border border-white/[0.06] gap-0.5">
+                {KANVAS_STUDIO_ORDER.map((s) => {
+                  const Icon = {
+                    image: ImageIcon,
+                    video: VideoIcon,
+                    edit: Pencil,
+                    cinema: Clapperboard,
+                    lipsync: Mic2,
+                    worldview: Globe2,
+                    'character-creation': Sparkles,
+                  }[s] as typeof ImageIcon;
+                  const isActive = studio === s;
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setStudio(s)}
+                      className={cn(
+                        'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200',
+                        isActive
+                          ? 'bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]'
+                          : 'text-zinc-500 hover:text-zinc-300',
+                      )}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      <span className="hidden md:inline">{KANVAS_STUDIO_META[s].label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Right: spacer for symmetry */}
+              <div className="min-w-[80px]" />
             </div>
           </header>
 
