@@ -1,40 +1,43 @@
 
 
-# Dashboard UI Polish — Glowing Sidebar + Layout Fix
+# Fix Missing Hover Tooltips on Floating Sidebar
 
-## Problems Identified
+## Problem
+The floating sidebar has `overflow-hidden` in its className (line 236), which clips content during the width transition. While Radix tooltips portal to `<body>`, the `overflow-hidden` combined with the narrow `w-3` collapsed state and `pointer-events-none` prevents tooltip triggers from receiving hover events properly. The tooltips ARE in the code but never visually appear.
 
-1. **Dead space when collapsed**: The sidebar is now `fixed` (floating), but `Home.tsx` still animates `marginLeft: 64px` when collapsed — creating 64px of empty space on the left since the floating sidebar doesn't occupy flow space.
-2. **No glowing orange stroke on floating sidebar**: The expanded sidebar has a `ShineBorder` on hover, but the collapsed floating pill has no animated border glow.
-3. **Tooltips**: Already implemented for collapsed mode — no change needed there.
-4. **Expanded sidebar**: Already has `ShineBorder` on hover — will enhance with a persistent subtle animated orange border glow instead of hover-only.
+## Root Cause
+Line 236-237 in `Sidebar.tsx`:
+```
+'transition-all duration-300 ease-out overflow-hidden',
+isFloatingVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none',
+```
 
-## Changes
+The `overflow-hidden` is needed for the width collapse animation (so icons don't leak out during the `w-14 → w-3` transition), but it can interfere with tooltip positioning. More critically, the tooltip content needs explicit `z-50` or higher to appear above other elements.
 
-### 1. `src/pages/Home.tsx` — Fix collapsed margin
+## Fix — `src/components/home/Sidebar.tsx`
 
-Line 234: Change `animate={{ marginLeft: isCollapsed ? 64 : 256 }}` to `animate={{ marginLeft: isCollapsed ? 0 : 256 }}` since the collapsed sidebar is now a floating overlay (`fixed`) and doesn't consume layout space.
+1. **Keep `overflow-hidden` only during transition, remove when fully visible**: Change the aside className so `overflow-hidden` is only applied when NOT visible. When `isFloatingVisible` is true, remove it so tooltips can render properly.
 
-### 2. `src/components/home/Sidebar.tsx` — Glowing orange stroke on floating pill
+2. **Add explicit `sideOffset` to all `TooltipContent`**: Add `sideOffset={8}` to give tooltips breathing room from the pill edge.
 
-**Collapsed (floating) mode** (lines 231-237):
-- Add an animated orange border glow using a CSS `box-shadow` animation or the existing `ShineBorder` component
-- Replace `border border-white/[0.06]` with an animated orange running stroke: wrap the `<aside>` content in a container with `ShineBorder` using `shineColor="#f97316"` and `borderWidth={1}`
-- Add a subtle persistent outer glow: `shadow-[0_0_15px_rgba(249,115,22,0.15),0_0_30px_rgba(249,115,22,0.05)]`
+3. **Ensure `TooltipContent` has high z-index**: Add `className="z-[60]"` to all `TooltipContent` instances in the floating section to guarantee they render above the `z-50` sidebar.
 
-**Expanded mode** (lines 336-347):
-- Make the `ShineBorder` always visible (change `opacity-0 group-hover/sidebar:opacity-100` to `opacity-60 group-hover/sidebar:opacity-100`) so there's always a subtle running orange stroke
-- Add matching outer glow shadow to the expanded sidebar container
+### Specific line changes:
 
-### 3. `src/components/home/Sidebar.tsx` — Floating pill visual refinements
+**Line 236-237** — swap `overflow-hidden` to be conditional:
+```tsx
+'transition-all duration-300 ease-out',
+isFloatingVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none overflow-hidden',
+```
 
-- Add a faint orange gradient top-highlight inside the floating pill (matching expanded mode's `from-orange-500/5`)
-- Increase the lime-dot or add an orange dot at the bottom of the floating pill for brand consistency
+**Lines 263, 305, 330** (all `TooltipContent` in floating section) — add sideOffset and z-index:
+```tsx
+<TooltipContent side="right" sideOffset={8} className="z-[60]">
+```
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/pages/Home.tsx` | Fix collapsed marginLeft from 64 to 0 |
-| `src/components/home/Sidebar.tsx` | Add ShineBorder glow to floating pill, make expanded glow persistent, add outer orange shadow |
+| `src/components/home/Sidebar.tsx` | Move `overflow-hidden` to collapsed-only state, add `sideOffset={8}` and `z-[60]` to all floating tooltip contents |
 
