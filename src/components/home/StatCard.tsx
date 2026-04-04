@@ -33,8 +33,9 @@ export const StatCard = ({
       transition={{ duration: 0.4, delay: index * 0.1 }}
       className={cn(
         "relative group p-5 rounded-2xl overflow-hidden transition-all duration-300",
-        "glass-stat border border-[rgba(249,115,22,0.1)]",
-        "hover:border-[rgba(249,115,22,0.3)] hover:shadow-[0_0_35px_rgba(249,115,22,0.12)]",
+        "bg-white dark:bg-white/[0.03] border border-orange-100 dark:border-[rgba(249,115,22,0.1)]",
+        "shadow-sm dark:shadow-none",
+        "hover:border-orange-200 dark:hover:border-[rgba(249,115,22,0.3)] hover:shadow-lg dark:hover:shadow-[0_0_35px_rgba(249,115,22,0.12)]",
         "hover:-translate-y-0.5",
         className
       )}
@@ -65,7 +66,7 @@ export const StatCard = ({
       
       <div className="relative z-10">
         {/* Label */}
-        <p className="text-[10px] text-muted-foreground/70 mb-1 font-semibold uppercase tracking-[0.15em]">
+        <p className="text-[10px] text-zinc-500 dark:text-muted-foreground/70 mb-1 font-semibold uppercase tracking-[0.15em]">
           {label}
         </p>
         
@@ -94,9 +95,9 @@ export const StatCard = ({
           >
             <span className={cn(
               "inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm",
-              trendDirection === 'up' && "text-orange-300 bg-orange-500/15 border border-orange-500/25",
-              trendDirection === 'down' && "text-rose-300 bg-rose-500/15 border border-rose-500/25",
-              trendDirection === 'neutral' && "text-amber-300 bg-amber/10 border border-amber/20"
+              trendDirection === 'up' && "text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-500/15 border border-orange-200 dark:border-orange-500/25",
+              trendDirection === 'down' && "text-rose-600 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/15 border border-rose-200 dark:border-rose-500/25",
+              trendDirection === 'neutral' && "text-amber-600 dark:text-amber-300 bg-amber-50 dark:bg-amber/10 border border-amber-200 dark:border-amber/20"
             )}>
               {trendDirection === 'up' && <TrendingUp className="w-3 h-3" />}
               {trendDirection === 'down' && <TrendingDown className="w-3 h-3" />}

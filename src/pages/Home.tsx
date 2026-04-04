@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, UserPlus, Plus, FolderKanban, Activity, Image, Sparkles, Settings, HelpCircle, ChevronDown, User, LogOut, Palette, Coins } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Loader2, UserPlus, Plus, FolderKanban, Activity, Image, Sparkles, Settings, HelpCircle, ChevronDown, ChevronRight, User, LogOut, Palette, Coins } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import wzrdLogo from '@/assets/wzrd-logo.png';
 import { ProjectList } from '@/components/home/ProjectList';
 import { AuraProjectList } from '@/components/home/AuraProjectList';
@@ -48,7 +48,7 @@ export default function Home() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { availableCredits } = useCredits();
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, setIsCollapsed } = useSidebar();
   const onboarding = useOnboardingTour();
   const isDemo = isDemoModeEnabled();
 
@@ -240,13 +240,32 @@ export default function Home() {
 
           {/* Desktop Header - hidden on mobile */}
           <header data-tour="dashboard-title" className={cn(
-            "border-b border-[rgba(249,115,22,0.1)]",
-            "bg-[#0a0a0f]/90 backdrop-blur-xl",
+            "border-b border-orange-100 dark:border-[rgba(249,115,22,0.1)]",
+            "bg-white/90 dark:bg-[#0a0a0f]/90 backdrop-blur-xl",
             "hidden md:block"
           )}>
             {/* Row 1: Title + Project Count + Actions */}
             <div className="h-16 flex items-center justify-between px-6">
               <div className="flex items-center gap-4">
+                <AnimatePresence>
+                  {isCollapsed && (
+                    <motion.button
+                      initial={{ opacity: 0, x: -10, scale: 0.8 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: -10, scale: 0.8 }}
+                      transition={{ duration: 0.2 }}
+                      onClick={() => setIsCollapsed(false)}
+                      className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200",
+                        "bg-zinc-100 dark:bg-white/[0.06] border border-zinc-200 dark:border-white/[0.1]",
+                        "hover:border-orange-300 dark:hover:border-orange-500/40 hover:shadow-[0_0_12px_rgba(249,115,22,0.15)]",
+                        "text-zinc-500 dark:text-zinc-400 hover:text-orange-500"
+                      )}
+                    >
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
                 <img 
                   src={wzrdLogo} 
                   alt="WZRD STUDIO Logo" 
@@ -286,7 +305,7 @@ export default function Home() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="end" 
-                    className="w-56 bg-[#0f0f13] border-[rgba(249,115,22,0.15)] text-white"
+                    className="w-56 bg-white dark:bg-[#0f0f13] border-zinc-200 dark:border-[rgba(249,115,22,0.15)] text-zinc-800 dark:text-white"
                     sideOffset={8}
                   >
                     <DropdownMenuLabel className="text-text-secondary dark:text-zinc-400 text-xs">
@@ -361,9 +380,9 @@ export default function Home() {
             </div>
             
             {/* Row 2: Tabs + Search + Actions */}
-            <div className="h-14 flex items-center justify-between px-6 border-t border-[rgba(249,115,22,0.08)]">
+            <div className="h-14 flex items-center justify-between px-6 border-t border-zinc-100 dark:border-[rgba(249,115,22,0.08)]">
               {/* Tabs */}
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.03]">
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-zinc-100 dark:bg-white/[0.03]">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -371,8 +390,8 @@ export default function Home() {
                     className={cn(
                       "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                       activeTab === tab.id
-                        ? "text-[#f97316] bg-[rgba(249,115,22,0.08)] border border-[rgba(249,115,22,0.25)] shadow-sm"
-                        : "text-text-tertiary hover:text-text-primary"
+                        ? "text-orange-600 dark:text-[#f97316] bg-orange-50 dark:bg-[rgba(249,115,22,0.08)] border border-orange-200 dark:border-[rgba(249,115,22,0.25)] shadow-sm"
+                        : "text-zinc-500 dark:text-text-tertiary hover:text-zinc-800 dark:hover:text-text-primary"
                     )}
                   >
                     {tab.label}
@@ -397,8 +416,8 @@ export default function Home() {
                   whileTap={{ scale: 0.98 }}
                   className={cn(
                     "flex items-center gap-2 h-9 px-4 rounded-lg text-sm font-medium transition-all duration-200",
-                    "bg-white/[0.03] border border-[rgba(249,115,22,0.15)] text-text-secondary",
-                    "hover:text-text-primary hover:border-[rgba(249,115,22,0.25)] hover:bg-[rgba(249,115,22,0.06)]"
+                    "bg-zinc-100 dark:bg-white/[0.03] border border-zinc-200 dark:border-[rgba(249,115,22,0.15)] text-zinc-600 dark:text-text-secondary",
+                    "hover:text-zinc-800 dark:hover:text-text-primary hover:border-zinc-300 dark:hover:border-[rgba(249,115,22,0.25)] hover:bg-zinc-200 dark:hover:bg-[rgba(249,115,22,0.06)]"
                   )}
                 >
                   <UserPlus className="w-4 h-4" />
@@ -421,7 +440,7 @@ export default function Home() {
           </header>
 
           {/* Stats Row - Responsive grid */}
-          <div data-tour="stats-section" className="px-4 md:px-6 py-4 md:py-6 border-b border-[rgba(249,115,22,0.1)] bg-gradient-to-b from-[rgba(249,115,22,0.02)] to-transparent">
+          <div data-tour="stats-section" className="px-4 md:px-6 py-4 md:py-6 border-b border-orange-100 dark:border-[rgba(249,115,22,0.1)] bg-gradient-to-b from-orange-50/50 dark:from-[rgba(249,115,22,0.02)] to-transparent">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <StatCard 
                 icon={<FolderKanban className="w-5 h-5" />}
