@@ -1193,7 +1193,7 @@ export default function KanvasPage() {
             <div className="flex items-center justify-between px-5 py-2">
               {/* Left: WZRD logo + badge */}
               <div className="flex items-center gap-3 min-w-[140px]">
-                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-20 object-contain" />
+                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-10 object-contain" />
                 <span className="text-[10px] text-[#BEFF00] bg-[#BEFF00]/10 px-2 py-0.5 rounded-full border border-[#BEFF00]/20 font-medium">ALPHA</span>
               </div>
 
@@ -1230,34 +1230,73 @@ export default function KanvasPage() {
               </div>
 
               {/* Right: action buttons */}
-              <div className="flex items-center gap-2 min-w-[140px] justify-end">
-                <button
-                  type="button"
-                  onClick={() => navigate(appRoutes.home)}
-                  className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
-                  aria-label="Home"
-                >
-                  <Home className="h-4 w-4" />
-                </button>
-                <ThemeToggle />
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
-                      aria-label="Settings"
-                    >
-                      <Settings className="h-4 w-4" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 bg-[#141414] border-white/[0.08] text-zinc-300">
-                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">Preferences</DropdownMenuItem>
-                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">Keyboard Shortcuts</DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-white/[0.06]" />
-                    <DropdownMenuItem className="hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">About</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              <TooltipProvider delayDuration={200}>
+                <div className="flex items-center gap-2 min-w-[140px] justify-end">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => navigate(appRoutes.home)}
+                        className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
+                        aria-label="Home"
+                      >
+                        <Home className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" sideOffset={8} className="z-[60]">Home</TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <ThemeToggle />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" sideOffset={8} className="z-[60]">Toggle theme</TooltipContent>
+                  </Tooltip>
+
+                  <DropdownMenu>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
+                            aria-label="Settings"
+                          >
+                            <Settings className="h-4 w-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={8} className="z-[60]">Settings</TooltipContent>
+                    </Tooltip>
+                    <DropdownMenuContent align="end" sideOffset={8} className="w-52 bg-[#141414] border-white/[0.08] text-zinc-300">
+                      <DropdownMenuItem onClick={() => navigate(appRoutes.home)} className="gap-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">
+                        <Home className="h-4 w-4 text-zinc-500" />
+                        <span>Home</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-white/[0.06]" />
+                      <DropdownMenuItem className="gap-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">
+                        <SlidersHorizontal className="h-4 w-4 text-zinc-500" />
+                        <span>Preferences</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">
+                        <Keyboard className="h-4 w-4 text-zinc-500" />
+                        <span>Keyboard Shortcuts</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-white/[0.06]" />
+                      <DropdownMenuItem className="gap-2 hover:bg-white/[0.06] focus:bg-white/[0.06] cursor-pointer">
+                        <Info className="h-4 w-4 text-zinc-500" />
+                        <span>About</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2 hover:bg-rose-500/10 focus:bg-rose-500/10 text-rose-400 cursor-pointer">
+                        <LogOut className="h-4 w-4" />
+                        <span>Logout</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </TooltipProvider>
             </div>
           </header>
 
