@@ -231,14 +231,23 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
         <aside
           className={cn(
             'fixed left-3 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
-            'bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/[0.06]',
-            'shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.03)]',
+            'bg-[#0A0A0A]/90 backdrop-blur-xl',
+            'shadow-[0_0_15px_rgba(249,115,22,0.15),0_0_30px_rgba(249,115,22,0.05),0_8px_32px_rgba(0,0,0,0.5)]',
             'transition-all duration-300 ease-out overflow-hidden',
             isFloatingVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none',
           )}
           onMouseEnter={() => setIsFloatingVisible(true)}
           onMouseLeave={() => setIsFloatingVisible(false)}
         >
+          {/* Animated orange glow border */}
+          <ShineBorder
+            shineColor={["#f97316", "#d4a574"]}
+            borderWidth={1}
+            duration={8}
+          />
+
+          {/* Faint orange top-highlight */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-orange-500/5 to-transparent pointer-events-none" />
           {/* Expand button */}
           <Tooltip>
             <TooltipTrigger asChild>
