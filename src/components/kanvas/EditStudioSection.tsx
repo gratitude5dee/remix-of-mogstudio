@@ -219,13 +219,13 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
         </span>
 
         {/* Hero section */}
-        <div className="relative z-10 flex flex-col items-center pt-24 pb-16 px-6">
+        <div className="relative z-10 flex flex-col items-center pt-12 md:pt-24 pb-16 px-4 md:px-6">
           <p className="text-[10px] uppercase tracking-[0.3em] text-[#f97316] font-bold mb-4">AI-Powered Studio</p>
-          <h1 className="text-5xl md:text-7xl font-black text-white uppercase tracking-[-0.03em] text-center mb-4"
+          <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-white uppercase tracking-[-0.03em] text-center mb-4"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             TRANSFORM YOUR<br />IMAGES
           </h1>
-          <p className="text-sm text-zinc-500 max-w-md text-center mb-12">
+          <p className="text-sm text-zinc-500 max-w-md text-center mb-8 md:mb-12">
             Draw masks, inpaint, upscale, remove backgrounds, and relight — all on an infinite canvas powered by AI.
           </p>
 
