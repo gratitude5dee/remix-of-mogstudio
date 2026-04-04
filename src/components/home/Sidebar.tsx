@@ -226,7 +226,7 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
     return (
       <TooltipProvider delayDuration={200}>
         {/* Invisible hover trigger zone */}
-        <div className="fixed left-0 top-0 h-screen w-[80px] z-[49]" />
+        <div className="fixed left-0 top-[68px] bottom-0 w-[80px] z-[49]" />
 
         <aside
           className={cn(
