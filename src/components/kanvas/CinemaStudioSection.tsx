@@ -837,7 +837,7 @@ export default function CinemaStudioSection({
         {activeTab === 'image' && renderImageTab()}
         {activeTab === 'video' && renderVideoTab()}
         {activeTab === 'cast' && renderCastTab()}
-        {activeTab === 'audio' && renderPlaceholderTab('Audio')}
+        {activeTab === 'audio' && renderAudioTab()}
         {activeTab === 'all' && renderPlaceholderTab('All Generations')}
         {activeTab === 'liked' && renderPlaceholderTab('Liked')}
 
