@@ -595,6 +595,188 @@ export default function CinemaStudioSection({
     );
   }
 
+  /* ── AUDIO TAB ── */
+  function renderAudioTab() {
+    const voiceoverModels = AUDIO_MODELS.filter(m => m.category === 'voiceover' || m.category === 'voice-clone' || m.category === 'multi-speaker');
+    const musicModels = AUDIO_MODELS.filter(m => m.category === 'music');
+    const sfxModels = AUDIO_MODELS.filter(m => m.category === 'sfx' || m.category === 'video-sfx');
+
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center relative pb-48">
+        <div className="absolute inset-0 bg-gradient-to-b from-orange-950/20 via-[#090909] to-[#090909] pointer-events-none" />
+
+        {/* Decorative waveform bars */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
+          <div className="flex items-end gap-[3px] h-40">
+            {Array.from({ length: 60 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-1 rounded-full bg-[#f97316]"
+                style={{ height: `${20 + Math.sin(i * 0.3) * 30 + Math.cos(i * 0.7) * 20}%` }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="relative z-10 text-center max-w-3xl px-8">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-bold mb-4">CINEMA STUDIO 2.5</p>
+          <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-[1.1] mb-6" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
+              Ready to give your
+            </span>
+            <br />
+            <span className="text-white">scene a voice?</span>
+          </h1>
+          <p className="text-zinc-500 text-sm mb-10 max-w-lg mx-auto">
+            Generate voiceovers, music scores, and sound effects with AI. Choose a model and describe your sound.
+          </p>
+
+          {/* Model Categories */}
+          <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
+            <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-2xl p-5 text-left hover:border-white/10 transition-colors">
+              <Music className="h-5 w-5 text-[#f97316] mb-3" />
+              <p className="text-xs font-bold text-white mb-1">Voiceover</p>
+              <p className="text-[10px] text-zinc-500 leading-relaxed">{voiceoverModels.length} models available</p>
+              <div className="mt-3 flex flex-wrap gap-1">
+                {voiceoverModels.slice(0, 3).map(m => (
+                  <span key={m.id} className="text-[8px] bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5 text-zinc-400">{m.name} · {m.credits}cr</span>
+                ))}
+              </div>
+            </div>
+            <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-2xl p-5 text-left hover:border-white/10 transition-colors">
+              <Volume2 className="h-5 w-5 text-[#f97316] mb-3" />
+              <p className="text-xs font-bold text-white mb-1">Music</p>
+              <p className="text-[10px] text-zinc-500 leading-relaxed">{musicModels.length} models available</p>
+              <div className="mt-3 flex flex-wrap gap-1">
+                {musicModels.map(m => (
+                  <span key={m.id} className="text-[8px] bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5 text-zinc-400">{m.name} · {m.credits}cr</span>
+                ))}
+              </div>
+            </div>
+            <div className="bg-[#1a1a1a] border border-white/[0.06] rounded-2xl p-5 text-left hover:border-white/10 transition-colors">
+              <Sparkles className="h-5 w-5 text-[#f97316] mb-3" />
+              <p className="text-xs font-bold text-white mb-1">Sound Effects</p>
+              <p className="text-[10px] text-zinc-500 leading-relaxed">{sfxModels.length} models available</p>
+              <div className="mt-3 flex flex-wrap gap-1">
+                {sfxModels.map(m => (
+                  <span key={m.id} className="text-[8px] bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5 text-zinc-400">{m.name} · {m.credits}cr</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Voice Picker Modal */}
+        {showVoicePicker && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="bg-[#131313] border border-white/[0.06] rounded-2xl w-[480px] max-h-[500px] overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+                <h3 className="text-sm font-bold text-white uppercase tracking-widest">Select or Add a Voice</h3>
+                <button onClick={() => setShowVoicePicker(false)} className="text-zinc-500 hover:text-white transition-colors">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="p-6">
+                <button className="w-full bg-[#1a1a1a] border border-dashed border-white/10 rounded-xl p-4 text-center hover:border-[#f97316]/30 transition-colors mb-4">
+                  <Upload className="h-5 w-5 text-zinc-500 mx-auto mb-2" />
+                  <p className="text-[10px] uppercase tracking-widest text-[#f97316] font-bold">+ Create Custom Voice</p>
+                  <p className="text-[9px] text-zinc-500 mt-1">Upload a voice sample to clone</p>
+                </button>
+                <div className="text-center py-8">
+                  <p className="text-zinc-600 text-xs">No custom voices yet</p>
+                  <p className="text-[10px] text-zinc-700 mt-1">Create one above or use a preset model</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ── AUDIO BOTTOM BAR ── */
+  function renderAudioBar() {
+    const AUDIO_MODES: { id: AudioMode; label: string; Icon: React.ElementType }[] = [
+      { id: 'voiceover', label: 'Voiceover', Icon: Mic },
+      { id: 'change-voice', label: 'Change Voice', Icon: RefreshCw },
+      { id: 'translate', label: 'Translate', Icon: Languages },
+    ];
+
+    return (
+      <div className="absolute bottom-8 left-0 right-0 z-30">
+        <div className="bg-[#0e0e0e]/95 backdrop-blur-2xl border-t border-white/[0.06] px-6 py-3">
+          <div className="max-w-[1400px] mx-auto flex items-center gap-2.5">
+            {/* Mode selector */}
+            <div className="flex bg-[#1a1a1a] rounded-full p-0.5 flex-shrink-0">
+              {AUDIO_MODES.map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setAudioMode(id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all ${
+                    audioMode === id ? 'bg-[#f97316] text-black' : 'text-zinc-500 hover:text-white'
+                  }`}
+                >
+                  <Icon className="h-3 w-3" /> {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Prompt input */}
+            <div className="flex-1 min-w-0">
+              <div className="bg-[#1a1a1a] rounded-full px-4 py-2.5 flex items-center">
+                <input
+                  type="text"
+                  value={audioPrompt}
+                  onChange={(e) => setAudioPrompt(e.target.value)}
+                  placeholder={
+                    audioMode === 'voiceover' ? 'Describe the sound you imagine...' :
+                    audioMode === 'change-voice' ? 'Drop a reference video or audio...' :
+                    'Enter text to translate...'
+                  }
+                  className="flex-1 bg-transparent border-none text-white placeholder-zinc-600 text-sm focus:outline-none min-w-0"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                />
+              </div>
+            </div>
+
+            {/* Model badge */}
+            <button
+              className="bg-[#1a1a1a] border border-white/[0.06] rounded-full px-3 py-2 text-[10px] text-zinc-400 flex items-center gap-1.5 hover:border-white/10 transition-colors flex-shrink-0"
+              onClick={() => {
+                const idx = AUDIO_MODELS.findIndex(m => m.id === selectedAudioModel.id);
+                setSelectedAudioModel(AUDIO_MODELS[(idx + 1) % AUDIO_MODELS.length]);
+              }}
+            >
+              <Coins className="h-3 w-3 text-[#f97316]" />
+              {selectedAudioModel.name} · {selectedAudioModel.credits}cr
+            </button>
+
+            {/* Choose Voice */}
+            <button
+              onClick={() => setShowVoicePicker(true)}
+              className="bg-[#1a1a1a] border border-white/[0.06] rounded-xl px-4 py-2 flex items-center gap-2 hover:border-white/10 transition-colors flex-shrink-0"
+            >
+              <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center">
+                <Users className="h-3 w-3 text-zinc-500" />
+              </div>
+              <span className="text-[10px] text-zinc-400 whitespace-nowrap uppercase tracking-widest font-bold">Choose Voice</span>
+            </button>
+
+            {/* Generate */}
+            <button
+              onClick={onGenerate}
+              disabled={submitting || !audioPrompt.trim()}
+              className="bg-[#f97316] text-black font-bold uppercase tracking-widest text-[11px] px-6 py-2.5 rounded-full flex items-center gap-2 hover:shadow-[0_0_25px_rgba(249,115,22,0.3)] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              GENERATE ✦ {selectedAudioModel.credits}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   /* ── Placeholder tab ── */
   function renderPlaceholderTab(label: string) {
     return (
