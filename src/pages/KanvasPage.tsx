@@ -1240,13 +1240,13 @@ export default function KanvasPage() {
 
               {/* Right: action buttons */}
               <TooltipProvider delayDuration={200}>
-                <div className="flex items-center gap-2 min-w-[140px] justify-end">
+                <div className="flex items-center gap-2 min-w-0 md:min-w-[140px] justify-end">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
                         type="button"
                         onClick={() => navigate(appRoutes.home)}
-                        className="h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
+                        className="hidden md:flex h-9 w-9 rounded-full bg-white/[0.04] border border-white/[0.06] items-center justify-center text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.08] transition-all duration-200"
                         aria-label="Home"
                       >
                         <Home className="h-4 w-4" />
@@ -1257,7 +1257,7 @@ export default function KanvasPage() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div>
+                      <div className="hidden md:block">
                         <ThemeToggle />
                       </div>
                     </TooltipTrigger>
