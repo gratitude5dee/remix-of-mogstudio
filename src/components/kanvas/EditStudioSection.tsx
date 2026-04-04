@@ -665,7 +665,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
         )}
 
         {/* Bottom Prompt Bar (upgraded) */}
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-full max-w-4xl z-30 px-4">
+        <div className="absolute bottom-16 md:bottom-5 left-1/2 -translate-x-1/2 w-full max-w-4xl z-30 px-3 md:px-4">
           {/* Processing progress bar */}
           {isProcessing && (
             <div className="w-full h-0.5 bg-[#1a1a1a] rounded-full mb-2 overflow-hidden">
