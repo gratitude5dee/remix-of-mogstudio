@@ -16,6 +16,7 @@ const TabNavigation = () => {
 
   const imageGenerationModels = useMemo(() => getModelsByTypeAndGroup('image', 'generation'), []);
   const videoGenerationModels = useMemo(() => getModelsByTypeAndGroup('video', 'generation'), []);
+  const audioGenerationModels = useMemo(() => getModelsByTypeAndGroup('audio', 'generation'), []);
   const storylineModelOptions = STORYLINE_MODEL_OPTIONS;
 
   const [storylineSettingsText, setStorylineSettingsText] = useState(
