@@ -1302,7 +1302,7 @@ export default function KanvasPage() {
             </div>
           </header>
 
-          <div className="mx-auto max-w-[1600px] px-4 py-6 md:px-6">
+          <div className="mx-auto max-w-[1600px] px-3 py-2 pb-12 md:px-4">
             <div className="min-w-0">
             {studio === "image" ? (
               <ImageStudioSection
