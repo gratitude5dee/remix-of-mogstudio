@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Clapperboard,
@@ -37,10 +38,33 @@ interface KanvasSidebarProps {
 
 export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarProps) {
   const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState(false);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    setIsVisible(e.clientX <= 80);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [handleMouseMove]);
 
   return (
     <TooltipProvider delayDuration={200}>
-      <aside className="flex h-screen w-14 flex-col items-center border-r border-white/[0.04] bg-[#0A0A0A] py-3 flex-shrink-0">
+      {/* Invisible hover trigger zone */}
+      <div className="fixed left-0 top-0 h-screen w-[80px] z-[49]" />
+
+      <aside
+        className={cn(
+          'fixed left-3 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
+          'bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/[0.06]',
+          'shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.03)]',
+          'transition-all duration-300 ease-out overflow-hidden',
+          isVisible ? 'w-14 opacity-100 translate-x-0' : 'w-3 opacity-0 -translate-x-2 pointer-events-none',
+        )}
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+      >
         {/* Home button */}
         <Tooltip>
           <TooltipTrigger asChild>
@@ -80,7 +104,6 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
                         : 'text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300',
                     )}
                   >
-                    {/* Lime left accent */}
                     {isActive && (
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[2px] rounded-r-full bg-[#BEFF00] shadow-[0_0_6px_rgba(190,255,0,0.4)]" />
                     )}
