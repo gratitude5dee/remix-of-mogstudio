@@ -1,103 +1,91 @@
 
 
-# Sync All Models (Image + Video + Audio) Across App + Mobile-Ready All Pages
+# Mobile-Optimized Kanvas Page — Award-Winning Redesign
 
-## Overview
+## Problems Identified
 
-Three workstreams: (1) Add ~30 missing image and video models to the centralized catalog, (2) Add ~25 new audio models, (3) Unify Cinema Studio with the central catalog, add audio model selector to project-setup, and make all pages mobile-responsive.
+1. **Header**: The centered pill-slider nav overflows on mobile (7 icons + labels). The right action buttons (Home, Theme, Settings) are hidden/cramped. The logo is too large at `h-14` for mobile.
+2. **Image Studio prompt bar**: Fixed at `bottom-8 left-8 right-8` with many inline controls (model selector, aspect ratio, image count, draw, @mention, generate) — all overflow on small screens. Uses `#ccff00` lime green colors.
+3. **Video Studio**: Fixed padding `p-8` doesn't scale. Content layout assumes desktop widths.
+4. **Edit Studio**: Landing page uses `pt-24` large hero text at `text-5xl md:text-7xl` which works, but the workspace view has fixed sidebars (80px asset rail + 240px right panel) that don't collapse on mobile.
+5. **Lipsync Studio**: Fixed left sidebar at `w-[260px]` with `left-[260px]` content offset — completely breaks on mobile (sidebar covers entire viewport). Uses `#ccff00` lime.
+6. **Cinema Studio**: Audio tab has a 88px turnable dial in the bottom bar — too large for mobile. Cast/Image/Video tabs have horizontal layouts that overflow.
+7. **Worldview**: Uses `#BEFF00` lime green throughout. Feature cards grid `grid-cols-2 md:grid-cols-4` is decent but CTA and text need mobile sizing.
+8. **Characters**: Appears to work (max-w-1200px centered) but the gallery header gets clipped on small screens (visible in screenshot).
+9. **Remaining lime green (`#ccff00`, `#BEFF00`)**: Still present in Image Studio, Video Studio, Lipsync Studio, Worldview, and various shared components.
+10. **Mobile bottom nav overlaps studio content**: Studios use `fixed inset-0 top-[68px]` but don't account for the ~56px mobile bottom nav.
 
----
+## Solution
 
-## 1. New Image Models to Add to `studio-model-constants.ts`
+### 1. Header — Mobile-First Redesign (`KanvasPage.tsx`)
 
-The following models exist on fal.ai but are missing from `imageGenerationModels`:
+- On `md:hidden`: Hide the center pill-slider nav entirely (replaced by bottom nav)
+- Shrink logo to `h-10` on mobile, keep `h-14` on desktop
+- Right actions: Show only Settings dropdown on mobile (contains Home + Theme toggle inside)
+- On `md:` and up: Keep current layout unchanged
 
-| Model ID | Name | Credits | Badge |
-|----------|------|---------|-------|
-| `fal-ai/flux-2-pro` | Flux 2 Pro | 8 | Premium |
-| `fal-ai/flux-2` | Flux 2 | 6 | Quality |
-| `fal-ai/flux-2/turbo` | Flux 2 Turbo | 5 | Fast |
-| `fal-ai/flux-2/flash` | Flux 2 Flash | 4 | Fast |
-| `fal-ai/flux-2-max` | Flux 2 Max | 10 | Premium |
-| `fal-ai/flux-2-flex` | Flux 2 Flex | 6 | — |
-| `fal-ai/flux-pro/kontext/text-to-image` | FLUX Kontext Pro | 7 | Quality |
-| `fal-ai/gpt-image-1.5` | GPT-Image 1.5 | 8 | Premium |
-| `xai/grok-imagine-image` | Grok Imagine Image | 7 | — |
-| `fal-ai/imagen4/preview` | Imagen 4 | 7 | Quality |
-| `fal-ai/imagen4/preview/ultra` | Imagen 4 Ultra | 10 | Premium |
-| `fal-ai/imagen4/preview/fast` | Imagen 4 Fast | 5 | Fast |
-| `fal-ai/bytedance/seedream/v4.5/text-to-image` | Seedream 4.5 | 5 | — |
-| `fal-ai/z-image/turbo` | Z-Image Turbo | 4 | Fast |
+### 2. Image Studio — Mobile Prompt Bar (`ImageStudioSection.tsx`)
 
-## 2. New Video Models to Add
+- Wrap prompt bar controls in a responsive layout:
+  - Mobile: Stack into 2 rows — top row: input + generate button; bottom row: model pill, aspect ratio, count (horizontally scrollable)
+  - Reduce `bottom-8 left-8 right-8` to `bottom-16 left-3 right-3 md:bottom-8 md:left-8 md:right-8` (clear mobile bottom nav)
+- Replace all `#ccff00` with `#f97316` (orange)
+- Gallery columns: `columns-2 md:columns-4 lg:columns-5` (already correct)
 
-**Text-to-Video (add to `videoGenerationModels`):**
+### 3. Video Studio — Responsive Layout (`VideoStudioSection.tsx`)
 
-| Model ID | Name | Credits | Badge |
-|----------|------|---------|-------|
-| `fal-ai/veo3.1` | Veo 3.1 | 40 | Premium |
-| `fal-ai/veo3.1/fast` | Veo 3.1 Fast | 30 | Fast |
-| `fal-ai/veo3.1/lite` | Veo 3.1 Lite | 22 | — |
-| `fal-ai/veo3` | Veo 3 | 35 | Quality |
-| `fal-ai/veo3/fast` | Veo 3 Fast | 25 | Fast |
-| `fal-ai/kling-video/v3/pro/text-to-video` | Kling 3.0 Pro T2V | 32 | Premium |
-| `fal-ai/kling-video/v3/standard/text-to-video` | Kling 3.0 Std T2V | 22 | — |
-| `fal-ai/kling-video/v2.6/pro/text-to-video` | Kling 2.6 Pro T2V | 28 | Quality |
-| `fal-ai/bytedance/seedance/v1.5/pro/text-to-video` | Seedance 1.5 Pro T2V | 32 | Premium |
-| `xai/grok-imagine-video/text-to-video` | Grok Imagine Video | 30 | — |
-| `fal-ai/minimax/hailuo-02/standard/text-to-video` | Hailuo 02 Std T2V | 24 | — |
-| `fal-ai/minimax/hailuo-02/pro/text-to-video` | Hailuo 02 Pro T2V | 32 | Premium |
-| `fal-ai/pixverse/v6/text-to-video` | Pixverse V6 T2V | 20 | — |
-| `fal-ai/ltx-2.3/text-to-video` | LTX 2.3 Pro T2V | 22 | Quality |
-| `fal-ai/ltx-2.3/text-to-video/fast` | LTX 2.3 Fast T2V | 16 | Fast |
-| `fal-ai/wan/v2.2-a14b/text-to-video` | Wan 2.2 T2V | 20 | — |
+- Change `p-8` to `px-4 py-4 md:p-8`
+- Add `bottom-16 md:bottom-0` padding to account for mobile nav
+- Replace `#ccff00` with `#f97316`
+- Generate button: Replace `bg-[#ccff00]` with `bg-[#f97316]`
 
-**Image-to-Video (add to `videoGenerationModels`):**
+### 4. Edit Studio — Collapsible Panels (`EditStudioSection.tsx`)
 
-| Model ID | Name | Credits | Badge |
-|----------|------|---------|-------|
-| `fal-ai/veo3.1/image-to-video` | Veo 3.1 I2V | 42 | Premium |
-| `fal-ai/veo3.1/fast/image-to-video` | Veo 3.1 Fast I2V | 32 | Fast |
-| `fal-ai/veo3.1/lite/image-to-video` | Veo 3.1 Lite I2V | 24 | — |
-| `fal-ai/kling-video/v2.6/pro/image-to-video` | Kling 2.6 Pro I2V | 30 | Quality |
-| `fal-ai/sora-2/image-to-video` | Sora 2 I2V | 38 | Premium |
-| `fal-ai/bytedance/seedance/v1.5/pro/image-to-video` | Seedance 1.5 Pro I2V | 34 | Premium |
-| `fal-ai/minimax/hailuo-02/standard/image-to-video` | Hailuo 02 Std I2V | 26 | — |
-| `fal-ai/minimax/hailuo-02/pro/image-to-video` | Hailuo 02 Pro I2V | 34 | Premium |
+- Landing: Replace `#ccff00` with `#f97316`
+- Workspace: On mobile, hide the right settings panel and show it as a slide-up sheet triggered by a floating gear button
+- Asset rail: Collapse to a horizontal strip at top on mobile instead of fixed left column
+- Bottom padding for mobile nav clearance
 
-## 3. New Audio Models (same as previous plan)
+### 5. Lipsync Studio — Drawer Sidebar (`LipsyncStudioSection.tsx`)
 
-Add 25+ TTS, voice clone, music, SFX, and STT models to `AUDIO_MODELS` array (ElevenLabs, MiniMax Speech, Chatterbox, Qwen TTS, Lyria2, CassetteAI, Whisper, etc.)
+- Replace fixed `w-[260px]` sidebar with:
+  - Desktop (`md:`): Keep current sidebar
+  - Mobile: Convert to a horizontal step indicator at the top + collapsible drawer
+- Content area: `left-0 md:left-[260px]`
+- Replace `#ccff00` with `#f97316`
 
-## 4. Unify Cinema Studio with Central Catalog
+### 6. Cinema Studio — Compact Audio Bar (`CinemaStudioSection.tsx`)
 
-**File: `src/components/kanvas/CinemaStudioSection.tsx`**
+- Audio bottom bar dial: Scale down to `w-[64px] h-[64px] md:w-[88px] md:h-[88px]` on mobile
+- Model picker popup: Make full-width on mobile `w-[calc(100vw-2rem)] md:w-[340px]`
+- Cast/Image tab grids: `grid-cols-1 md:grid-cols-3` for character cards
+- Add `pb-16 md:pb-0` for mobile nav clearance
 
-Replace the local `AUDIO_MODELS` array (lines 25-41) with imports from `studio-model-constants.ts`. Map the centralized `StudioModel` to the local `AudioModel` interface, deriving category from the centralized category field.
+### 7. Worldview — Orange Theme (`WorldviewSection.tsx`)
 
-## 5. Add Audio Model Selector to Project Setup
+- Replace all `#BEFF00` with `#f97316` (orange)
+- Replace `bg-[#BEFF00]` buttons with `bg-[#f97316]`
+- Feature cards hover: `hover:border-[#f97316]/20`
+- Responsive: Already decent, just color swap
 
-- **`src/components/project-setup/types.ts`**: Add `baseAudioModel?: string` to `ProjectData`
-- **`src/components/project-setup/TabNavigation.tsx`**: Add a 3rd model selector after video for "Audio Model"
-- **`src/components/project-setup/ProjectContext.tsx`**: Wire `baseAudioModel` to save/load
+### 8. Characters — Mobile Polish (`CharacterCreationSection.tsx` + `CharacterGallery.tsx`)
 
-## 6. Mobile Responsiveness
+- Add responsive padding `px-4 md:px-0`
+- Ensure "Create New" button and search bar don't get clipped
 
-### 6a. Kanvas Page (`src/pages/KanvasPage.tsx`)
-- Mobile bottom tab bar (`md:hidden`) for 7 studio icons
-- Hide `KanvasSidebar` on mobile (`hidden md:block`)
-- Safe area padding (`pb-[env(safe-area-inset-bottom)]`)
+### 9. Global — Bottom Nav Clearance
 
-### 6b. Project Setup (`src/components/project-setup/ProjectSetupWizard.tsx`)
-- Scrollable tabs on mobile (`overflow-x-auto flex-nowrap`)
-- Responsive padding (`px-4 md:px-8`)
-- Models popover width: `w-[calc(100vw-2rem)]` on mobile
+All studio sections that use `fixed inset-0 top-[68px]` need `pb-16 md:pb-0` or equivalent to prevent content from being hidden behind the mobile bottom nav.
 
-### 6c. KanvasSidebar
-- Add `hidden md:block` to sidebar wrapper and trigger zone
+### 10. Remaining Lime → Orange Sweep
 
-### 6d. Global PWA
-- `index.html`: Add `viewport-fit=cover`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style` meta tags
+Search and replace across all Kanvas-related files:
+- `#ccff00` → `#f97316`
+- `#BEFF00` → `#f97316`
+- `lime-300` → `orange-400` (contextually)
+- `rgba(204,255,0,` → `rgba(249,115,22,`
+- `rgba(190,242,100,` → `rgba(249,115,22,`
+- `rgba(190,255,0,` → `rgba(249,115,22,`
 
 ---
 
@@ -105,13 +93,13 @@ Replace the local `AUDIO_MODELS` array (lines 25-41) with imports from `studio-m
 
 | File | Change |
 |------|--------|
-| `src/lib/studio-model-constants.ts` | Add ~14 new image models, ~24 new video models, ~25 new audio models |
-| `src/components/kanvas/CinemaStudioSection.tsx` | Replace local audio models with centralized imports |
-| `src/components/project-setup/types.ts` | Add `baseAudioModel` to `ProjectData` |
-| `src/components/project-setup/TabNavigation.tsx` | Add audio model selector, responsive popover |
-| `src/components/project-setup/ProjectContext.tsx` | Wire `baseAudioModel` |
-| `src/pages/KanvasPage.tsx` | Mobile bottom nav, safe areas, responsive header |
-| `src/components/kanvas/KanvasSidebar.tsx` | `hidden md:block` for mobile |
-| `src/components/project-setup/ProjectSetupWizard.tsx` | Responsive tabs and padding |
-| `index.html` | PWA meta tags |
+| `src/pages/KanvasPage.tsx` | Hide header pill nav on mobile, shrink logo, consolidate right actions, add bottom nav clearance, lime→orange sweep |
+| `src/components/kanvas/ImageStudioSection.tsx` | Responsive prompt bar (2-row mobile layout), mobile margins, lime→orange |
+| `src/components/kanvas/VideoStudioSection.tsx` | Responsive padding, mobile bottom clearance, lime→orange |
+| `src/components/kanvas/EditStudioSection.tsx` | Collapsible panels on mobile, responsive asset rail, lime→orange |
+| `src/components/kanvas/LipsyncStudioSection.tsx` | Drawer sidebar on mobile, horizontal step indicator, lime→orange |
+| `src/components/kanvas/CinemaStudioSection.tsx` | Compact dial on mobile, full-width model picker, responsive grids, bottom nav clearance |
+| `src/components/worldview/WorldviewSection.tsx` | Full lime→orange color swap |
+| `src/components/character-creation/CharacterCreationSection.tsx` | Mobile padding |
+| `src/components/character-creation/CharacterGallery.tsx` | Responsive header, prevent clipping |
 
