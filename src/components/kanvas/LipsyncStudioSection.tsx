@@ -102,7 +102,7 @@ function WizardSidebar({
   onStepChange: (step: WizardStep) => void;
 }) {
   return (
-    <div className="fixed left-0 top-[80px] bottom-0 w-[260px] bg-[#090909] z-40 flex flex-col overflow-hidden">
+    <div className="fixed left-0 top-[44px] bottom-0 w-[260px] bg-[#090909] z-40 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#ccff00] font-['Space_Grotesk']">
@@ -661,7 +661,7 @@ export default function LipsyncStudioSection(props: LipsyncStudioProps) {
   }
 
   return (
-    <div className="fixed inset-0 top-[80px] z-30 bg-[#000000] overflow-hidden">
+    <div className="fixed inset-0 top-[44px] z-30 bg-[#000000] overflow-hidden">
       {/* Film Grain */}
       <div
         className="pointer-events-none fixed inset-0 z-[1] mix-blend-overlay opacity-[0.15]"

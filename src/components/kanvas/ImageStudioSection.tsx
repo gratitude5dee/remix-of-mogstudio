@@ -442,7 +442,7 @@ export default function ImageStudioSection({
   /* ---- Render ---- */
   return (
     <div
-      className="fixed inset-0 top-[80px] bg-[#0a0a0a] z-20 overflow-y-auto"
+      className="fixed inset-0 top-[44px] bg-[#0a0a0a] z-20 overflow-y-auto"
       style={{ scrollbarWidth: "none" }}
       onClick={() => modelDropdownOpen && setModelDropdownOpen(false)}
     >
