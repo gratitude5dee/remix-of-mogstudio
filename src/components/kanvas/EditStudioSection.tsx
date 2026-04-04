@@ -204,7 +204,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
   /* ── LANDING STATE ── */
   if (!hasWorkspace) {
     return (
-      <div className="fixed inset-0 top-[68px] bg-[#090909] z-20 overflow-y-auto overflow-x-hidden" style={{ scrollbarWidth: 'none' }}>
+      <div className="fixed inset-0 top-[68px] bg-[#090909] z-20 overflow-y-auto overflow-x-hidden pb-16 md:pb-0" style={{ scrollbarWidth: 'none' }}>
         <style>{`::-webkit-scrollbar { display: none; }`}</style>
 
         {/* SVG noise overlay */}
