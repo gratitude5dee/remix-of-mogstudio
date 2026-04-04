@@ -1183,7 +1183,7 @@ export default function KanvasPage() {
                 {KANVAS_STUDIO_ORDER.map((s) => {
                   const Icon = {
                     image: ImageIcon,
-                    video: VideoIcon,
+                    video: Video,
                     edit: Pencil,
                     cinema: Clapperboard,
                     lipsync: Mic2,
