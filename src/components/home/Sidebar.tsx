@@ -334,6 +334,11 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
             </TooltipTrigger>
             <TooltipContent side="right">Logout</TooltipContent>
           </Tooltip>
+
+          {/* Brand dot */}
+          <div className="mt-1 flex h-6 w-6 items-center justify-center">
+            <div className="h-2 w-2 rounded-full bg-[#f97316]/60 shadow-[0_0_6px_rgba(249,115,22,0.3)]" />
+          </div>
         </aside>
       </TooltipProvider>
     );
