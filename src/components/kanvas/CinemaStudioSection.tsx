@@ -844,6 +844,7 @@ export default function CinemaStudioSection({
         {/* Tab-specific bottom bars */}
         {activeTab === 'image' && renderImageBar()}
         {activeTab === 'video' && renderVideoBar()}
+        {activeTab === 'audio' && renderAudioBar()}
       </div>
 
       {/* Right Icon Rail */}
