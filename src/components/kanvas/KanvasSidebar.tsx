@@ -57,7 +57,7 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
 
       <aside
         className={cn(
-          'fixed left-3 top-[calc(50%-1rem)] -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
+          'fixed left-3 top-[calc(50%-1.5rem)] -translate-y-1/2 z-50 flex flex-col items-center py-3 rounded-2xl',
           'bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/[0.06]',
           'shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.03)]',
           'transition-all duration-300 ease-out',
