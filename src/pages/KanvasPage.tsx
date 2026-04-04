@@ -1161,12 +1161,12 @@ export default function KanvasPage() {
   }, [getMentionListFn]);
 
   return (
-    <div className="flex h-screen bg-[#050506] text-white overflow-hidden">
-      {/* Left sidebar nav */}
+    <div className="relative h-screen bg-[#050506] text-white overflow-hidden">
+      {/* Floating sidebar nav (fixed overlay) */}
       <KanvasSidebar activeStudio={studio} onStudioChange={setStudio} />
 
-      {/* Main content area */}
-      <div className="relative flex-1 overflow-auto">
+      {/* Main content area — full width */}
+      <div className="relative w-full h-full overflow-auto">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,242,100,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.08),transparent_24%)] pointer-events-none" />
         <div className="relative">
           {/* Slim status header */}
