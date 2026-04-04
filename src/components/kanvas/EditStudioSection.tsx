@@ -567,7 +567,7 @@ export default function EditStudioSection({ assets, jobs, selectedJob, uploading
 
         {/* Right settings panel */}
         {showSettingsPanel && (
-          <div className="absolute right-0 top-14 bottom-20 w-60 bg-[#0e0e0e]/95 backdrop-blur-xl border-l border-white/[0.06] z-20 overflow-y-auto flex flex-col" style={{ scrollbarWidth: 'none' }}>
+          <div className="hidden md:flex absolute right-0 top-14 bottom-20 w-60 bg-[#0e0e0e]/95 backdrop-blur-xl border-l border-white/[0.06] z-20 overflow-y-auto flex-col" style={{ scrollbarWidth: 'none' }}>
             {/* Feature controls header */}
             <div className="p-4 border-b border-white/[0.06]">
               <div className="flex items-center justify-between mb-3">
