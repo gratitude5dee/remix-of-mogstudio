@@ -1174,8 +1174,7 @@ export default function KanvasPage() {
             <div className="flex items-center justify-between px-5 py-2">
               {/* Left: WZRD wordmark */}
               <div className="flex items-center gap-2.5 min-w-[80px]">
-                <div className="w-2 h-2 rounded-full bg-[#BEFF00] shadow-[0_0_8px_rgba(190,255,0,0.4)]" />
-                <span className="text-sm font-bold tracking-tight text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>WZRD</span>
+                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-10 object-contain" />
               </div>
 
               {/* Center: Pill-slider studio nav */}
