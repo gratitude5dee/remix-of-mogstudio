@@ -758,7 +758,7 @@ export default function CinemaStudioSection({
             {/* ── Premium Turnable Dial ── */}
             <div className="flex items-center gap-4 flex-shrink-0">
               <div
-                className="relative w-[88px] h-[88px] cursor-grab"
+                className="relative w-[64px] h-[64px] md:w-[88px] md:h-[88px] cursor-grab"
                 style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}
               >
                 {/* Outer ring — knurled edge */}
@@ -827,8 +827,8 @@ export default function CinemaStudioSection({
                 </div>
               </div>
 
-              {/* ── Mode Labels with Icons + Accent Bar ── */}
-              <div className="flex flex-col gap-0.5">
+              {/* ── Mode Labels with Icons + Accent Bar — hidden on small mobile ── */}
+              <div className="hidden sm:flex flex-col gap-0.5">
                 {AUDIO_MODES.map(({ id, label, Icon }) => (
                   <button
                     key={id}
@@ -891,7 +891,7 @@ export default function CinemaStudioSection({
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowAudioModelPicker(false)} />
                   <div
-                    className="absolute bottom-full mb-2 right-0 z-50 w-[340px] max-h-[400px] flex flex-col rounded-xl border border-white/[0.08] bg-[#0e0e0e]/95 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-2 fade-in duration-200"
+                    className="absolute bottom-full mb-2 right-0 z-50 w-[calc(100vw-2rem)] sm:w-[340px] max-h-[400px] flex flex-col rounded-xl border border-white/[0.08] bg-[#0e0e0e]/95 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-2 fade-in duration-200"
                   >
                     {/* Header with search */}
                     <div className="p-3 border-b border-white/[0.06] flex-shrink-0">
@@ -1002,21 +1002,21 @@ export default function CinemaStudioSection({
   }
 
   return (
-    <div className="fixed inset-0 top-[68px] bg-[#090909] z-20 overflow-hidden flex" style={{ scrollbarWidth: 'none' }}>
+    <div className="fixed inset-0 top-[68px] bg-[#090909] z-20 overflow-hidden flex flex-col pb-16 md:pb-0" style={{ scrollbarWidth: 'none' }}>
       <style>{`::-webkit-scrollbar { display: none; }`}</style>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full relative">
         {/* Tab Nav — Centered Pill Slider */}
-        <div className="flex items-center justify-center px-6 pt-4 pb-2 flex-shrink-0">
-          <div className="inline-flex bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06]">
+        <div className="flex items-center justify-center px-4 md:px-6 pt-3 md:pt-4 pb-2 flex-shrink-0">
+          <div className="inline-flex bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06] overflow-x-auto scrollbar-hide">
             {TAB_LIST.map(({ id, label, Icon }) => {
               const isActive = activeTab === id;
               return (
                 <button
                   key={id}
                   onClick={() => setActiveTab(id)}
-                  className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  className={`flex items-center gap-1.5 px-3 md:px-5 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                     isActive
                       ? 'bg-white/10 text-[#f97316] shadow-[inset_0_0_12px_rgba(249,115,22,0.06)]'
                       : 'text-zinc-500 hover:text-zinc-300'

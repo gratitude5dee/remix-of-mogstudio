@@ -43,9 +43,9 @@ export function CharacterGallery() {
             useCharacterCreationStore.getState().resetDraft();
             setMode('builder');
           }}
-          className="flex items-center gap-2 rounded-2xl border border-lime-300/40 bg-lime-300/10 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-lime-300/20"
+          className="flex items-center gap-2 rounded-2xl border border-orange-400/40 bg-orange-400/10 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-orange-400/20"
         >
-          <Plus className="h-4 w-4 text-lime-300" />
+          <Plus className="h-4 w-4 text-orange-400" />
           Create New
         </button>
       </div>
@@ -58,7 +58,7 @@ export function CharacterGallery() {
           placeholder="Search characters by name or @slug..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-2xl border border-white/10 bg-white/[0.03] py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-zinc-500 focus:border-lime-300/40 focus:outline-none"
+          className="w-full rounded-2xl border border-white/10 bg-white/[0.03] py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-zinc-500 focus:border-orange-400/40 focus:outline-none"
         />
       </div>
 
@@ -122,7 +122,7 @@ function CharacterCard({
       }}
       className={cn(
         'group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-all',
-        'hover:border-white/20 hover:bg-white/[0.06] hover:shadow-[0_0_40px_rgba(190,242,100,0.04)]',
+        'hover:border-white/20 hover:bg-white/[0.06] hover:shadow-[0_0_40px_rgba(249,115,22,0.04)]',
         'cursor-pointer',
       )}
     >
@@ -148,10 +148,10 @@ function CharacterCard({
               e.stopPropagation();
               onFavorite();
             }}
-            className="rounded-lg bg-black/60 p-1.5 text-zinc-300 backdrop-blur-sm hover:text-lime-300"
+            className="rounded-lg bg-black/60 p-1.5 text-zinc-300 backdrop-blur-sm hover:text-orange-400"
           >
             <Heart
-              className={cn('h-3.5 w-3.5', blueprint.isFavorite && 'fill-lime-300 text-lime-300')}
+              className={cn('h-3.5 w-3.5', blueprint.isFavorite && 'fill-orange-400 text-orange-400')}
             />
           </button>
           <button

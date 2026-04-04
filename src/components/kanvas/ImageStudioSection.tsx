@@ -144,7 +144,7 @@ export default function ImageStudioSection({
 
   /* ---- Sub-nav ---- */
   const renderSubNav = () => (
-    <div className="flex items-center gap-6 px-12 pt-6">
+    <div className="flex items-center gap-4 md:gap-6 px-4 md:px-12 pt-4 md:pt-6">
       {(["explore", "history", "community"] as const).map((tab) => (
         <button
           key={tab}
@@ -152,7 +152,7 @@ export default function ImageStudioSection({
           className={cn(
             "text-sm font-semibold capitalize transition-colors pb-2 border-b-2",
             activeTab === tab
-              ? "text-white border-[#ccff00]"
+              ? "text-white border-[#f97316]"
               : "text-zinc-500 border-transparent hover:text-zinc-300"
           )}
         >
@@ -164,22 +164,22 @@ export default function ImageStudioSection({
 
   /* ---- Hero Section ---- */
   const renderHero = () => (
-    <div className="text-center pt-16 pb-8">
+    <div className="text-center pt-8 md:pt-16 pb-6 md:pb-8 px-4 md:px-0">
       <h1
-        className="text-6xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase"
+        className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[0.9] uppercase"
         style={{ fontFamily: "'Space Grotesk', sans-serif" }}
       >
         <span className="text-white">TURN IDEAS</span>
         <br />
         <span className="text-white">INTO </span>
-        <span className="text-[#ccff00]">VISUALS</span>
+        <span className="text-[#f97316]">VISUALS</span>
       </h1>
     </div>
   );
 
   /* ---- Use Case Carousel ---- */
   const renderCarousel = () => (
-    <div className="relative max-w-[1100px] mx-auto px-12">
+    <div className="relative max-w-[1100px] mx-auto px-4 md:px-12 hidden md:block">
       <div className="flex items-center gap-4">
         <button
           onClick={() => setCarouselIndex(Math.max(0, carouselIndex - 1))}
@@ -276,7 +276,7 @@ export default function ImageStudioSection({
         {groupedModels.map((group) => (
           <div key={group.label}>
             <div className="px-4 py-2 flex items-center gap-2 border-b border-white/5">
-              <div className="w-5 h-5 rounded-full bg-[#ccff00]/20 flex items-center justify-center text-[9px] font-bold text-[#ccff00]">
+              <div className="w-5 h-5 rounded-full bg-[#f97316]/20 flex items-center justify-center text-[9px] font-bold text-[#f97316]">
                 {group.icon}
               </div>
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{group.label}</span>
@@ -291,14 +291,14 @@ export default function ImageStudioSection({
                   onClick={() => { onModelChange(m.id); setModelDropdownOpen(false); }}
                   className={cn(
                     "w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors text-left",
-                    isActive ? "bg-[#ccff00]/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                    isActive ? "bg-[#f97316]/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-white"
                   )}
                 >
                   <span className="flex items-center gap-2">
-                    {isActive && <Check className="h-3 w-3 text-[#ccff00]" />}
+                    {isActive && <Check className="h-3 w-3 text-[#f97316]" />}
                     <span className="font-medium">{m.name}</span>
                     {isFeatured && (
-                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-[#ccff00]/20 text-[#ccff00]">
+                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-[#f97316]/20 text-[#f97316]">
                         Top Choice
                       </span>
                     )}
@@ -323,28 +323,71 @@ export default function ImageStudioSection({
 
   /* ---- Bottom Prompt Bar ---- */
   const renderPromptBar = () => (
-    <div className="fixed bottom-8 left-8 right-8 flex justify-center z-50">
-      <div className="relative bg-[#131313]/95 backdrop-blur-2xl border border-white/10 rounded-[28px] p-2.5 flex items-center gap-2 shadow-[0_20px_60px_rgba(0,0,0,0.9)] w-full max-w-[1100px]">
+    <div className="fixed bottom-16 left-3 right-3 md:bottom-8 md:left-8 md:right-8 flex justify-center z-50">
+      <div className="relative bg-[#131313]/95 backdrop-blur-2xl border border-white/10 rounded-[28px] p-2.5 shadow-[0_20px_60px_rgba(0,0,0,0.9)] w-full max-w-[1100px]">
         {renderModelDropdown()}
 
+        {/* Mobile: 2-row layout */}
+        <div className="flex flex-col gap-2 md:hidden">
+          {/* Row 1: Upload + Input + Generate */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => uploadRef.current?.click()}
+              className="shrink-0 w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin text-[#f97316]" /> : <Plus className="h-4 w-4 text-zinc-400" />}
+            </button>
+            <input
+              type="text"
+              value={prompt}
+              onChange={(e) => onPromptChange(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && prompt.trim()) onGenerate(); }}
+              placeholder="Describe the scene..."
+              className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 focus:outline-none text-white placeholder-zinc-600 font-medium text-sm px-2"
+            />
+            <button
+              onClick={onGenerate}
+              disabled={submitting || !prompt.trim()}
+              className={cn(
+                "shrink-0 flex items-center gap-1.5 px-4 h-10 rounded-full font-bold text-sm transition-all",
+                "bg-[#f97316] text-black hover:shadow-[0_0_25px_rgba(249,115,22,0.4)]",
+                "disabled:opacity-40 disabled:cursor-not-allowed"
+              )}
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+          {/* Row 2: Model + Aspect + Count (scrollable) */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
+              className="shrink-0 flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 hover:bg-white/10 transition-colors"
+            >
+              <span className="text-[10px] font-bold text-white whitespace-nowrap max-w-[100px] truncate">
+                {currentModel?.name ?? "Model"}
+              </span>
+              <ChevronDown className="h-3 w-3 text-zinc-500" />
+            </button>
+            <button className="shrink-0 flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2.5 py-1.5">
+              <span className="text-[10px] font-bold text-white">{selectedAspect}</span>
+            </button>
+            <div className="shrink-0 flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2 py-1">
+              <button onClick={() => setImageCount(Math.max(1, imageCount - 1))} className="p-0.5 text-zinc-500"><Minus className="h-3 w-3" /></button>
+              <span className="text-[10px] font-bold text-white w-5 text-center">{imageCount}</span>
+              <button onClick={() => setImageCount(Math.min(4, imageCount + 1))} className="p-0.5 text-zinc-500"><Plus className="h-3 w-3" /></button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: single-row layout */}
+        <div className="hidden md:flex items-center gap-2">
         {/* Plus (upload) */}
         <button
           onClick={() => uploadRef.current?.click()}
           className="shrink-0 w-11 h-11 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
         >
-          {uploading ? <Loader2 className="h-4 w-4 animate-spin text-[#ccff00]" /> : <Plus className="h-4 w-4 text-zinc-400" />}
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin text-[#f97316]" /> : <Plus className="h-4 w-4 text-zinc-400" />}
         </button>
-        <input
-          ref={uploadRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            e.currentTarget.value = "";
-            if (file) onUpload(file, "image");
-          }}
-        />
 
         {/* Prompt input */}
         <input
@@ -362,7 +405,7 @@ export default function ImageStudioSection({
           onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
           className="shrink-0 flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3.5 py-2 hover:bg-white/10 transition-colors"
         >
-          <div className="w-4 h-4 rounded-full bg-[#ccff00]/20 flex items-center justify-center text-[8px] font-bold text-[#ccff00]">
+          <div className="w-4 h-4 rounded-full bg-[#f97316]/20 flex items-center justify-center text-[8px] font-bold text-[#f97316]">
             {getModelProvider(currentModel ?? models[0])?.charAt(0)?.toUpperCase() ?? "G"}
           </div>
           <span className="text-[11px] font-bold text-white whitespace-nowrap max-w-[120px] truncate">
@@ -383,7 +426,7 @@ export default function ImageStudioSection({
                 onClick={() => { setSelectedAspect(ar); onSettingsChange("aspect_ratio", ar); }}
                 className={cn(
                   "px-4 py-2 text-[11px] font-bold text-left transition-colors",
-                  selectedAspect === ar ? "text-[#ccff00] bg-[#ccff00]/10" : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  selectedAspect === ar ? "text-[#f97316] bg-[#f97316]/10" : "text-zinc-400 hover:text-white hover:bg-white/5"
                 )}
               >
                 {ar}
@@ -420,7 +463,7 @@ export default function ImageStudioSection({
           disabled={submitting || !prompt.trim()}
           className={cn(
             "shrink-0 flex items-center gap-2 px-6 h-11 rounded-full font-bold text-sm transition-all",
-            "bg-[#ccff00] text-black hover:shadow-[0_0_25px_rgba(204,255,0,0.4)]",
+            "bg-[#f97316] text-black hover:shadow-[0_0_25px_rgba(249,115,22,0.4)]",
             "disabled:opacity-40 disabled:cursor-not-allowed"
           )}
           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
@@ -435,6 +478,19 @@ export default function ImageStudioSection({
             </>
           )}
         </button>
+        </div>
+
+        <input
+          ref={uploadRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.currentTarget.value = "";
+            if (file) onUpload(file, "image");
+          }}
+        />
       </div>
     </div>
   );
@@ -463,7 +519,7 @@ export default function ImageStudioSection({
                 </div>
                 <button
                   onClick={() => setActiveTab("history")}
-                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 hover:text-[#ccff00] transition-colors"
+                  className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-500 hover:text-[#f97316] transition-colors"
                 >
                   View All →
                 </button>
@@ -483,7 +539,7 @@ export default function ImageStudioSection({
                           decoding="async"
                         />
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
-                          <Eye className="h-5 w-5 text-[#ccff00]" />
+                          <Eye className="h-5 w-5 text-[#f97316]" />
                         </div>
                       </div>
                     </div>
