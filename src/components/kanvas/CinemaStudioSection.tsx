@@ -827,8 +827,8 @@ export default function CinemaStudioSection({
                 </div>
               </div>
 
-              {/* ── Mode Labels with Icons + Accent Bar ── */}
-              <div className="flex flex-col gap-0.5">
+              {/* ── Mode Labels with Icons + Accent Bar — hidden on small mobile ── */}
+              <div className="hidden sm:flex flex-col gap-0.5">
                 {AUDIO_MODES.map(({ id, label, Icon }) => (
                   <button
                     key={id}
