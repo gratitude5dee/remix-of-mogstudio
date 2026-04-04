@@ -360,7 +360,7 @@ export default function CinemaStudioSection({
   /* ── VIDEO TAB ── */
   function renderVideoTab() {
     return (
-      <div className="flex-1 overflow-y-auto pb-32 px-8 pt-8" style={{ scrollbarWidth: 'none' }}>
+      <div className="flex-1 overflow-y-auto pb-40 px-8 pt-8" style={{ scrollbarWidth: 'none' }}>
         <div className="max-w-[1200px] mx-auto">
           {/* Camera Presets */}
           <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-500 font-bold mb-4">Camera Movement</p>
