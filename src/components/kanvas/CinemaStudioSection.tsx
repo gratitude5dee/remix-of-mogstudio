@@ -1002,7 +1002,7 @@ export default function CinemaStudioSection({
   }
 
   return (
-    <div className="fixed inset-0 top-[68px] bg-[#090909] z-20 overflow-hidden flex" style={{ scrollbarWidth: 'none' }}>
+    <div className="fixed inset-0 top-[68px] bg-[#090909] z-20 overflow-hidden flex flex-col pb-16 md:pb-0" style={{ scrollbarWidth: 'none' }}>
       <style>{`::-webkit-scrollbar { display: none; }`}</style>
 
       {/* Main Content */}
