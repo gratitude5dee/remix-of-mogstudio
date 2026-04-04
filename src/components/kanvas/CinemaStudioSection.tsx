@@ -141,6 +141,7 @@ export default function CinemaStudioSection({
   const [audioMode, setAudioMode] = useState<AudioMode>('voiceover');
   const [selectedAudioModel, setSelectedAudioModel] = useState<AudioModel>(AUDIO_MODELS[0]);
   const [showVoicePicker, setShowVoicePicker] = useState(false);
+  const [showAudioModelPicker, setShowAudioModelPicker] = useState(false);
   const [audioPrompt, setAudioPrompt] = useState('');
 
   const creditCost = genMode === 'video' ? 24 : (currentModel?.credits ?? 2);
