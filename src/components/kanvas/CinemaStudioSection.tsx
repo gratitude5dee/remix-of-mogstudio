@@ -304,7 +304,7 @@ export default function CinemaStudioSection({
   /* ── IMAGE TAB ── */
   function renderImageTab() {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center relative pb-28">
+      <div className="flex-1 flex flex-col items-center justify-center relative pb-40">
         <div className="absolute inset-0 bg-gradient-to-b from-purple-950/30 via-[#090909] to-[#090909] pointer-events-none" />
         <div className="relative z-10 text-center max-w-3xl px-8">
           <p className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-bold mb-4">CINEMA STUDIO 2.5</p>
