@@ -53,7 +53,7 @@ export function KanvasSidebar({ activeStudio, onStudioChange }: KanvasSidebarPro
   return (
     <TooltipProvider delayDuration={200}>
       {/* Invisible hover trigger zone */}
-      <div className="fixed left-0 top-0 h-screen w-[80px] z-[49]" />
+      <div className="fixed left-0 top-0 h-[calc(100vh-2rem)] w-[80px] z-[49]" />
 
       <aside
         className={cn(
