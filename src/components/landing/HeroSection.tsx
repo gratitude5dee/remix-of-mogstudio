@@ -237,7 +237,7 @@ export function HeroSection({
             transition={{ duration: 0.7, delay: 0.5 }}
             className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight leading-[0.95] mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60"
           >
-            {headline || <>Your <em className="font-serif italic not-italic bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-amber-200" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>creative</em> environment.</>}
+            {headline || <>Your <em className="font-serif italic not-italic bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-amber-200" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>generative</em> environment.</>}
           </motion.h1>
 
           {/* Subheadline */}
