@@ -28,8 +28,24 @@ export const Sidebar = ({ activeView, onViewChange }: SidebarProps) => {
   const [favoritesOpen, setFavoritesOpen] = useState(true);
   const { isCollapsed, setIsCollapsed } = useSidebar();
   const navigate = useNavigate();
+  const [isFloatingVisible, setIsFloatingVisible] = useState(false);
 
-  const handleLogout = async () => {
+  // Hover-reveal for collapsed (floating) mode
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isCollapsed) {
+      setIsFloatingVisible(e.clientX <= 80);
+    }
+  }, [isCollapsed]);
+
+  useEffect(() => {
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [handleMouseMove]);
+
+  // Reset floating visibility when expanding
+  useEffect(() => {
+    if (!isCollapsed) setIsFloatingVisible(false);
+  }, [isCollapsed]);
     const { error } = await supabase.auth.signOut();
     if (error) {
       toast.error('Failed to log out');
