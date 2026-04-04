@@ -105,7 +105,7 @@ function SceneChip({
       className={cn(
         'group relative flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-all',
         isActive
-          ? 'border-amber-400/50 bg-amber-400/10 text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.12)]'
+          ? 'border-[#BEFF00]/30 bg-[#BEFF00]/10 text-[#BEFF00] shadow-[0_0_20px_rgba(190,255,0,0.12)]'
           : 'border-zinc-700/40 bg-zinc-900/40 text-zinc-400 hover:border-zinc-600/60 hover:text-zinc-200',
       )}
     >
@@ -186,7 +186,7 @@ function SceneStrip({
           type="button"
           onClick={onAddScene}
           aria-label="New Scene"
-          className="flex shrink-0 items-center gap-1.5 rounded-xl border border-dashed border-zinc-700/50 px-3 py-2 text-xs font-medium text-zinc-500 transition-colors hover:border-amber-500/40 hover:text-amber-400"
+          className="flex shrink-0 items-center gap-1.5 rounded-xl border border-dashed border-zinc-700/50 px-3 py-2 text-xs font-medium text-zinc-500 transition-colors hover:border-[#BEFF00]/30 hover:text-[#BEFF00]"
         >
           <Plus className="h-3 w-3" />
           New Scene
@@ -244,7 +244,7 @@ function WorldCreatorPanel({
           className={cn(
             'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
             promptMode === 'text'
-              ? 'bg-amber-500/20 text-amber-300'
+              ? 'bg-[#BEFF00]/10 text-[#BEFF00]'
               : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200',
           )}
         >
@@ -257,7 +257,7 @@ function WorldCreatorPanel({
           className={cn(
             'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
             promptMode === 'image'
-              ? 'bg-amber-500/20 text-amber-300'
+              ? 'bg-[#BEFF00]/10 text-[#BEFF00]'
               : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200',
           )}
         >
@@ -270,7 +270,7 @@ function WorldCreatorPanel({
         value={textPrompt}
         onChange={(e) => setTextPrompt(e.target.value)}
         placeholder="Describe the 3D world you want to create..."
-        className="mb-3 w-full resize-none rounded-xl border border-zinc-700/40 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-amber-500/40 focus:outline-none"
+        className="mb-3 w-full resize-none rounded-xl border border-zinc-700/40 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-[#BEFF00]/30 focus:outline-none"
         rows={3}
       />
 
@@ -288,7 +288,7 @@ function WorldCreatorPanel({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             aria-label="Upload image"
-            className="flex items-center gap-2 rounded-lg border border-dashed border-zinc-700/50 px-3 py-2 text-xs text-zinc-400 transition-colors hover:border-amber-500/40 hover:text-amber-300"
+            className="flex items-center gap-2 rounded-lg border border-dashed border-zinc-700/50 px-3 py-2 text-xs text-zinc-400 transition-colors hover:border-[#BEFF00]/30 hover:text-[#BEFF00]"
           >
             <Upload className="h-3.5 w-3.5" />
             {imageFile ? imageFile.name : 'Select image file'}
@@ -308,7 +308,7 @@ function WorldCreatorPanel({
           value={selectedModel}
           onChange={(e) => setSelectedModel(e.target.value as WorldModel)}
           aria-label="Select model"
-          className="w-full rounded-lg border border-zinc-700/40 bg-black/40 px-3 py-2 text-sm text-white focus:border-amber-500/40 focus:outline-none"
+          className="w-full rounded-lg border border-zinc-700/40 bg-black/40 px-3 py-2 text-sm text-white focus:border-[#BEFF00]/30 focus:outline-none"
         >
           <option value="Marble 0.1-plus">Marble 0.1-plus</option>
           <option value="Marble 0.1-mini">Marble 0.1-mini</option>
@@ -324,7 +324,7 @@ function WorldCreatorPanel({
         className={cn(
           'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all',
           canGenerate
-            ? 'bg-amber-500 text-black hover:bg-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.15)]'
+            ? 'bg-[#BEFF00] text-black hover:bg-[#d4ff4d] shadow-[0_0_20px_rgba(190,255,0,0.15)]'
             : 'bg-zinc-800 text-zinc-600 cursor-not-allowed',
         )}
       >
@@ -343,14 +343,14 @@ function WorldGeneratingCard({ progress }: { progress?: number }) {
   return (
     <motion.div
       {...fadeIn}
-      className="flex flex-col items-center gap-3 rounded-2xl border border-amber-500/20 bg-zinc-900/40 p-6 backdrop-blur-xl"
+      className="flex flex-col items-center gap-3 rounded-2xl border border-[#BEFF00]/20 bg-zinc-900/40 p-6 backdrop-blur-xl"
     >
-      <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
+      <Loader2 className="h-8 w-8 animate-spin text-[#BEFF00]" />
       <p className="text-sm font-medium text-white">Generating world…</p>
       <p className="text-xs text-zinc-500">This may take a few minutes</p>
       <div className="h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-zinc-800">
         <motion.div
-          className="h-full rounded-full bg-amber-500"
+          className="h-full rounded-full bg-[#BEFF00]"
           initial={{ width: '5%' }}
           animate={{ width: `${progress ?? 15}%` }}
           transition={{ duration: 0.5, ease: 'easeInOut' }}
@@ -424,7 +424,7 @@ function WorldCard({
       <div className="p-3">
         <p className="text-sm font-semibold text-white">{world.displayName}</p>
         <div className="mt-1 flex items-center gap-2">
-          <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
+          <span className="rounded-md bg-[#BEFF00]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#BEFF00]">
             {world.model}
           </span>
           {world.assets.viewerUrl && (
@@ -432,7 +432,7 @@ function WorldCard({
               href={world.assets.viewerUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] text-zinc-500 underline hover:text-amber-400"
+              className="text-[10px] text-zinc-500 underline hover:text-[#BEFF00]"
               aria-label="Open in Marble"
             >
               Open in Marble
@@ -497,7 +497,7 @@ function TakeCard({
                 type="button"
                 onClick={onCompose}
                 aria-label="Compose Shot"
-                className="rounded-lg bg-amber-500/90 px-3 py-1.5 text-xs font-semibold text-black transition-colors hover:bg-amber-400"
+                className="rounded-lg bg-[#BEFF00]/90 px-3 py-1.5 text-xs font-semibold text-black transition-colors hover:bg-[#d4ff4d]"
               >
                 Compose Shot
               </button>
@@ -508,7 +508,7 @@ function TakeCard({
         {/* Loading state */}
         {take.status === 'capturing' && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-            <Loader2 className="h-5 w-5 animate-spin text-amber-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#BEFF00]" />
           </div>
         )}
       </div>
@@ -564,7 +564,7 @@ function GeneratedImageCard({
         )}
 
         {/* Model badge */}
-        <span className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 text-[9px] font-medium text-amber-400 backdrop-blur-sm">
+        <span className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 text-[9px] font-medium text-[#BEFF00] backdrop-blur-sm">
           <Sparkles className="h-2.5 w-2.5" />
           {shot.model}
         </span>
@@ -621,7 +621,7 @@ function WorldviewCanvas({
             type="button"
             onClick={onRetryGeneration}
             aria-label="Retry generation"
-            className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-300 transition-colors hover:bg-amber-500/30"
+            className="flex items-center gap-1.5 rounded-lg bg-[#BEFF00]/10 px-3 py-1.5 text-xs font-medium text-[#BEFF00] transition-colors hover:bg-[#BEFF00]/30"
           >
             <RefreshCw className="h-3 w-3" />
             Retry
@@ -637,7 +637,7 @@ function WorldviewCanvas({
           type="button"
           onClick={() => onSetShowCreator(true)}
           aria-label="Create a 3D World"
-          className="flex w-full flex-col items-center gap-3 rounded-2xl border border-dashed border-zinc-700/40 bg-zinc-900/20 p-8 text-zinc-500 transition-all hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_30px_rgba(245,158,11,0.08)]"
+          className="flex w-full flex-col items-center gap-3 rounded-2xl border border-dashed border-zinc-700/40 bg-zinc-900/20 p-8 text-zinc-500 transition-all hover:border-[#BEFF00]/30 hover:text-[#BEFF00] hover:shadow-[0_0_30px_rgba(190,255,0,0.08)]"
         >
           <Globe2 className="h-8 w-8" />
           <span className="text-sm font-medium">Create a 3D World</span>
@@ -679,7 +679,7 @@ function WorldviewCanvas({
 
       {/* Bottom prompt bar */}
       <div className="flex items-center gap-3 rounded-xl border border-zinc-700/40 bg-zinc-900/40 px-4 py-3 backdrop-blur-xl">
-        <Sparkles className="h-4 w-4 shrink-0 text-amber-400" />
+        <Sparkles className="h-4 w-4 shrink-0 text-[#BEFF00]" />
         <input
           type="text"
           placeholder="Describe what you'd like to create…"
@@ -869,7 +869,7 @@ function GSplatViewer({
       <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
         <div className="relative">
           <button type="button" onClick={() => setLensOpen((o) => !o)} aria-label="Select lens"
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-700/40 bg-zinc-900/70 px-2.5 py-1.5 font-mono text-xs text-amber-400 backdrop-blur-xl transition-colors hover:border-amber-500/40">
+            className="flex items-center gap-1.5 rounded-lg border border-zinc-700/40 bg-zinc-900/70 px-2.5 py-1.5 font-mono text-xs text-[#BEFF00] backdrop-blur-xl transition-colors hover:border-[#BEFF00]/30">
             {camera.lens}
             <ChevronDown className={cn('h-3 w-3 transition-transform', lensOpen && 'rotate-180')} />
           </button>
@@ -880,7 +880,7 @@ function GSplatViewer({
                 {LENS_OPTIONS.map((opt) => (
                   <button key={opt.value} type="button" onClick={() => handleLensChange(opt.value)} aria-label={`Lens ${opt.value}`}
                     className={cn('px-3 py-1.5 text-left font-mono text-xs transition-colors',
-                      camera.lens === opt.value ? 'bg-amber-500/20 text-amber-300' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200')}>
+                      camera.lens === opt.value ? 'bg-[#BEFF00]/10 text-[#BEFF00]' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200')}>
                     {opt.value}<span className="ml-2 text-[10px] text-zinc-500">fov {opt.fov}°</span>
                   </button>
                 ))}
@@ -892,13 +892,13 @@ function GSplatViewer({
           <button type="button" onClick={handleZoomOut} aria-label="Zoom out" className="rounded p-0.5 text-zinc-400 transition-colors hover:text-white">
             <Minus className="h-3 w-3" />
           </button>
-          <span className="min-w-[3ch] text-center font-mono text-xs text-amber-400">{camera.zoom}%</span>
+          <span className="min-w-[3ch] text-center font-mono text-xs text-[#BEFF00]">{camera.zoom}%</span>
           <button type="button" onClick={handleZoomIn} aria-label="Zoom in" className="rounded p-0.5 text-zinc-400 transition-colors hover:text-white">
             <Plus className="h-3 w-3" />
           </button>
         </div>
         <button type="button" aria-label="Help"
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700/40 bg-zinc-900/70 text-zinc-400 backdrop-blur-xl transition-colors hover:text-amber-400">
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700/40 bg-zinc-900/70 text-zinc-400 backdrop-blur-xl transition-colors hover:text-[#BEFF00]">
           <CircleHelp className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -921,7 +921,7 @@ function GSplatViewer({
             <span className="rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] uppercase text-zinc-300 backdrop-blur-sm">{camera.lens}</span>
             <span className="rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] text-zinc-300 backdrop-blur-sm">{camera.aperture}</span>
             <span className="rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] text-zinc-300 backdrop-blur-sm">{camera.aspectRatio}</span>
-            <span className="rounded bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-amber-400 backdrop-blur-sm">AF</span>
+            <span className="rounded bg-[#BEFF00]/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-[#BEFF00] backdrop-blur-sm">AF</span>
           </div>
         </div>
       </div>
@@ -929,12 +929,12 @@ function GSplatViewer({
       {/* Bottom controls */}
       <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3">
         <button type="button" onClick={handleResetCamera} aria-label="Reset camera"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-700/40 bg-zinc-900/70 text-zinc-400 backdrop-blur-xl transition-colors hover:text-amber-400">
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-700/40 bg-zinc-900/70 text-zinc-400 backdrop-blur-xl transition-colors hover:text-[#BEFF00]">
           <RotateCcw className="h-4 w-4" />
         </button>
         <button type="button" onClick={toggleMotion} aria-label="Toggle motion" aria-pressed={motionEnabled}
           className={cn('flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-xl transition-colors',
-            motionEnabled ? 'border-amber-500/40 bg-amber-500/20 text-amber-400' : 'border-zinc-700/40 bg-zinc-900/70 text-zinc-400 hover:text-zinc-200')}>
+            motionEnabled ? 'border-[#BEFF00]/30 bg-[#BEFF00]/10 text-[#BEFF00]' : 'border-zinc-700/40 bg-zinc-900/70 text-zinc-400 hover:text-zinc-200')}>
           <Move3d className="h-4 w-4" />
         </button>
         <button type="button" onClick={handleCaptureTake} disabled={capturing} aria-label="Capture Take"
@@ -1188,8 +1188,8 @@ function ShotComposer({
         {generatingShot && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
             <div className="flex items-center gap-2">
-              <Loader2 className="h-5 w-5 animate-spin text-amber-400" />
-              <span className="text-sm font-medium text-amber-300">Building…</span>
+              <Loader2 className="h-5 w-5 animate-spin text-[#BEFF00]" />
+              <span className="text-sm font-medium text-[#BEFF00]">Building…</span>
             </div>
           </div>
         )}
@@ -1199,7 +1199,7 @@ function ShotComposer({
           <button
             type="button"
             aria-label="Aperture"
-            className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700/40 bg-zinc-800 text-zinc-400 transition-colors hover:text-amber-400"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700/40 bg-zinc-800 text-zinc-400 transition-colors hover:text-[#BEFF00]"
           >
             <Aperture className="h-4 w-4" />
           </button>
@@ -1213,7 +1213,7 @@ function ShotComposer({
             className={cn(
               'rounded-lg px-2.5 py-1 text-xs font-medium transition-colors',
               cameraBagOn
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                ? 'bg-[#BEFF00]/10 text-[#BEFF00] border border-[#BEFF00]/30'
                 : 'bg-zinc-800 text-zinc-400 border border-zinc-700/40 hover:text-zinc-200',
             )}
           >
@@ -1443,7 +1443,7 @@ function ShotComposer({
             className={cn(
               'ml-auto flex h-8 w-8 items-center justify-center rounded-full transition-all',
               canSend
-                ? 'bg-amber-500 text-black hover:bg-amber-400'
+                ? 'bg-[#BEFF00] text-black hover:bg-[#d4ff4d]'
                 : 'bg-zinc-700 text-zinc-500 cursor-not-allowed opacity-50',
             )}
           >
@@ -1490,7 +1490,7 @@ function ShotComposer({
         type="button"
         onClick={onBack}
         aria-label="Back to canvas"
-        className="flex items-center gap-1 text-sm text-zinc-400 transition-colors hover:text-amber-400"
+        className="flex items-center gap-1 text-sm text-zinc-400 transition-colors hover:text-[#BEFF00]"
       >
         <ChevronLeft className="h-4 w-4" />
         Back to canvas
@@ -1500,7 +1500,7 @@ function ShotComposer({
 }
 
 // ---------------------------------------------------------------------------
-// WorldviewSection — main export
+// WorldviewSection — main export (redesigned)
 // ---------------------------------------------------------------------------
 
 export function WorldviewSection() {
@@ -1519,7 +1519,6 @@ export function WorldviewSection() {
     setSceneShowCreator,
   } = useWorldviewStore();
 
-  const [collapsed, setCollapsed] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState<number | undefined>(undefined);
 
@@ -1530,19 +1529,20 @@ export function WorldviewSection() {
     ? worlds.find((w) => w.id === activeScene.worldId) ?? null
     : null;
 
+  // Determine if we have any content (worlds or scenes with worlds)
+  const hasContent = worlds.length > 0 || activeWorld !== null;
+
   const handleAddScene = useCallback(() => {
     addScene();
   }, [addScene]);
 
   const handleRemoveScene = useCallback(
     (id: string) => {
-      // Best-effort cleanup: delete take images from Supabase Storage
       const sceneToRemove = scenes.find((s) => s.id === id);
       if (sceneToRemove && sceneToRemove.takes.length > 0) {
         const filePaths = sceneToRemove.takes
           .filter((t) => t.imageUrl && !t.imageUrl.startsWith('data:'))
           .map((t) => {
-            // Extract file path from public URL (last segment)
             const url = t.imageUrl;
             const parts = url.split('/');
             return parts[parts.length - 1];
@@ -1550,13 +1550,10 @@ export function WorldviewSection() {
           .filter(Boolean);
 
         if (filePaths.length > 0) {
-          // Fire and forget — don't block on failure
           supabase.storage
             .from('worldview-takes')
             .remove(filePaths)
-            .catch(() => {
-              // Silently ignore cleanup errors
-            });
+            .catch(() => {});
         }
       }
       removeScene(id);
@@ -1573,7 +1570,6 @@ export function WorldviewSection() {
       setSceneGenerationError(activeScene.id, null);
 
       try {
-        // If an image file is provided, upload it first to get a media URL
         let imageUrl: string | undefined;
         if (imageFile) {
           const asset = await worldLabsService.uploadMediaAsset(imageFile);
@@ -1592,7 +1588,7 @@ export function WorldviewSection() {
 
         const finalOp = await worldLabsService.pollOperation(
           operation.id,
-          (status, description) => {
+          (status) => {
             if (status === 'running') {
               setGenerationProgress((prev) => Math.min((prev ?? 30) + 10, 90));
             }
@@ -1648,8 +1644,6 @@ export function WorldviewSection() {
     [activeSceneId, setSceneShowCreator],
   );
 
-  // -- Add to Canvas handler ------------------------------------------------
-
   const handleAddToCanvas = useCallback(
     (imageUrl: string) => {
       const store = useCanvasStore.getState();
@@ -1680,7 +1674,24 @@ export function WorldviewSection() {
     [],
   );
 
-  // -- Reset showCreator when switching scenes ------------------------------
+  // Enter a world from the history gallery
+  const handleEnterHistoryWorld = useCallback(
+    (worldId: string) => {
+      // Find or create a scene for this world
+      const existingScene = scenes.find((s) => s.worldId === worldId);
+      if (existingScene) {
+        setActiveScene(existingScene.id);
+      } else {
+        // Create a new scene and assign the world
+        const newSceneId = addScene();
+        if (newSceneId) {
+          assignWorldToScene(newSceneId, worldId);
+        }
+      }
+      setMode('world-viewer');
+    },
+    [scenes, setActiveScene, addScene, assignWorldToScene, setMode],
+  );
 
   useEffect(() => {
     if (activeSceneId) {
@@ -1688,20 +1699,15 @@ export function WorldviewSection() {
     }
   }, [activeSceneId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // -- Focus management on mode switch -------------------------------------
-
   const contentRef = useRef<HTMLDivElement>(null);
   const prevModeRef = useRef(mode);
 
   useEffect(() => {
     if (prevModeRef.current !== mode) {
       prevModeRef.current = mode;
-      // Wait for AnimatePresence transition to render the new mode's DOM
       const timer = setTimeout(() => {
         const container = contentRef.current;
         if (!container) return;
-
-        // Find the first focusable element in the new mode's content
         const focusable = container.querySelector<HTMLElement>(
           'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
@@ -1711,98 +1717,174 @@ export function WorldviewSection() {
     }
   }, [mode]);
 
-  return (
-    <div className="min-w-0 space-y-3 px-2 sm:space-y-4 sm:px-0">
-      {/* Section header */}
-      <button
-        type="button"
-        onClick={() => setCollapsed((c) => !c)}
-        aria-label={collapsed ? 'Expand Worldview section' : 'Collapse Worldview section'}
-        className="flex w-full items-center gap-3 rounded-2xl border border-zinc-700/40 bg-zinc-900/40 px-4 py-3 backdrop-blur-xl transition-colors hover:border-zinc-600/60"
-      >
-        <Globe2 className="h-5 w-5 text-amber-400" />
-        <span className="text-sm font-semibold text-white">Worldview</span>
-        <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
-          3D Worlds
-        </span>
-        {/* Green pulse dot */}
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
-        </span>
-        <ChevronDown
-          className={cn(
-            'ml-auto h-4 w-4 text-zinc-500 transition-transform',
-            collapsed && '-rotate-90',
-          )}
-        />
-      </button>
-
-      {/* Collapsible content */}
-      <AnimatePresence>
-        {!collapsed && (
-          <motion.div
-            key="worldview-content"
-            variants={collapseVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="space-y-4 overflow-hidden"
+  // ── Landing state: no active world ──
+  if (!hasContent && !activeScene?.showCreator && !generating) {
+    return (
+      <div className="relative min-h-[calc(100vh-60px)] flex flex-col">
+        {/* Watermark */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <span
+            className="select-none text-[12vw] font-black uppercase tracking-[-0.04em] text-white/[0.02]"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
-            {/* Scene strip */}
-            <SceneStrip
-              scenes={scenes}
-              activeSceneId={activeSceneId}
-              onSelect={setActiveScene}
-              onAddScene={handleAddScene}
-              onRemoveScene={handleRemoveScene}
-            />
+            WORLDVIEW
+          </span>
+        </div>
 
-            {/* Mode-dependent content */}
-            <div ref={contentRef}>
-              <AnimatePresence mode="wait">
-                {activeScene ? (
-                  mode === 'canvas' ? (
-                    <WorldviewCanvas
-                      key="canvas"
-                      scene={activeScene}
-                      world={activeWorld}
-                      generating={generating}
-                      generationProgress={generationProgress}
-                      generationError={generationError}
-                      showCreator={showCreator}
-                      onCreateWorld={handleCreateWorld}
-                      onEnterWorld={handleEnterWorld}
-                      onComposeTake={handleComposeTake}
-                      onRetryGeneration={handleRetryGeneration}
-                      onSetShowCreator={handleSetShowCreator}
-                      onAddToCanvas={handleAddToCanvas}
-                    />
-                  ) : mode === 'world-viewer' ? (
-                    <GSplatViewer
-                      key="world-viewer"
-                      world={activeWorld}
-                      onClose={() => setMode('canvas')}
-                    />
-                  ) : (
-                    <ShotComposer
-                      key="shot-composer"
-                      scene={activeScene}
-                      onBack={() => setMode('canvas')}
-                    />
-                  )
-                ) : (
-                  <motion.div key="empty" {...fadeIn} className="py-6 text-center">
-                    <p className="text-sm text-zinc-500">
-                      Create a new scene to get started
-                    </p>
-                  </motion.div>
+        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-16">
+          {/* Hero */}
+          <div className="mb-3 flex items-center gap-2">
+            <Globe2 className="h-5 w-5 text-[#BEFF00]" />
+            <span className="rounded-full bg-[#BEFF00]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#BEFF00]">
+              3D Worlds
+            </span>
+          </div>
+          <h1
+            className="mb-3 text-center text-4xl font-black uppercase tracking-tight text-white md:text-5xl"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            CREATE 3D WORLDS
+          </h1>
+          <p className="mb-10 max-w-lg text-center text-sm text-zinc-500">
+            Generate immersive environments, capture camera takes, and compose AI-powered shots
+          </p>
+
+          {/* Feature cards */}
+          <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {[
+              { icon: Globe2, title: 'Text to World', desc: 'Describe any environment' },
+              { icon: ImagePlus, title: 'Image to World', desc: 'Upload a reference image' },
+              { icon: Camera, title: 'Camera Takes', desc: 'Capture 3D viewpoints' },
+              { icon: Sparkles, title: 'Shot Composer', desc: 'AI-driven compositions' },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div
+                key={title}
+                className="group flex flex-col items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-6 text-center transition-all duration-300 hover:border-[#BEFF00]/20 hover:bg-white/[0.04] hover:shadow-[0_0_30px_rgba(190,255,0,0.05)]"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#BEFF00]/10 text-[#BEFF00] transition-colors group-hover:bg-[#BEFF00]/20">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <p className="text-sm font-semibold text-white">{title}</p>
+                <p className="text-xs text-zinc-500">{desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <button
+            type="button"
+            onClick={() => {
+              if (!activeScene) addScene();
+              const sceneId = activeSceneId ?? scenes[0]?.id;
+              if (sceneId) setSceneShowCreator(sceneId, true);
+            }}
+            className="flex items-center gap-2 rounded-full bg-[#BEFF00] px-6 py-3 text-sm font-bold text-black transition-all duration-200 hover:bg-[#d4ff4d] hover:shadow-[0_0_30px_rgba(190,255,0,0.2)]"
+          >
+            <Zap className="h-4 w-4" />
+            Create Your First World
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Workspace state ──
+  return (
+    <div className="min-w-0 space-y-4 px-2 sm:px-0">
+      {/* Mode pill-tab nav (centered) */}
+      <div className="flex justify-center pt-2">
+        <div className="inline-flex rounded-full bg-[#1A1A1A] p-1 border border-white/[0.06]">
+          {(['canvas', 'world-viewer', 'shot-composer'] as const).map((m) => {
+            const labels = { canvas: 'Canvas', 'world-viewer': 'World Viewer', 'shot-composer': 'Shot Composer' };
+            const isActive = mode === m;
+            return (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                className={cn(
+                  'px-5 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                  isActive
+                    ? 'bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]'
+                    : 'text-zinc-500 hover:text-zinc-300',
                 )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              >
+                {labels[m]}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Scene strip */}
+      <SceneStrip
+        scenes={scenes}
+        activeSceneId={activeSceneId}
+        onSelect={setActiveScene}
+        onAddScene={handleAddScene}
+        onRemoveScene={handleRemoveScene}
+      />
+
+      {/* Mode-dependent content */}
+      <div ref={contentRef}>
+        <AnimatePresence mode="wait">
+          {activeScene ? (
+            mode === 'canvas' ? (
+              <WorldviewCanvas
+                key="canvas"
+                scene={activeScene}
+                world={activeWorld}
+                generating={generating}
+                generationProgress={generationProgress}
+                generationError={generationError}
+                showCreator={showCreator}
+                onCreateWorld={handleCreateWorld}
+                onEnterWorld={handleEnterWorld}
+                onComposeTake={handleComposeTake}
+                onRetryGeneration={handleRetryGeneration}
+                onSetShowCreator={handleSetShowCreator}
+                onAddToCanvas={handleAddToCanvas}
+              />
+            ) : mode === 'world-viewer' ? (
+              <GSplatViewer
+                key="world-viewer"
+                world={activeWorld}
+                onClose={() => setMode('canvas')}
+              />
+            ) : (
+              <ShotComposer
+                key="shot-composer"
+                scene={activeScene}
+                onBack={() => setMode('canvas')}
+              />
+            )
+          ) : (
+            <motion.div key="empty" {...fadeIn} className="py-6 text-center">
+              <p className="text-sm text-zinc-500">
+                Create a new scene to get started
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── YOUR WORLDS — History Gallery ── */}
+      {worlds.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            Your Worlds
+          </h2>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            {worlds.map((world) => (
+              <WorldCard
+                key={world.id}
+                world={world}
+                onEnterWorld={() => handleEnterHistoryWorld(world.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
