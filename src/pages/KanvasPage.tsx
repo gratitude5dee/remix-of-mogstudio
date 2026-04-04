@@ -1201,13 +1201,13 @@ export default function KanvasPage() {
            <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-transparent" style={{ borderImage: 'linear-gradient(to right, rgba(249,115,22,0.15), transparent 60%) 1' }}>
             <div className="flex items-center justify-between px-5 py-1.5">
               {/* Left: WZRD logo + badge */}
-              <div className="flex items-center gap-3 min-w-[140px]">
-                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-14 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
-                <span className="text-[10px] text-[#f97316] bg-[#f97316]/10 px-2 py-0.5 rounded-full border border-[#f97316]/20 font-medium">ALPHA</span>
+              <div className="flex items-center gap-2 md:gap-3 min-w-0 md:min-w-[140px]">
+                <img src="/lovable-uploads/wzrdtechlogo.png" alt="WZRD STUDIO Logo" className="h-10 md:h-14 object-contain cursor-pointer" onClick={() => navigate(appRoutes.home)} />
+                <span className="hidden sm:inline text-[10px] text-[#f97316] bg-[#f97316]/10 px-2 py-0.5 rounded-full border border-[#f97316]/20 font-medium">ALPHA</span>
               </div>
 
-              {/* Center: Pill-slider studio nav */}
-              <div className="inline-flex items-center bg-[#111] rounded-full p-1 border border-white/[0.06] gap-0.5">
+              {/* Center: Pill-slider studio nav — hidden on mobile (bottom nav replaces it) */}
+              <div className="hidden md:inline-flex items-center bg-[#111] rounded-full p-1 border border-white/[0.06] gap-0.5">
                 {KANVAS_STUDIO_ORDER.map((s) => {
                   const Icon = {
                     image: ImageIcon,
