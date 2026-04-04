@@ -1,82 +1,93 @@
 
 
-# Cinema Studio + @Mention Integration + Kanvas Header Redesign
+# Worldview Studio Redesign + Left Sidebar Nav for /kanvas
 
-## Problems Identified
+## Overview
+Two changes: (1) Redesign the Worldview studio to match the Noir Futurist aesthetic of the other studios, with a generation history gallery so users can access past worlds without regenerating. (2) Add a persistent left icon sidebar nav to the /kanvas page for quick studio switching + home navigation, replacing the overhead of the top pill-slider for primary nav.
 
-1. **Cinema Studio lacks @mention integration**: The prompt inputs in `CinemaStudioSection` call `onPromptChange` directly but never trigger `onMentionChange` from `useCharacterMention`. The `MentionDropdown` component is imported in `KanvasPage.tsx` but never rendered for Cinema. Characters in the prompt bar are hardcoded stock photos instead of real character blueprints.
+## Part 1: Left Sidebar Navigation
 
-2. **Header is generic and cluttered**: The current header uses rounded-2xl bordered buttons for 7+ studios, a plain "Back to Home" button, and a redundant sidebar + mobile scroll area. It doesn't match the premium pill-slider pattern used inside studios.
+### New Component: `src/components/kanvas/KanvasSidebar.tsx`
 
-3. **Runtime error**: Stale HMR cache — will be resolved by the file changes.
+A narrow 56px vertical icon sidebar on the left edge of the /kanvas page:
 
-## Phase 1: Wire @Mention into Cinema Studio
-
-### `src/components/kanvas/CinemaStudioSection.tsx`
-
-**New props** added to `CinemaStudioProps`:
-- `mentionSuggestions: CharacterMention[]`
-- `showMentionDropdown: boolean`
-- `onMentionSelect: (mention: CharacterMention) => void`
-- `onCloseMentions: () => void`
-
-**Prompt input changes** (both Image and Video bars):
-- Wrap prompt input in a `relative` container
-- Render `<MentionDropdown>` positioned above the input
-- On input change: call both `onPromptChange(value)` and trigger mention detection
-- On selecting a mention: replace the @query in the prompt string
-
-**Character avatars**: Replace hardcoded `CHARACTER_AVATARS` array with a new prop `characterMentions: CharacterMention[]` from the store's `getMentionList()`. Fall back to placeholder avatars when no characters exist. The left icon rail and Cast tab will show real character blueprint images.
-
-### `src/pages/KanvasPage.tsx`
-
-- Pass `mentionSuggestions`, `showMentionDropdown`, `onMentionSelect`, `onCloseMentions` to `CinemaStudioSection`
-- Wire `onPromptChange` to also call `onMentionChange` for cinema prompt (same pattern used for image/video)
-
-## Phase 2: Redesign Kanvas Header
-
-### `src/pages/KanvasPage.tsx` — Header section (lines 1159-1218)
-
-Replace the current header with a premium, award-winning design:
-
-**Structure**:
 ```text
-┌──────────────────────────────────────────────────────────────┐
-│  WZRD logo    │  ● Image  Video  Edit  Lipsync  Cinema ...  │  ⌂  │
-│  (glow mark)  │  (centered pill-slider nav)                  │     │
-└──────────────────────────────────────────────────────────────┘
+┌──┐
+│🏠│  ← Home (tooltip: "Home")
+│──│  
+│🖼│  ← Image
+│🎬│  ← Video  
+│✏️│  ← Edit
+│🎤│  ← Lipsync
+│🎬│  ← Cinema
+│🌍│  ← Worldview
+│👤│  ← Characters
+└──┘
 ```
 
-- **Left**: Small WZRD wordmark with lime dot indicator, no "Back to Home" button (home icon on right suffices)
-- **Center**: Pill-slider nav matching the Video/Edit studio pattern — `inline-flex bg-[#111] rounded-full p-1 border border-white/[0.06]`. Active tab: `bg-white/10 text-[#BEFF00] shadow-[inset_0_0_12px_rgba(190,255,0,0.06)]`. Icons + labels.
-- **Right**: Home icon button only
-- **Remove**: Redundant `xl:flex` sidebar of studio buttons (lines 1221-1231) — the header nav is sufficient
-- **Remove**: Mobile scroll area duplicate — the pill slider is already responsive
-- **Height**: Reduce from py-4 to py-2.5 for a sleeker bar
-- **Background**: `bg-[#0A0A0A]/80 backdrop-blur-xl` with no visible border — use a subtle `shadow-[0_1px_0_rgba(255,255,255,0.04)]` instead
+- `w-14` fixed left column, `bg-[#0A0A0A]` with `border-r border-white/[0.04]`
+- Each icon is 40px rounded-lg button with tooltip (using `title` attribute or a small tooltip component)
+- Active studio: `bg-white/10` with lime left border accent (`border-l-2 border-[#BEFF00]`)
+- Inactive: `text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]`
+- Home button at top, separated by a divider from studio icons
+- Icons from lucide-react matching the existing `STUDIO_ICONS` map
 
-### `StudioNavButton` component
-Replace entirely — no longer needed as separate component. The header renders tabs inline using the pill-slider pattern.
+### `src/pages/KanvasPage.tsx` Changes
 
-## Phase 3: Cinema Studio UI Polish
+- Wrap the main content in a flex layout: `flex h-screen` with the sidebar on the left and content area on the right
+- Keep the top header but make it slimmer or remove redundant nav (the sidebar handles navigation now)
+- The top header becomes a thin status bar with just the WZRD wordmark + current studio name
+- Layout: `<KanvasSidebar /> + <div className="flex-1 overflow-auto">...</div>`
 
-### Tab navigation (lines 581-613)
-- Move from left-aligned pills to centered pill-slider matching the Video studio pattern
-- `bg-[#1A1A1A] rounded-full p-1 border border-white/[0.06]` container
-- Active: `bg-white/10 text-[#BEFF00]` with inset glow
+## Part 2: Worldview Studio Redesign
 
-### Cast tab improvements
-- Wire "Create Character" button to navigate to `?studio=character-creation`
-- Wire "Create Location" similarly
-- Show real character blueprints from the mention list instead of stock photos
+### `src/components/worldview/WorldviewSection.tsx` — Full Redesign
 
-### Remove floating FAB
-The FAB duplicates the generate button in the bottom bar — remove it to reduce clutter.
+**Current problems:**
+- Collapsible section header pattern (click to expand) — no other studio uses this; feels like a sidebar widget, not a full studio
+- No generation history — worlds stored only in Zustand memory, lost on refresh
+- Amber/orange accent colors don't match the lime (#BEFF00) Noir Futurist system
+- No hero landing state like Image/Video/Edit studios
+
+**Landing State** (no worlds yet):
+- Full-width hero with large "WORLDVIEW" watermark text (like Image studio's "IMAGE" watermark)
+- Centered heading: "CREATE 3D WORLDS" in Space Grotesk, uppercase
+- Subtitle: "Generate immersive environments, capture takes, compose AI shots"
+- Feature cards row: "Text to World", "Image to World", "Camera Takes", "Shot Composer" — perspective-tilted cards
+- Centered CTA: Lime "Create Your First World" button
+- Remove the collapsible header pattern entirely — render as a full studio section
+
+**Generation History Gallery** (below the workspace):
+- Section title: "YOUR WORLDS" — uppercase tracking
+- Grid of WorldCard thumbnails (3-column on desktop, 2 on tablet)
+- Each card shows: thumbnail, world name, model badge, date created, "Enter World" hover overlay
+- Data source: `useWorldviewStore.worlds` array (already persisted in Zustand)
+- For true persistence across sessions: store world metadata (id, name, model, thumbnailUrl, viewerUrl, splatUrl, createdAt) in Supabase `generation_jobs` table with `studio = 'worldview'`
+- Clicking a history card loads that world into the active scene
+
+**Workspace State** (world selected):
+- Remove the collapsible wrapper — render scene strip + canvas/viewer/composer directly
+- Top: Centered pill-tab nav for modes: `Canvas | World Viewer | Shot Composer`
+- Accent colors: Switch from amber/orange to lime (#BEFF00) to match system
+- Bottom prompt bar: Match the upgraded style from other studios — wider, with model chip and credit cost
+
+**Color Migration:**
+- `amber-400/500` → `[#BEFF00]` / `lime-400`
+- `border-amber-500/40` → `border-[#BEFF00]/30`
+- `bg-amber-500/20` → `bg-[#BEFF00]/10`
+- Keep functional orange only for model badges if needed
+
+### Persistence via Supabase
+
+Query existing `generation_jobs` where `studio = 'worldview'` on mount to populate the history gallery. The `result_payload` JSONB column already stores the world data (thumbnailUrl, viewerUrl, splatUrl). On successful generation, insert a row into `generation_jobs`.
+
+This uses the existing table — no migration needed.
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/kanvas/CinemaStudioSection.tsx` | Add @mention props, wire MentionDropdown to prompt inputs, replace hardcoded avatars with character data, redesign tab nav as centered pill slider, remove FAB |
-| `src/pages/KanvasPage.tsx` | Redesign header as centered pill-slider nav, remove redundant sidebar, pass mention props to CinemaStudioSection, wire cinema prompt to onMentionChange |
+| `src/components/kanvas/KanvasSidebar.tsx` | **New** — 56px icon sidebar with tooltips, home button, studio switching |
+| `src/pages/KanvasPage.tsx` | Add sidebar to layout, slim down top header, pass studio setter to sidebar |
+| `src/components/worldview/WorldviewSection.tsx` | Full redesign: hero landing, generation history gallery, lime color migration, remove collapsible pattern, add mode pill-tabs |
 
