@@ -630,6 +630,52 @@ export default function CinemaStudioSection({
         {activeTab === 'image' && renderImageBar()}
         {activeTab === 'video' && renderVideoBar()}
       </div>
+
+      {/* Right Icon Rail */}
+      <div className="w-[56px] flex-shrink-0 h-full bg-[#0a0a0a] border-l border-white/[0.06] flex flex-col items-center py-4 gap-3">
+        <button className="w-10 h-10 rounded-xl bg-[#1a1a1a] flex items-center justify-center text-zinc-500 hover:text-white transition-colors">
+          <Search className="h-4 w-4" />
+        </button>
+        <div className="h-px w-6 bg-white/[0.06]" />
+        {avatars.slice(0, 3).map((a, i) => (
+          <div key={i} className="w-9 h-9 rounded-full overflow-hidden border border-white/10 hover:border-[#BEFF00]/40 transition-colors cursor-pointer" title={a.name}>
+            {a.src ? (
+              <img src={a.src} alt={a.name} className="w-full h-full object-cover" loading="lazy" />
+            ) : (
+              <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                <Users className="h-3.5 w-3.5 text-zinc-600" />
+              </div>
+            )}
+          </div>
+        ))}
+        <button className="w-9 h-9 rounded-full border border-dashed border-white/10 flex items-center justify-center text-zinc-600 hover:border-[#BEFF00]/30 transition-colors">
+          <Plus className="h-3 w-3" />
+        </button>
+
+        <div className="flex-1" />
+
+        {/* Image/Video mode toggle */}
+        <div className="flex flex-col items-center gap-1.5 mb-2">
+          <button
+            onClick={() => setGenMode('image')}
+            className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all ${
+              genMode === 'image' ? 'bg-[#BEFF00] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
+            }`}
+          >
+            <ImageIcon className="h-3.5 w-3.5" />
+            <span className="text-[7px] uppercase tracking-wider font-bold">Img</span>
+          </button>
+          <button
+            onClick={() => setGenMode('video')}
+            className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all ${
+              genMode === 'video' ? 'bg-[#BEFF00] text-black' : 'bg-[#1a1a1a] text-zinc-500 hover:text-white'
+            }`}
+          >
+            <Video className="h-3.5 w-3.5" />
+            <span className="text-[7px] uppercase tracking-wider font-bold">Vid</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
