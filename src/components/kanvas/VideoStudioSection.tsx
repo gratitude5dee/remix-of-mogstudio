@@ -635,9 +635,9 @@ export function VideoStudioSection({
   /*  Render                                                           */
   /* ================================================================ */
   return (
-    <div className="fixed inset-0 top-[68px] bg-[#0a0a0a] z-20 overflow-y-auto p-8" style={{ scrollbarWidth: "none" }}>
+    <div className="fixed inset-0 top-[68px] bg-[#0a0a0a] z-20 overflow-y-auto px-4 py-4 md:p-8 pb-20 md:pb-8" style={{ scrollbarWidth: "none" }}>
       {subNav}
-      <div className="mt-6">
+      <div className="mt-4 md:mt-6">
         {activeTab === "edit" ? renderEditTab() : activeTab === "motion" ? renderMotionTab() : renderCreateTab()}
       </div>
     </div>
