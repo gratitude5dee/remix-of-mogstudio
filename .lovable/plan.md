@@ -1,60 +1,40 @@
 
 
-# Apply Floating Hover Menu to Home Sidebar (Collapsed Mode)
+# Dashboard UI Polish — Glowing Sidebar + Layout Fix
 
-## Problem
-The home page sidebar in collapsed mode is a static 64px docked column. The user wants the same floating, hover-reveal pill design from the Kanvas sidebar (`KanvasSidebar.tsx`) applied when the sidebar is collapsed.
+## Problems Identified
 
-## Design
-When `isCollapsed` is true, the sidebar transforms from a static full-height column into a floating vertically-centered pill that auto-hides and reveals on mouse proximity — identical behavior to the Kanvas floating nav.
+1. **Dead space when collapsed**: The sidebar is now `fixed` (floating), but `Home.tsx` still animates `marginLeft: 64px` when collapsed — creating 64px of empty space on the left since the floating sidebar doesn't occupy flow space.
+2. **No glowing orange stroke on floating sidebar**: The expanded sidebar has a `ShineBorder` on hover, but the collapsed floating pill has no animated border glow.
+3. **Tooltips**: Already implemented for collapsed mode — no change needed there.
+4. **Expanded sidebar**: Already has `ShineBorder` on hover — will enhance with a persistent subtle animated orange border glow instead of hover-only.
 
-```text
-Expanded (unchanged)          Collapsed (new floating pill)
-┌────────────┐                         
-│ Workspace  │                ┌────┐   
-│ ─────────  │                │ WS │   
-│ All Proj   │    ←→          │ ── │   
-│ Kanvas     │                │ 📁 │   
-│ Aura       │                │ 🎨 │   
-│ ─────────  │                │ ✨ │   
-│ Shared     │                │ ── │   
-│ Community  │                │ 👥 │   
-│            │                │ 🌐 │   
-│ ─────────  │                │ ── │   
-│ Credits    │                │ 🚪 │   
-│ Logout     │                └────┘   
-└────────────┘                floating 
-```
+## Changes
 
-## Changes — `src/components/home/Sidebar.tsx`
+### 1. `src/pages/Home.tsx` — Fix collapsed margin
 
-### 1. Add hover-reveal state (collapsed only)
-- Add `isVisible` state + `mousemove` listener (same as `KanvasSidebar`)
-- Only active when `isCollapsed === true`
-- Trigger zone: `e.clientX <= 80`
+Line 234: Change `animate={{ marginLeft: isCollapsed ? 64 : 256 }}` to `animate={{ marginLeft: isCollapsed ? 0 : 256 }}` since the collapsed sidebar is now a floating overlay (`fixed`) and doesn't consume layout space.
 
-### 2. Swap container styles when collapsed
-- **Remove**: `h-screen fixed left-0 top-0 border-r` (full-height docked)
-- **Add**: `fixed left-3 top-1/2 -translate-y-1/2 rounded-2xl` (centered floating pill)
-- **Add**: `bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/[0.06]` (frosted glass)
-- **Add**: `shadow-[0_8px_32px_rgba(0,0,0,0.5)]` (depth shadow)
-- **Add**: Hover transition: `w-14 opacity-100 translate-x-0` ↔ `w-3 opacity-0 -translate-x-2`
-- **Add**: `onMouseEnter`/`onMouseLeave` handlers on the `<aside>`
-- Add invisible 80px trigger zone div (same as Kanvas)
+### 2. `src/components/home/Sidebar.tsx` — Glowing orange stroke on floating pill
 
-### 3. Simplify collapsed content
-When collapsed + floating:
-- Remove section headers ("Main Menu", "Collaborate" text)
-- Remove credits card, favorites expand
-- Keep: icon buttons with tooltips, dividers between sections, logout at bottom
-- Keep the collapse toggle button (repositioned to work with floating pill)
+**Collapsed (floating) mode** (lines 231-237):
+- Add an animated orange border glow using a CSS `box-shadow` animation or the existing `ShineBorder` component
+- Replace `border border-white/[0.06]` with an animated orange running stroke: wrap the `<aside>` content in a container with `ShineBorder` using `shineColor="#f97316"` and `borderWidth={1}`
+- Add a subtle persistent outer glow: `shadow-[0_0_15px_rgba(249,115,22,0.15),0_0_30px_rgba(249,115,22,0.05)]`
 
-### 4. Expanded mode — unchanged
-When `isCollapsed === false`, everything stays exactly as it is today (full-height docked sidebar with all sections).
+**Expanded mode** (lines 336-347):
+- Make the `ShineBorder` always visible (change `opacity-0 group-hover/sidebar:opacity-100` to `opacity-60 group-hover/sidebar:opacity-100`) so there's always a subtle running orange stroke
+- Add matching outer glow shadow to the expanded sidebar container
+
+### 3. `src/components/home/Sidebar.tsx` — Floating pill visual refinements
+
+- Add a faint orange gradient top-highlight inside the floating pill (matching expanded mode's `from-orange-500/5`)
+- Increase the lime-dot or add an orange dot at the bottom of the floating pill for brand consistency
 
 ## Files Changed
 
 | File | Change |
 |------|--------|
-| `src/components/home/Sidebar.tsx` | Add hover-reveal logic for collapsed state, swap to floating pill container styles, add trigger zone |
+| `src/pages/Home.tsx` | Fix collapsed marginLeft from 64 to 0 |
+| `src/components/home/Sidebar.tsx` | Add ShineBorder glow to floating pill, make expanded glow persistent, add outer orange shadow |
 
