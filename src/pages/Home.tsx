@@ -49,7 +49,7 @@ export default function Home() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { availableCredits } = useCredits();
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, setIsCollapsed } = useSidebar();
   const onboarding = useOnboardingTour();
   const isDemo = isDemoModeEnabled();
 
