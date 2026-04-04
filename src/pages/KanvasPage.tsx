@@ -1187,7 +1187,7 @@ export default function KanvasPage() {
 
       {/* Main content area — full width */}
       <div className="relative w-full h-full overflow-auto">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,242,100,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.08),transparent_24%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.05),transparent_24%)] pointer-events-none" />
         <div className="relative">
           {/* Slim status header */}
            <header className="sticky top-0 z-40 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-transparent" style={{ borderImage: 'linear-gradient(to right, rgba(249,115,22,0.15), transparent 60%) 1' }}>
