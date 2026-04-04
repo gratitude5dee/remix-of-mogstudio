@@ -144,7 +144,7 @@ export default function ImageStudioSection({
 
   /* ---- Sub-nav ---- */
   const renderSubNav = () => (
-    <div className="flex items-center gap-6 px-12 pt-6">
+    <div className="flex items-center gap-4 md:gap-6 px-4 md:px-12 pt-4 md:pt-6">
       {(["explore", "history", "community"] as const).map((tab) => (
         <button
           key={tab}
