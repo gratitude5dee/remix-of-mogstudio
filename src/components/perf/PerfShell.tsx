@@ -9,7 +9,7 @@ interface PerfShellProps {
 
 const shimmer = 'relative overflow-hidden rounded-md bg-slate-800/70 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.6s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent';
 
-export const PerfShell = memo(({ headline = 'Loading studio…', description = 'Preparing your creative workspace', className }: PerfShellProps) => {
+export const PerfShell = memo(({ headline = 'Initializing studio', description = 'Preparing your generative workspace', className }: PerfShellProps) => {
   return (
     <div className={cn('min-h-screen bg-[#0b0d13] text-white', className)} aria-busy="true" aria-live="polite">
       <style>
