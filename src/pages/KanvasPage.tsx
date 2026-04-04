@@ -89,6 +89,7 @@ import type {
 } from "@/features/kanvas/types";
 import { WorldviewSection } from "@/components/worldview";
 import { CharacterCreationSection } from "@/components/character-creation";
+import { KanvasSidebar } from "@/components/kanvas/KanvasSidebar";
 import { VideoStudioSection } from "@/components/kanvas/VideoStudioSection";
 import ImageStudioSection from "@/components/kanvas/ImageStudioSection";
 import EditStudioSection from "@/components/kanvas/EditStudioSection";
