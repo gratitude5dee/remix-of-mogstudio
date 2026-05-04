@@ -65,6 +65,16 @@ function getHumanFriendlyError(error: unknown): string {
   return "Something went wrong. Please retry.";
 }
 
+function CreateEmptyVisual({ alt }: { alt: string }) {
+  return (
+    <img
+      src="/images/mog-empty-state.png"
+      alt={alt}
+      className="mx-auto h-24 w-24 rounded-lg object-cover opacity-90"
+    />
+  );
+}
+
 export default function MogUpload() {
   const navigate = useNavigate();
   const { address, isConnected, connect } = useWallet();
@@ -543,6 +553,7 @@ export default function MogUpload() {
                       </div>
                     ) : (
                       <div className="space-y-2">
+                        <CreateEmptyVisual alt={`Empty ${contentType} upload frame`} />
                         <Upload className="h-10 w-10 mx-auto text-muted-foreground" />
                         <p className="text-sm text-muted-foreground">Tap to select a {contentType}</p>
                       </div>
@@ -670,6 +681,7 @@ export default function MogUpload() {
                     </div>
                   ) : (
                     <div className="space-y-2">
+                      <CreateEmptyVisual alt="Empty source image frame for FAL generation" />
                       <Image className="h-10 w-10 mx-auto text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
                         {generationType === "video" ? "Upload a source image to animate" : "Upload a source image to guide the result"}

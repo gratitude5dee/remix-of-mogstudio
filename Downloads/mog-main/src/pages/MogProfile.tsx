@@ -247,7 +247,7 @@ export default function MogProfile() {
               <PostsGrid posts={likedPosts} onPostClick={(id) => navigate(`/mog/post/${id}`)} />
             </TabsContent>
             <TabsContent value="bookmarks" className="mt-0">
-              <p className="text-center text-muted-foreground py-12">Bookmarked posts will appear here</p>
+              <ProfileEmptyState message="Bookmarked posts will appear here" />
             </TabsContent>
           </>
         )}
@@ -258,11 +258,22 @@ export default function MogProfile() {
   );
 }
 
+function ProfileEmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
+      <img
+        src="/images/mog-empty-state.png"
+        alt="Empty Mog profile media frames"
+        className="mb-4 h-32 w-32 rounded-lg object-cover opacity-90"
+      />
+      <p className="text-muted-foreground">{message}</p>
+    </div>
+  );
+}
+
 function PostsGrid({ posts, onPostClick }: { posts: MogPost[]; onPostClick: (id: string) => void }) {
   if (posts.length === 0) {
-    return (
-      <p className="text-center text-muted-foreground py-12">No posts yet</p>
-    );
+    return <ProfileEmptyState message="No posts yet" />;
   }
 
   return (
