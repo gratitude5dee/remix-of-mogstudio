@@ -1,0 +1,49 @@
+project_id = "ixkkrousepsiorwlaycp"
+
+[functions.verify-moltbook-identity]
+verify_jwt = false
+
+[functions.engagement-pay]
+verify_jwt = false
+
+[functions.content-interact]
+verify_jwt = false
+
+[functions.mog-feed]
+verify_jwt = false
+
+[functions.mog-upload]
+verify_jwt = false
+
+[functions.mog-upload-intent]
+verify_jwt = false
+
+[functions.mog-generate]
+verify_jwt = false
+
+[functions.mog-interact]
+verify_jwt = false
+
+[functions.wallet-proof]
+verify_jwt = false
+
+[functions.pay-stream]
+verify_jwt = false
+
+[functions.get-stream]
+verify_jwt = false
+
+[functions.stream-session-active]
+verify_jwt = false
+
+[functions.moltbook-auth]
+verify_jwt = false
+
+[functions.moltbook-interact]
+verify_jwt = false
+
+[functions.bot-autopilot]
+verify_jwt = false
+
+[functions.get-thirdweb-config]
+verify_jwt = false

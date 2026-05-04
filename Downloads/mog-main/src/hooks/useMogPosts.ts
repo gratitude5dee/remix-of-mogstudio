@@ -1,0 +1,93 @@
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabaseConfig";
+import { FeedType, MogPost } from "@/types/mog";
+
+type MogFeedResponse = {
+  success: boolean;
+  items: MogPost[];
+  next_cursor: string | null;
+  has_more: boolean;
+  error?: string;
+};
+
+const PAGE_SIZE = 20;
+
+function buildMogFeedUrl(feedType: FeedType, address?: string, cursor: string | null = null) {
+  const url = new URL(`${SUPABASE_URL}/functions/v1/mog-feed`);
+  url.searchParams.set("feed_type", feedType);
+  url.searchParams.set("limit", String(PAGE_SIZE));
+  url.searchParams.set("sort", "new");
+
+  if (address) {
+    url.searchParams.set("wallet", address.toLowerCase());
+  }
+
+  if (cursor) {
+    url.searchParams.set("cursor", cursor);
+  }
+
+  return url.toString();
+}
+
+async function fetchMogPosts(
+  feedType: FeedType,
+  address?: string,
+  cursor: string | null = null,
+): Promise<MogFeedResponse> {
+  const response = await fetch(buildMogFeedUrl(feedType, address, cursor), {
+    method: "GET",
+    headers: {
+      apikey: SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.error || `Failed to load feed (${response.status})`);
+  }
+
+  if (!data?.success) {
+    throw new Error(data?.error || "Failed to load feed");
+  }
+
+  return {
+    success: true,
+    items: (data.items || []) as MogPost[],
+    next_cursor: data.next_cursor || null,
+    has_more: Boolean(data.has_more),
+  };
+}
+
+export function useMogPosts(feedType: FeedType, address?: string) {
+  const query = useInfiniteQuery({
+    queryKey: ["mog-posts", feedType, address],
+    queryFn: ({ pageParam }) => fetchMogPosts(feedType, address, pageParam as string | null),
+    initialPageParam: null,
+    getNextPageParam: (lastPage) => (lastPage.has_more ? lastPage.next_cursor : undefined),
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+  });
+
+  const seen = new Set<string>();
+  const posts = (query.data?.pages || [])
+    .flatMap((page) => page.items)
+    .filter((post) => {
+      if (seen.has(post.id)) return false;
+      seen.add(post.id);
+      return true;
+    });
+
+  return {
+    posts,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    isFetchingNextPage: query.isFetchingNextPage,
+    hasNextPage: query.hasNextPage,
+    fetchNextPage: query.fetchNextPage,
+    refetch: query.refetch,
+  };
+}

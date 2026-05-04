@@ -1,0 +1,12 @@
+# LOG_DECISIONS.md
+
+- 2026-02-01 13:00 PST: Proceed with project OC-20260201-0004 using compliant growth plan; disallow manipulation/pump tactics.
+- 2026-02-01 15:58 PST: Proceed with OC-20260201-0005; use sub-agents; health plan must be aggressive but safety-first with monitoring.
+- 2026-02-01 19:03 PST: Proceed with OC-20260201-0006; use multiple sub-agents for repo review, testing plan, and model-integration design.
+- 2026-02-03 00:27 PST: Proceed with OC-20260203-0001; use specialized agents to scout and execute high‑value Openwork tasks.
+- 2026-02-03 01:36 PST: Proceed with OC-20260203-0002; spin up sub-agent swarm for repo review and PRD.
+- 2026-03-05 01:48 PST: Proceed with OC-20260305-0001 in staged execution (Phase 1 stability first), with hybrid x402 mode defaulting to legacy/auto fallback and Moltbook prod+dev split; enforce no lockfile/build-plumbing changes.
+- 2026-03-05 03:39 PST: For OC-20260305-0001 Phase 4, enforce staging-first operational gates via repo-managed scripts and DB-backed ops telemetry; keep default x402 staging mode legacy, canary auto mode cohort-limited, and require strict bot live safety constraints (`no_self_engagement=true`, `max_actions_per_run<=3`, `cadence_minutes>=30`).
+- 2026-05-04 00:35 PDT: Proceed with OC-20260504-0001 as a spec-first/read-only overhaul audit. Use the requested Supabase, Postgres, React, frontend-builder, imagegen, and fal-redesign guidance, but defer FAL/image concept generation and implementation until after the written spec or key direction is approved.
+- 2026-05-04 00:42 PDT: For OC-20260504-0001, recommend Phase 0 decisions before implementation: canonical token/economy model, canonical route model, canonical Supabase project, and whether agent autonomy remains simulation-only during Phase 1 hardening.
+- 2026-05-04 01:43 PDT: User approved Phase 0 decisions for OC-20260504-0001. Locked: mocked `$5DEE` is the only initial settlement asset; `/mog` is canonical and `/home` is redirect-only; `/listen`, `/watch`, and `/read` remain top-level and also appear as Mog feed filters; Supabase project `ixkkrousepsiorwlaycp` is canonical; generated content uses FAL server-side through Supabase Edge Functions; x402 is disabled for the initial release.
