@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2, AlertCircle, Film, Sparkles, CircleStop, Scissors } from 'lucide-react';
@@ -13,7 +13,7 @@ import { AddSceneButton } from '@/components/timeline/AddSceneButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAppStore } from '@/store/appStore';
-import { ProjectDetails, SceneDetails, CharacterDetails, SidebarData } from '@/types/storyboardTypes';
+import { ProjectDetails, SceneDetails, CharacterDetails, SidebarData, ShotDetails } from '@/types/storyboardTypes';
 import { cn } from '@/lib/utils';
 import { useProjectAutoGenerate } from '@/hooks/useProjectAutoGenerate';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -22,11 +22,38 @@ import { appRoutes } from '@/lib/routes';
 import { getShotImageCredits, getShotVideoCredits, DIRECTORS_CUT_CREDITS } from '@/lib/constants/credits';
 import { useProjectSettingsStore } from '@/store/projectSettingsStore';
 import { ConfirmGenerateDialog } from '@/components/ui/ConfirmGenerateDialog';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { PanelLeft } from 'lucide-react';
+import { useRegisterVoiceActions } from '@/voice/VoiceAgentProvider';
+import type { VoiceActionRegistration, VoiceActionResult } from '@/voice/actions/registry';
+import { scrollVoiceTargetIntoView, useVoiceSelection } from '@/voice/VoiceSelectionContext';
+import useSaveToProjectAssets from '@/hooks/useSaveToProjectAssets';
+import {
+  NANO_BANANA_FAST_EDIT_ALIAS,
+  resolveFrontendModelAlias,
+  type StructuredImageEditPrompt,
+} from '@/lib/modelAliases';
+
+function completed(message: string, data?: unknown): VoiceActionResult {
+  return { ok: true, status: 'completed', message, data };
+}
+
+function invalid(message: string, data?: unknown): VoiceActionResult {
+  return { ok: false, status: 'invalid_input', message, data };
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Unknown error';
+}
 
 const StoryboardPage = () => {
   const { projectId } = useParams<{ projectId?: string }>();
   const navigate = useNavigate();
   const { setActiveProject } = useAppStore();
+  const isMobile = useIsMobile();
+  const { selectedTargets, selectTarget, setExpandedShotId } = useVoiceSelection();
+  const { saveAsset } = useSaveToProjectAssets(projectId);
   
   const [scenes, setScenes] = useState<SceneDetails[]>([]);
   const [projectDetails, setProjectDetails] = useState<ProjectDetails | null>(null);
@@ -46,12 +73,19 @@ const StoryboardPage = () => {
   // Project-level auto-generate for all shots across all scenes
   const {
     state: projectAutoGenState,
+    generationCounts,
     startAutoGenerate: startProjectAutoGenerate,
     cancelAutoGenerate: cancelProjectAutoGenerate,
     nextPhase: projectNextPhase,
     isProcessing: isProjectAutoGenerating,
     fetchAllProjectShots
   } = useProjectAutoGenerate(projectId || '');
+  const estimatedProjectShotCount = generationCounts.totalShots || projectAutoGenState.progress.total || scenes.length * 3;
+  const pendingProjectGenerationCount = generationCounts.totalShots > 0
+    ? projectNextPhase === 'images'
+      ? generationCounts.missingImages
+      : generationCounts.missingVideos
+    : projectAutoGenState.progress.total || estimatedProjectShotCount;
   
   // Validate that we have a projectId and fetch project settings
   useEffect(() => {
@@ -136,9 +170,10 @@ const StoryboardPage = () => {
         });
       }
 
-    } catch (error: any) {
+    } catch (error) {
+      const message = getErrorMessage(error);
       console.error("Error fetching storyboard data:", error);
-      toast.error(`Failed to load storyboard: ${error.message}`);
+      toast.error(`Failed to load storyboard: ${message}`);
       setProjectDetails(null);
       setScenes([]);
       setCharacters([]);
@@ -248,7 +283,7 @@ const StoryboardPage = () => {
     try {
       const { error } = await supabase
         .from('scenes')
-        .update(updates as any)
+        .update(updates)
         .eq('id', sceneId);
       if (error) throw error;
 
@@ -263,9 +298,10 @@ const StoryboardPage = () => {
         sceneWeather: updates.weather ?? prev.sceneWeather,
       } : null);
 
-    } catch (error: any) {
+    } catch (error) {
+      const message = getErrorMessage(error);
       console.error("Error updating scene:", error);
-      toast.error(`Failed to update scene: ${error.message}`);
+      toast.error(`Failed to update scene: ${message}`);
     }
   };
 
@@ -283,9 +319,10 @@ const StoryboardPage = () => {
         projectTitle: updates.title ?? prev.projectTitle,
         projectDescription: updates.description ?? prev.projectDescription,
       } : null);
-    } catch (error: any) {
+    } catch (error) {
+      const message = getErrorMessage(error);
       console.error("Error updating project:", error);
-      toast.error(`Failed to update project: ${error.message}`);
+      toast.error(`Failed to update project: ${message}`);
     }
   };
 
@@ -304,14 +341,15 @@ const StoryboardPage = () => {
         setScenes(prev => [...prev, data as SceneDetails]);
         toast.success(`Scene ${newSceneNumber} added.`);
       }
-    } catch (error: any) {
+    } catch (error) {
+      const message = getErrorMessage(error);
       console.error("Error adding scene:", error);
-      toast.error(`Failed to add scene: ${error.message}`);
+      toast.error(`Failed to add scene: ${message}`);
     }
   };
 
   // Function to handle selecting a different scene
-  const handleSelectScene = (scene: SceneDetails) => {
+  const handleSelectScene = useCallback((scene: SceneDetails) => {
     setSelectedScene(scene);
     // Update sidebar data when scene changes
     setSidebarData(prev => projectDetails ? ({
@@ -324,7 +362,361 @@ const StoryboardPage = () => {
       videoStyle: projectDetails.video_style ?? null,
       characters: characters
     }) : null);
-  };
+  }, [characters, projectDetails]);
+
+  const fetchVoiceShots = useCallback(async () => {
+    if (!projectId || scenes.length === 0) return [];
+    const sceneIds = scenes.map((scene) => scene.id);
+    const { data, error } = await supabase
+      .from('shots')
+      .select('*')
+      .in('scene_id', sceneIds)
+      .order('shot_number', { ascending: true });
+    if (error) throw error;
+    return (data || []) as ShotDetails[];
+  }, [projectId, scenes]);
+
+  const selectShotForVoice = useCallback(
+    async (input: {
+      shotId?: string;
+      shotNumber?: number;
+      sceneId?: string;
+      sceneNumber?: number;
+      open?: boolean;
+    }) => {
+      const shots = await fetchVoiceShots();
+      const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));
+      const targetScene =
+        (input.sceneId ? sceneById.get(input.sceneId) : undefined) ??
+        (typeof input.sceneNumber === 'number'
+          ? scenes.find((scene) => scene.scene_number === input.sceneNumber)
+          : undefined) ??
+        (selectedTargets.scene?.id ? sceneById.get(selectedTargets.scene.id) : undefined) ??
+        selectedScene ??
+        undefined;
+
+      let matches = shots;
+      if (input.shotId) {
+        matches = shots.filter((shot) => shot.id === input.shotId);
+      } else if (typeof input.shotNumber === 'number') {
+        matches = shots.filter((shot) => shot.shot_number === input.shotNumber);
+        if (targetScene) {
+          matches = matches.filter((shot) => shot.scene_id === targetScene.id);
+        }
+      } else if (selectedTargets.shot?.id) {
+        matches = shots.filter((shot) => shot.id === selectedTargets.shot?.id);
+      }
+
+      if (matches.length === 0) {
+        return {
+          result: invalid('Which shot number should I use?', {
+            selectedSceneNumber: targetScene?.scene_number ?? null,
+          }),
+          shot: null,
+          scene: null,
+        };
+      }
+
+      if (!input.shotId && typeof input.shotNumber === 'number' && matches.length > 1 && !targetScene) {
+        return {
+          result: invalid('That shot number appears in more than one scene. Which scene number?', {
+            shotNumber: input.shotNumber,
+            matchingSceneNumbers: matches
+              .map((shot) => sceneById.get(shot.scene_id)?.scene_number)
+              .filter((value): value is number => typeof value === 'number'),
+          }),
+          shot: null,
+          scene: null,
+        };
+      }
+
+      const shot = matches[0];
+      const scene = sceneById.get(shot.scene_id) ?? null;
+      if (scene) {
+        handleSelectScene(scene);
+      }
+
+      selectTarget({
+        type: 'shot',
+        id: shot.id,
+        label: `Shot ${shot.shot_number}`,
+        projectId,
+        sceneId: shot.scene_id,
+        sceneNumber: scene?.scene_number ?? null,
+        shotNumber: shot.shot_number,
+        sourceImageUrl: shot.image_url ?? null,
+      });
+
+      if (input.open) {
+        setExpandedShotId(shot.id);
+      }
+      scrollVoiceTargetIntoView(`[data-shot-id="${shot.id}"]`);
+
+      return {
+        result: completed(`Shot ${shot.shot_number} is selected.`, {
+          shotId: shot.id,
+          shotNumber: shot.shot_number,
+          sceneNumber: scene?.scene_number ?? null,
+        }),
+        shot,
+        scene,
+      };
+    },
+    [fetchVoiceShots, handleSelectScene, projectId, scenes, selectTarget, selectedScene, selectedTargets.scene?.id, selectedTargets.shot?.id, setExpandedShotId],
+  );
+
+  const voiceActions = useMemo<VoiceActionRegistration[]>(
+    () => [
+      {
+        name: 'get_app_context',
+        scope: 'timeline',
+        handler: () =>
+          completed('Timeline context loaded.', {
+            route: window.location.pathname,
+            projectId,
+            selectedScene: selectedScene
+              ? { id: selectedScene.id, sceneNumber: selectedScene.scene_number, title: selectedScene.title }
+              : null,
+            selectedShot: selectedTargets.shot ?? null,
+            generationStatus: {
+              projectPhase: projectAutoGenState.phase,
+              projectProgress: projectAutoGenState.progress,
+              nextPhase: projectNextPhase,
+              isProjectAutoGenerating,
+            },
+            availableActions: [
+              'timeline_select_shot',
+              'timeline_open_shot',
+              'timeline_update_shot_prompt',
+              'timeline_generate_shot_image',
+              'timeline_generate_all_images',
+              'timeline_edit_shot_image',
+              'timeline_start_directors_cut',
+              'asset_store_save_current',
+            ],
+          }),
+      },
+      {
+        name: 'timeline_select_shot',
+        scope: 'timeline',
+        handler: async (input) => {
+          const payload = input as { shotId?: string; shotNumber?: number; sceneId?: string; sceneNumber?: number };
+          const { result } = await selectShotForVoice(payload);
+          return result;
+        },
+      },
+      {
+        name: 'timeline_open_shot',
+        scope: 'timeline',
+        handler: async (input) => {
+          const payload = input as { shotId?: string; shotNumber?: number; sceneId?: string; sceneNumber?: number };
+          const { result } = await selectShotForVoice({ ...payload, open: true });
+          return result.ok
+            ? completed('Shot card is open.', result.data)
+            : result;
+        },
+      },
+      {
+        name: 'timeline_update_shot_prompt',
+        scope: 'timeline',
+        handler: async (input) => {
+          const payload = input as {
+            shotId?: string;
+            shotNumber?: number;
+            sceneId?: string;
+            sceneNumber?: number;
+            prompt_idea?: string;
+            visual_prompt?: string;
+            dialogue?: string;
+            sound_effects?: string;
+          };
+          const { result, shot } = await selectShotForVoice(payload);
+          if (!shot) return result;
+
+          const updates = {
+            prompt_idea: payload.prompt_idea,
+            visual_prompt: payload.visual_prompt,
+            dialogue: payload.dialogue,
+            sound_effects: payload.sound_effects,
+          };
+          const compactUpdates = Object.fromEntries(
+            Object.entries(updates).filter(([, value]) => typeof value === 'string'),
+          );
+          if (Object.keys(compactUpdates).length === 0) {
+            return invalid('Tell me the shot prompt text to update.');
+          }
+
+          const { error } = await supabase.from('shots').update(compactUpdates).eq('id', shot.id);
+          if (error) throw error;
+          return completed(`Shot ${shot.shot_number} updated.`, { shotId: shot.id, updates: compactUpdates });
+        },
+      },
+      {
+        name: 'timeline_generate_shot_image',
+        scope: 'timeline',
+        confirmation: {
+          risk: 'generation',
+          message: 'This will spend credits. Should I continue?',
+        },
+        handler: async (input) => {
+          const payload = input as { shotId?: string; shotNumber?: number; sceneId?: string; sceneNumber?: number };
+          const { result, shot } = await selectShotForVoice(payload);
+          if (!shot) return result;
+
+          if (!shot.visual_prompt) {
+            const { error: promptError } = await supabase.functions.invoke('generate-visual-prompt', {
+              body: { shot_id: shot.id },
+            });
+            if (promptError) throw promptError;
+          }
+
+          const { error } = await supabase.functions.invoke('generate-shot-image', {
+            body: { shot_id: shot.id, image_model: selectedImageModel || undefined },
+          });
+          if (error) throw error;
+
+          return completed(`Image generation started for shot ${shot.shot_number}.`, { shotId: shot.id });
+        },
+      },
+      {
+        name: 'timeline_generate_all_images',
+        scope: 'timeline',
+        confirmation: {
+          risk: 'generation',
+          message: 'This will spend credits. Should I continue?',
+        },
+        handler: async () => {
+          if (projectNextPhase !== 'images') {
+            return completed('All missing images are already handled. The next available phase is video generation.', {
+              nextPhase: projectNextPhase,
+            });
+          }
+          await startProjectAutoGenerate({ imageModelId: selectedImageModel, videoModelId: selectedVideoModel });
+          return completed('Generating all missing shot images.', {
+            projectId,
+            pendingProjectGenerationCount,
+          });
+        },
+      },
+      {
+        name: 'timeline_edit_shot_image',
+        scope: 'timeline',
+        confirmation: {
+          risk: 'generation',
+          message: 'This will spend credits. Should I continue?',
+        },
+        handler: async (input) => {
+          const payload = input as {
+            shotId?: string;
+            shotNumber?: number;
+            sceneId?: string;
+            sceneNumber?: number;
+            edit_prompt?: string;
+            preserve?: string[];
+            avoid?: string[];
+            aspect_ratio?: string;
+          };
+          const editPrompt = payload.edit_prompt?.trim();
+          if (!editPrompt) return invalid('Tell me how to edit the shot image.');
+          const { result, shot } = await selectShotForVoice(payload);
+          if (!shot) return result;
+          if (!shot.image_url) return invalid('Generate this shot image before editing it.');
+
+          const editPayload: StructuredImageEditPrompt = {
+            target_type: 'shot',
+            target_id: shot.id,
+            source_image_url: shot.image_url,
+            edit_prompt: editPrompt,
+            model_alias: NANO_BANANA_FAST_EDIT_ALIAS,
+            preserve: payload.preserve ?? ['composition', 'main subject', 'camera angle', 'continuity'],
+            avoid: payload.avoid ?? ['distortion', 'extra limbs', 'identity drift', 'text artifacts'],
+            aspect_ratio: payload.aspect_ratio ?? 'auto',
+          };
+
+          const { data, error } = await supabase.functions.invoke('edit-shot-image', {
+            body: {
+              shot_id: shot.id,
+              image_url: shot.image_url,
+              edit_prompt: JSON.stringify(editPayload),
+              original_prompt: shot.visual_prompt,
+              model_alias: NANO_BANANA_FAST_EDIT_ALIAS,
+              preferred_model: resolveFrontendModelAlias(NANO_BANANA_FAST_EDIT_ALIAS),
+              structured_prompt: editPayload,
+            },
+          });
+          if (error) throw error;
+
+          return completed(`Shot ${shot.shot_number} image edit is ready.`, {
+            shotId: shot.id,
+            editPayload,
+            imageUrl: data?.image_url ?? null,
+          });
+        },
+      },
+      {
+        name: 'timeline_start_directors_cut',
+        scope: 'timeline',
+        confirmation: {
+          risk: 'generation',
+          message: 'This will spend credits. Should I continue?',
+        },
+        handler: async () => {
+          if (!projectId) return invalid('I need an active project before starting Director\'s Cut.');
+          navigate(appRoutes.projects.directorsCut(projectId));
+          return completed('Director\'s Cut is open.', { path: appRoutes.projects.directorsCut(projectId) });
+        },
+      },
+      {
+        name: 'asset_store_save_current',
+        scope: 'timeline',
+        handler: async (input) => {
+          const payload = input as { shotId?: string; shotNumber?: number; sceneId?: string; sceneNumber?: number };
+          const { result, shot } = await selectShotForVoice(payload);
+          if (!shot) return result;
+
+          const url = shot.video_status === 'completed' && shot.video_url ? shot.video_url : shot.image_url;
+          const type = shot.video_status === 'completed' && shot.video_url ? 'video' : 'image';
+          if (!url) return invalid('There is no generated output on the selected shot to save yet.');
+
+          const saved = await saveAsset({
+            url,
+            type,
+            prompt: shot.visual_prompt || shot.prompt_idea || undefined,
+            model: type === 'image' ? selectedImageModel : selectedVideoModel,
+            name: `Scene ${selectedScene?.scene_number ?? 'selected'} Shot ${shot.shot_number}`,
+            metadata: {
+              source: 'voice_timeline',
+              shotId: shot.id,
+              sceneId: shot.scene_id,
+              shotNumber: shot.shot_number,
+            },
+          });
+
+          if (!saved) return invalid('I could not save that output to the Asset Store.');
+          navigate(appRoutes.assets);
+          return completed('Saved to Asset Store.', { assetId: saved.id, path: appRoutes.assets });
+        },
+      },
+    ],
+    [
+      isProjectAutoGenerating,
+      navigate,
+      pendingProjectGenerationCount,
+      projectAutoGenState.phase,
+      projectAutoGenState.progress,
+      projectId,
+      projectNextPhase,
+      saveAsset,
+      selectShotForVoice,
+      selectedImageModel,
+      selectedScene,
+      selectedTargets.shot,
+      selectedVideoModel,
+      startProjectAutoGenerate,
+    ],
+  );
+
+  useRegisterVoiceActions(voiceActions);
 
   // Function to handle deleting a scene
   const handleDeleteScene = async (sceneId: string) => {
@@ -364,9 +756,10 @@ const StoryboardPage = () => {
       }
       
       toast.success('Scene deleted');
-    } catch (error: any) {
+    } catch (error) {
+      const message = getErrorMessage(error);
       console.error("Error deleting scene:", error);
-      toast.error(`Failed to delete scene: ${error.message}`);
+      toast.error(`Failed to delete scene: ${message}`);
       throw error; // Re-throw so ShotsRow can handle it
     }
   };
@@ -392,233 +785,199 @@ const StoryboardPage = () => {
     );
   }
 
+  const sidebarNode = sidebarData ? (
+    <EnhancedStoryboardSidebar
+      key={selectedScene?.id || 'no-scene'}
+      data={sidebarData}
+      sceneId={selectedScene?.id || ''}
+      onUpdate={(updates) => handleSceneUpdate(selectedScene?.id, updates)}
+      onProjectUpdate={handleProjectUpdate}
+    />
+  ) : (
+    <div className="p-6 text-zinc-500">Loading sidebar...</div>
+  );
+
+  const mainContent = (
+    <div className="p-3 md:p-6 h-full overflow-y-auto relative">
+      {projectDetails && (
+        <div className="mb-4 md:mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            {isMobile && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="shrink-0 h-10 w-10 border-zinc-800 bg-[#141414]">
+                    <PanelLeft className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[88vw] max-w-sm p-0 bg-[#0a0a0a] border-zinc-800">
+                  <SheetHeader className="p-4 border-b border-zinc-800">
+                    <SheetTitle className="text-white text-left">Scene Details</SheetTitle>
+                  </SheetHeader>
+                  <div className="h-[calc(100vh-65px)] overflow-y-auto">{sidebarNode}</div>
+                </SheetContent>
+              </Sheet>
+            )}
+            <GlowingTitle title={projectDetails.title} glowColor="#d4a574" />
+          </div>
+
+          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+            {projectId ? (
+              <Button
+                variant="outline"
+                size={isMobile ? 'sm' : 'default'}
+                onClick={() => navigate(appRoutes.projects.observability(projectId))}
+                className="border-amber-400/20 bg-[#141414] text-zinc-100 hover:bg-[#1a1a1a] min-h-[40px]"
+              >
+                <AlertCircle className="mr-2 h-4 w-4 text-amber-300" />
+                <span className="hidden sm:inline">Observability</span>
+                <span className="sm:hidden">Obs</span>
+                {openReviewTaskCount > 0 ? (
+                  <Badge variant="destructive" className="ml-2">
+                    {openReviewTaskCount}
+                  </Badge>
+                ) : null}
+              </Button>
+            ) : null}
+
+            {projectId && (
+              <Button
+                size={isMobile ? 'sm' : 'default'}
+                onClick={() => setShowDirectorsCutConfirm(true)}
+                className={cn(
+                  'relative overflow-hidden backdrop-blur-sm px-3 md:px-5 py-2 min-h-[40px]',
+                  'bg-[#151515] border border-[rgba(249,115,22,0.15)] text-zinc-100',
+                  'hover:border-[rgba(249,115,22,0.25)] hover:bg-[#1a1a1a]'
+                )}
+              >
+                <Scissors className="h-4 w-4" />
+                <span className="ml-2 hidden sm:inline">Director&apos;s Cut ({DIRECTORS_CUT_CREDITS} credits)</span>
+                <span className="ml-2 sm:hidden">Cut</span>
+              </Button>
+            )}
+
+            {scenes.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size={isMobile ? 'sm' : 'default'}
+                    onClick={isProjectAutoGenerating ? cancelProjectAutoGenerate : () => setShowProjectConfirmGenerate(true)}
+                    className={cn(
+                      'relative overflow-hidden px-3 md:px-6 py-2 min-h-[40px]',
+                      'bg-[#151210] border border-[rgba(249,115,22,0.15)] text-orange-50',
+                      'hover:border-[rgba(249,115,22,0.3)] hover:bg-[#1b1b1b]'
+                    )}
+                  >
+                    {isProjectAutoGenerating ? (
+                      <>
+                        <CircleStop className="h-4 w-4" />
+                        <span className="ml-2">Stop {projectAutoGenState.progress.completed}/{projectAutoGenState.progress.total}</span>
+                      </>
+                    ) : projectNextPhase === 'images' ? (
+                      <>
+                        <Sparkles className="h-4 w-4" />
+                        <span className="ml-2 hidden sm:inline">Generate Missing Images ({getShotImageCredits(selectedImageModel) * pendingProjectGenerationCount} credits)</span>
+                        <span className="ml-2 sm:hidden">Images</span>
+                      </>
+                    ) : (
+                      <>
+                        <Film className="h-4 w-4" />
+                        <span className="ml-2 hidden sm:inline">Generate Missing Videos ({getShotVideoCredits(selectedVideoModel) * pendingProjectGenerationCount} credits)</span>
+                        <span className="ml-2 sm:hidden">Videos</span>
+                      </>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="glass-panel border-zinc-700 max-w-xs">
+                  <p className="text-xs">
+                    {isProjectAutoGenerating
+                      ? 'Cancel the current project-wide generation queue'
+                      : projectNextPhase === 'images'
+                      ? `Generate missing images for ${pendingProjectGenerationCount} shot(s)`
+                      : `Generate missing videos for ${pendingProjectGenerationCount} shot(s)`}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </div>
+      )}
+      {scenes.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className={cn(
+            'text-center mt-12 md:mt-20 max-w-md mx-auto p-6 md:p-8 rounded-2xl',
+            'bg-[#111111]/90 backdrop-blur-sm border border-white/8'
+          )}
+        >
+          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-zinc-800/50 flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-zinc-500" />
+          </div>
+          <p className="text-xl font-semibold text-zinc-300 mb-2">No scenes found</p>
+          <p className="text-sm text-zinc-500 mb-6">Add scenes manually or generate them in Project Setup.</p>
+          <div className="flex items-center justify-center gap-3">
+            <AddSceneButton onClick={addScene} />
+            <span className="text-sm font-medium text-white/80">Add First Scene</span>
+          </div>
+        </motion.div>
+      ) : (
+        <AnimatePresence initial={false}>
+          {scenes.map((scene, index) => (
+            <motion.div
+              key={scene.id}
+              layout
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2, delay: index * 0.05 }}
+              onClick={() => handleSelectScene(scene)}
+              className={`${selectedScene?.id === scene.id ? 'border-l-2 border-[#f97316] pl-2 md:pl-4 -ml-2 md:-ml-4 mb-8 md:mb-12' : 'mb-8 md:mb-12'}`}
+            >
+              <ShotsRow
+                sceneId={scene.id}
+                sceneNumber={scene.scene_number}
+                projectId={projectId}
+                onSceneDelete={handleDeleteScene}
+                isSelected={selectedScene?.id === scene.id}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      )}
+      <div className="fixed bottom-6 right-4 md:bottom-8 md:right-8 z-30 pb-[env(safe-area-inset-bottom)]">
+        <motion.button
+          onClick={addScene}
+          className={cn(
+            'relative w-14 h-14 md:w-16 md:h-16 rounded-2xl',
+            'bg-gradient-to-br from-[#151515] to-[#1b1b1b]',
+            'border border-[#f97316]/25',
+            'shadow-[0_0_24px_rgba(249,115,22,0.18),0_8px_24px_rgba(0,0,0,0.35)]',
+            'flex items-center justify-center'
+          )}
+          whileHover={{ scale: 1.1, rotate: 90 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+        >
+          <Plus className="w-6 h-6 md:w-7 md:h-7 text-white drop-shadow-lg" />
+        </motion.button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex h-screen flex-col bg-[#090909] text-white">
       <AppHeader onOpenSettings={() => setIsSettingsPanelOpen(true)} />
-      <ResizablePanelGroup direction="horizontal" className="flex-grow">
-        {/* Sidebar */}
-        <ResizablePanel defaultSize={20} minSize={15} maxSize={30} className="h-full">
-          {sidebarData ? (
-            <EnhancedStoryboardSidebar
-              key={selectedScene?.id || 'no-scene'}
-              data={sidebarData}
-              sceneId={selectedScene?.id || ''}
-              onUpdate={(updates) => handleSceneUpdate(selectedScene?.id, updates)}
-              onProjectUpdate={handleProjectUpdate}
-            />
-          ) : (
-            <div className="p-6 text-zinc-500">Loading sidebar...</div>
-          )}
-        </ResizablePanel>
-
-        {/* Main content area */}
-        <ResizablePanel defaultSize={80}>
-          <div className="p-6 h-full overflow-y-auto relative">
-            {/* Project Title with Glowing Effect + Global Auto-Generate */}
-            {projectDetails && (
-              <div className="mb-6 flex items-center justify-between">
-                <GlowingTitle title={projectDetails.title} glowColor="#d4a574" />
-                
-                <div className="flex items-center gap-3">
-                  {projectId ? (
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Button
-                        variant="outline"
-                        onClick={() => navigate(appRoutes.projects.observability(projectId))}
-                        className="border-amber-400/20 bg-[#141414] text-zinc-100 hover:bg-[#1a1a1a]"
-                      >
-                        <AlertCircle className="mr-2 h-4 w-4 text-amber-300" />
-                        Observability
-                        {openReviewTaskCount > 0 ? (
-                          <Badge variant="destructive" className="ml-2">
-                            {openReviewTaskCount}
-                          </Badge>
-                        ) : null}
-                      </Button>
-                    </motion.div>
-                  ) : null}
-
-                  {projectId && (
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Button
-                        onClick={() => setShowDirectorsCutConfirm(true)}
-                        className={cn(
-                          'relative overflow-hidden backdrop-blur-sm px-5 py-2',
-                          'bg-[#151515] border border-[rgba(249,115,22,0.15)] text-zinc-100',
-                          'shadow-[0_12px_28px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.06)]',
-                          'hover:border-[rgba(249,115,22,0.25)] hover:bg-[#1a1a1a]',
-                          'transition-all duration-300'
-                        )}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/[0.03]" />
-                        <Scissors className="relative z-10 h-4 w-4" />
-                        <span className="relative z-10 ml-2">Director&apos;s Cut ({DIRECTORS_CUT_CREDITS} credits)</span>
-                      </Button>
-                    </motion.div>
-                  )}
-
-                  {/* Global Auto-Generate Button for ALL scenes */}
-                  {scenes.length > 0 && (
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            onClick={isProjectAutoGenerating ? cancelProjectAutoGenerate : () => setShowProjectConfirmGenerate(true)}
-                            className={cn(
-                              'relative overflow-hidden backdrop-blur-sm px-6 py-2',
-                              projectNextPhase === 'images'
-                                ? 'bg-[#151210] border border-[rgba(249,115,22,0.2)] text-orange-50'
-                                : 'bg-[#151210] border border-[rgba(249,115,22,0.15)] text-orange-50',
-                              'shadow-[0_12px_28px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)]',
-                              'hover:border-[rgba(249,115,22,0.3)] hover:bg-[#1b1b1b]',
-                              'transition-all duration-300'
-                            )}
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/[0.03]" />
-                            {isProjectAutoGenerating ? (
-                              <>
-                                <CircleStop className="relative z-10 h-4 w-4" />
-                                <span className="relative z-10 ml-2">
-                                  Stop{' '}
-                                  {projectAutoGenState.progress.completed}/{projectAutoGenState.progress.total}
-                                  {projectAutoGenState.progress.active > 0 && ` (${projectAutoGenState.progress.active} active)`}
-                                </span>
-                              </>
-                            ) : projectNextPhase === 'images' ? (
-                              <>
-                                <Sparkles className="relative z-10 h-4 w-4" />
-                                <span className="relative z-10 ml-2">Generate All Images ({getShotImageCredits(selectedImageModel) * (projectAutoGenState.progress.total || scenes.length * 3)} credits)</span>
-                              </>
-                            ) : (
-                              <>
-                                <Film className="relative z-10 h-4 w-4" />
-                                <span className="relative z-10 ml-2">Generate All Videos ({getShotVideoCredits(selectedVideoModel) * (projectAutoGenState.progress.total || scenes.length * 3)} credits)</span>
-                              </>
-                            )}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="glass-panel border-zinc-700 max-w-xs">
-                          <p className="text-xs">
-                            {isProjectAutoGenerating
-                              ? 'Cancel the current project-wide generation queue'
-                              : projectNextPhase === 'images'
-                              ? 'Generate images for ALL shots across ALL scenes in parallel'
-                              : 'Generate videos from ALL images across ALL scenes in parallel'}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </motion.div>
-                  )}
-                </div>
-              </div>
-            )}
-            {scenes.length === 0 ? (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} 
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                    className={cn(
-                      "text-center mt-20 max-w-md mx-auto",
-                      "p-8 rounded-2xl",
-                      "bg-[#111111]/90",
-                      "backdrop-blur-sm border border-white/8",
-                      "shadow-[0_20px_48px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.03)]"
-                    )}
-                  >
-                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-zinc-800/50 
-                  flex items-center justify-center
-                  shadow-[inset_0_2px_8px_rgba(0,0,0,0.3)]">
-                  <AlertCircle className="w-8 h-8 text-zinc-500" />
-                </div>
-                
-                <p className="text-xl font-semibold text-zinc-300 mb-2">No scenes found</p>
-                <p className="text-sm text-zinc-500 mb-6">
-                  Add scenes manually or generate them in Project Setup.
-                </p>
-                
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <div className="flex items-center justify-center gap-3">
-                    <AddSceneButton onClick={addScene} />
-                    <span className="text-sm font-medium text-white/80">Add First Scene</span>
-                  </div>
-                </motion.div>
-              </motion.div>
-            ) : (
-              <AnimatePresence initial={false}>
-                {scenes.map((scene, index) => (
-                  <motion.div 
-                    key={scene.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.2, delay: index * 0.05 }}
-                    onClick={() => handleSelectScene(scene)} 
-                    className={`${selectedScene?.id === scene.id ? 'border-l-2 border-[#f97316] pl-4 -ml-4 mb-12' : 'mb-12'}`}
-                  >
-                    <ShotsRow
-                      sceneId={scene.id}
-                      sceneNumber={scene.scene_number}
-                      projectId={projectId} 
-                      onSceneDelete={handleDeleteScene}
-                      isSelected={selectedScene?.id === scene.id}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            )}
-            {/* Floating Action Button to Add Scene - Premium Design */}
-            <div className="fixed bottom-8 right-8 z-30">
-              {/* Glow layer (backdrop) */}
-              <motion.div
-                className="absolute inset-0 rounded-full bg-gradient-to-br from-[#f97316]/25 to-[#d4a574]/18 blur-2xl"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 0.8, 0.5]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              {/* Main button */}
-              <motion.button
-                onClick={addScene}
-                className={cn(
-                  "relative w-16 h-16 rounded-2xl",
-                  "bg-gradient-to-br from-[#151515] to-[#1b1b1b]",
-                  "border border-[#f97316]/25",
-                  "shadow-[0_0_24px_rgba(249,115,22,0.18),0_8px_24px_rgba(0,0,0,0.35),inset_0_2px_0_rgba(255,255,255,0.08)]",
-                  "flex items-center justify-center",
-                  "overflow-hidden"
-                )}
-                whileHover={{ 
-                  scale: 1.1,
-                  rotate: 90,
-                  boxShadow: "0 0 32px rgba(249,115,22,0.22), 0 12px 32px rgba(0,0,0,0.42)"
-                }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 400, 
-                  damping: 15
-                }}
-              >
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/15" />
-                
-                {/* Icon */}
-                <Plus className="w-7 h-7 text-white relative z-10 drop-shadow-lg" />
-                
-                {/* Subtle shine */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent rounded-2xl" />
-              </motion.button>
-            </div>
-          </div>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+      {isMobile ? (
+        <div className="flex-grow overflow-hidden">{mainContent}</div>
+      ) : (
+        <ResizablePanelGroup direction="horizontal" className="flex-grow">
+          <ResizablePanel defaultSize={20} minSize={15} maxSize={30} className="h-full">
+            {sidebarNode}
+          </ResizablePanel>
+          <ResizablePanel defaultSize={80}>{mainContent}</ResizablePanel>
+        </ResizablePanelGroup>
+      )}
       
       {/* Enhanced Background */}
       {/* Base gradient */}
@@ -671,14 +1030,14 @@ const StoryboardPage = () => {
         onOpenChange={setShowProjectConfirmGenerate}
         onConfirm={() => {
           setShowProjectConfirmGenerate(false);
-          startProjectAutoGenerate();
+          startProjectAutoGenerate({ imageModelId: selectedImageModel, videoModelId: selectedVideoModel });
         }}
-        title="Confirm Auto-Generate All"
-        description="Are you sure you wish to auto-generate across all scenes?"
+        title={projectNextPhase === 'images' ? 'Generate Missing Images' : 'Generate Missing Videos'}
+        description={`This will process ${pendingProjectGenerationCount} incomplete shot(s) and skip completed outputs.`}
         estimatedCredits={
           projectNextPhase === 'images'
-            ? getShotImageCredits(selectedImageModel) * (projectAutoGenState.progress.total || scenes.length * 3)
-            : getShotVideoCredits(selectedVideoModel) * (projectAutoGenState.progress.total || scenes.length * 3)
+            ? getShotImageCredits(selectedImageModel) * pendingProjectGenerationCount
+            : getShotVideoCredits(selectedVideoModel) * pendingProjectGenerationCount
         }
       />
 

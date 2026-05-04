@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,9 +23,10 @@ interface CharacterCardProps {
   character: Character;
   onDelete: (characterId: string) => void;
   styleReferenceUrl?: string;
+  isVoiceSelected?: boolean;
+  onSelect?: (character: Character) => void;
 }
 
-/** Maps image_status to a badge config for the generation state indicator */
 const STATUS_BADGE: Record<string, { icon: React.ReactNode; label: string; className: string }> = {
   pending: {
     icon: <Clock className="w-3 h-3" />,
@@ -53,21 +54,59 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
   character,
   onDelete,
   styleReferenceUrl,
+  isVoiceSelected = false,
+  onSelect,
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isImageLoading = character.image_status === 'generating';
   const hasImage = !!character.image_url;
   const imageStatus = isGenerating ? 'generating' : (character.image_status || (hasImage ? 'completed' : 'pending'));
+  const isActivelyGenerating = isGenerating || isImageLoading;
+
+  // Progress bar simulation
+  useEffect(() => {
+    if (isActivelyGenerating) {
+      setProgress(5);
+      progressInterval.current = setInterval(() => {
+        setProgress(prev => {
+          if (prev < 30) return prev + 2;       // Phase 1: prompt (~3s)
+          if (prev < 70) return prev + 1;       // Phase 2: image gen (~20s)
+          if (prev < 90) return prev + 0.5;     // Phase 3: upload (~10s)
+          return prev;                           // Hold at 90
+        });
+      }, 500);
+    } else {
+      if (progressInterval.current) {
+        clearInterval(progressInterval.current);
+        progressInterval.current = null;
+      }
+      if (imageStatus === 'completed' && progress > 0) {
+        setProgress(100);
+        const t = setTimeout(() => setProgress(0), 1500);
+        return () => clearTimeout(t);
+      }
+      if (imageStatus === 'failed' && progress > 0) {
+        // Keep current progress but color turns red via className
+        const t = setTimeout(() => setProgress(0), 3000);
+        return () => clearTimeout(t);
+      }
+    }
+    return () => {
+      if (progressInterval.current) clearInterval(progressInterval.current);
+    };
+  }, [isActivelyGenerating, imageStatus]);
 
   const handleGenerate = async (e: React.MouseEvent) => {
     e.stopPropagation();
-
     if (isGenerating) return;
 
     setIsGenerating(true);
+    setProgress(0);
     toast.info('Generating character image...');
 
     try {
@@ -79,13 +118,12 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
       });
 
       if (error) throw error;
-
       if (data?.success) {
         toast.success('Character image generated!');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Generate error:', err);
-      toast.error(err.message || 'Failed to generate image');
+      toast.error(err instanceof Error ? err.message : 'Failed to generate image');
     } finally {
       setIsGenerating(false);
     }
@@ -93,18 +131,15 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-
     if (!hasImage) {
       toast.info('Generate an image first before editing');
       return;
     }
-
     setShowEditDialog(true);
   };
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-
     if (!confirm(`Delete ${character.name}?`)) return;
 
     setIsDeleting(true);
@@ -116,6 +151,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
   };
 
   const badge = STATUS_BADGE[imageStatus];
+  const showProgressBar = progress > 0;
 
   return (
     <>
@@ -127,9 +163,19 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
         transition={{ duration: 0.2 }}
       >
         <Card
-          className="relative bg-[#18191E] border border-zinc-700/60 w-56 aspect-[3/4] flex flex-col overflow-hidden transition-all duration-300 group hover:border-zinc-600 hover:shadow-lg hover:shadow-black/20"
+          data-voice-character-id={character.id}
+          onClick={() => onSelect?.(character)}
+          className={cn(
+            'relative bg-[#18191E] border border-zinc-700/60 w-56 aspect-[3/4] flex flex-col overflow-hidden transition-all duration-300 group hover:border-zinc-600 hover:shadow-lg hover:shadow-black/20',
+            onSelect && 'cursor-pointer',
+            isVoiceSelected &&
+              'border-[#f97316]/70 ring-2 ring-[#f97316]/50 shadow-[0_0_0_4px_rgba(249,115,22,0.12),0_0_34px_rgba(249,115,22,0.28)]',
+          )}
         >
-          {/* Generation State Indicator Badge */}
+          {isVoiceSelected && (
+            <div className="pointer-events-none absolute inset-0 z-20 rounded-[inherit] border border-[#fed7aa]/40" />
+          )}
+          {/* Status Badge */}
           {badge && (
             <div className={cn(
               'absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium backdrop-blur-sm',
@@ -137,6 +183,19 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
             )}>
               {badge.icon}
               {badge.label}
+            </div>
+          )}
+
+          {/* Progress Bar */}
+          {showProgressBar && (
+            <div className="absolute top-0 left-0 right-0 z-20 h-1 bg-zinc-800">
+              <div
+                className={cn(
+                  'h-full transition-all duration-500 ease-out rounded-r-full',
+                  imageStatus === 'failed' ? 'bg-red-500' : 'bg-primary'
+                )}
+                style={{ width: `${progress}%` }}
+              />
             </div>
           )}
 
@@ -154,7 +213,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
                   transition={{ duration: 0.3 }}
                   className="w-full h-full object-cover"
                 />
-              ) : isImageLoading || isGenerating ? (
+              ) : isActivelyGenerating ? (
                 <motion.div
                   key="loading"
                   initial={{ opacity: 0 }}
@@ -167,7 +226,10 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
                     </div>
                     <Sparkles className="h-4 w-4 text-primary absolute -top-1 -right-1 animate-pulse" />
                   </div>
-                  <p className="text-xs text-zinc-400 mt-3">Generating...</p>
+                  <p className="text-xs text-zinc-400 mt-3">
+                    {progress < 30 ? 'Creating prompt...' : progress < 70 ? 'Generating image...' : 'Uploading...'}
+                  </p>
+                  <p className="text-[10px] text-zinc-600 mt-1">{Math.round(progress)}%</p>
                 </motion.div>
               ) : (
                 <motion.div
@@ -184,9 +246,9 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
               )}
             </AnimatePresence>
 
-            {/* Hover Overlay with Action Buttons */}
+            {/* Hover Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-end p-3">
-              {!isImageLoading && !isGenerating && (
+              {!isActivelyGenerating && (
                 <div className="w-full space-y-1.5">
                   <Button
                     variant="secondary"
